@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL Generator Pro - Final Version</title>
+    <title>Qsl-Caribeño Pro</title>
     <style>
         :root {
             --navy-deep: #000c1d;
@@ -14,7 +14,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background-color: var(--navy-deep);
             color: var(--text-color);
             margin: 0;
@@ -24,8 +24,8 @@
             min-height: 100vh;
         }
 
-        header { padding: 15px; text-align: center; }
-        header h1 { margin: 0; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); letter-spacing: 2px; font-size: 1.5rem; }
+        header { padding: 20px; text-align: center; }
+        header h1 { margin: 0; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); letter-spacing: 2px; }
 
         .main-container {
             display: flex;
@@ -34,40 +34,32 @@
             padding: 20px;
             max-width: 1400px;
             width: 95%;
-            align-items: flex-start;
         }
 
-        /* --- Panel Izquierdo --- */
+        /* Panel de control */
         .controls-panel {
-            flex: 0 0 300px;
+            flex: 0 0 320px;
             background: var(--panel-bg);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 1px solid var(--neon-blue);
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
             max-height: 90vh;
-            overflow-y: auto; /* Scroll si la pantalla es pequeña */
+            overflow-y: auto;
         }
 
-        .section-title {
+        .section-label {
             color: var(--neon-green);
-            font-size: 0.9em;
-            border-bottom: 1px solid #333;
-            padding-bottom: 5px;
-            margin-bottom: 10px;
+            font-size: 0.8em;
             margin-top: 15px;
+            margin-bottom: 8px;
+            display: block;
+            border-bottom: 1px solid #1a3a5a;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .input-group { margin-bottom: 10px; }
-        label { 
-            display: block; 
-            margin-bottom: 4px; 
-            font-size: 0.8em; 
-            color: #8b949e; 
-            font-weight: bold; 
-        }
+        label { display: block; margin-bottom: 4px; font-size: 0.75em; color: #8b949e; }
         
         input {
             width: 100%;
@@ -77,47 +69,39 @@
             border-radius: 4px;
             color: white;
             box-sizing: border-box;
-            font-size: 13px;
         }
-        
-        input:focus { outline: none; border-color: var(--neon-blue); }
 
-        .btn {
+        .btn-download {
             width: 100%;
-            padding: 12px;
-            margin-top: 15px;
+            padding: 15px;
+            margin-top: 20px;
             border: none;
-            border-radius: 4px;
+            background: var(--neon-green);
+            color: black;
             font-weight: bold;
             cursor: pointer;
+            border-radius: 4px;
             text-transform: uppercase;
-            background: var(--neon-green);
-            color: #000;
-            box-shadow: 0 0 10px var(--neon-green);
         }
-        .btn:hover { box-shadow: 0 0 20px var(--neon-green); transform: scale(1.02); }
 
-        /* --- Panel Derecho --- */
+        /* Vista previa */
         .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; }
-        
         canvas {
-            width: 100%;
-            max-width: 900px; /* Limite visual */
-            height: auto;
-            border: 2px solid #004080;
-            border-radius: 6px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 2px solid var(--neon-blue);
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .main-container { flex-direction: column; }
-            .controls-panel { width: 100%; max-height: none; }
+            .controls-panel { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <header><h1>QSL CREATOR <span style="font-weight: 100;">V3.0</span></h1></header>
+    <header><h1>QSL-CARIBEÑO <span style="font-weight: 100;">V3.5</span></h1></header>
 
     <div class="main-container">
         <div class="controls-panel">
@@ -126,59 +110,44 @@
                 <input type="file" id="bgInput" accept="image/*">
             </div>
 
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                 <div style="flex:1;"><label>Caja Color</label><input type="color" id="boxColor" value="#000000" oninput="draw()"></div>
-                 <div style="flex:1;"><label>Texto Color</label><input type="color" id="textColor" value="#ffffff" oninput="draw()"></div>
+            <div style="display: flex; gap:10px;">
+                <div style="flex:1;"><label>Color Caja</label><input type="color" id="boxColor" value="#000000" oninput="draw()"></div>
+                <div style="flex:1;"><label>Color Texto</label><input type="color" id="textColor" value="#ffffff" oninput="draw()"></div>
             </div>
 
-            <div class="section-title">MI ESTACIÓN (Arriba)</div>
+            <span class="section-label">De: (Tu Estación)</span>
             <div class="input-group">
-                <label>Mi Indicativo (DE)</label>
-                <input type="text" id="myCall" placeholder="EA0MY" value="MY-CALL" oninput="draw()">
+                <label>Tu Indicativo</label>
+                <input type="text" id="myCall" placeholder="EA1ABC" value="HI8-QSL" oninput="draw()">
             </div>
             <div class="input-group">
-                <label>Mi QTH / Locator</label>
-                <input type="text" id="myLoc" placeholder="IN80aa" value="IN80aa" oninput="draw()">
+                <label>Tu Nombre / QTH</label>
+                <input type="text" id="myInfo" placeholder="Pedro - Santo Domingo" oninput="draw()">
             </div>
 
-            <div class="section-title">DATOS DEL QSO</div>
+            <span class="section-label">Para: (Detalles del QSO)</span>
             <div class="input-group">
-                <label>To Radio (Destinatario)</label>
-                <input type="text" id="urCall" placeholder="W1AW" oninput="draw()">
+                <label>Confirmando QSO con:</label>
+                <input type="text" id="toCall" placeholder="W1AW" oninput="draw()">
             </div>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div class="input-group">
-                    <label>Fecha</label>
-                    <input type="date" id="qsoDate" oninput="draw()">
-                </div>
-                <div class="input-group">
-                    <label>Hora (UTC)</label>
-                    <input type="time" id="qsoTime" oninput="draw()">
-                </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="input-group"><label>Fecha</label><input type="date" id="qDate" oninput="draw()"></div>
+                <div class="input-group"><label>Hora (UTC)</label><input type="time" id="qTime" oninput="draw()"></div>
             </div>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                <div class="input-group">
-                    <label>Banda</label>
-                    <input type="text" id="qsoBand" placeholder="20m" oninput="draw()">
-                </div>
-                <div class="input-group">
-                    <label>Modo</label>
-                    <input type="text" id="qsoMode" placeholder="SSB" oninput="draw()">
-                </div>
-                <div class="input-group">
-                    <label>RST</label>
-                    <input type="text" id="qsoRst" placeholder="59" oninput="draw()">
-                </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                <div class="input-group"><label>Banda</label><input type="text" id="qBand" placeholder="40m" oninput="draw()"></div>
+                <div class="input-group"><label>Modo</label><input type="text" id="qMode" placeholder="SSB" oninput="draw()"></div>
+                <div class="input-group"><label>RST</label><input type="text" id="qRst" placeholder="59" oninput="draw()"></div>
             </div>
 
             <div class="input-group">
-                <label>Comentario / PSE QSL / TNX</label>
-                <input type="text" id="qsoMsg" placeholder="TNX 73!" oninput="draw()">
+                <label>Comentarios / Remarks</label>
+                <input type="text" id="qMsg" placeholder="Gracias por el contacto, 73!" oninput="draw()">
             </div>
 
-            <button class="btn" onclick="downloadQSL()">DESCARGAR PNG</button>
+            <button class="btn-download" onclick="download()">Descargar QSL</button>
         </div>
 
         <div class="preview-panel">
@@ -197,33 +166,24 @@
             r.readAsDataURL(e.target.files[0]);
         });
 
-        // Función Maestra para dibujar líneas y texto ajustado
-        function drawField(label, value, x, y, width, textColor) {
-            const labelSize = 11;
-            const valueSize = 18;
-            
-            // Etiqueta (Arriba izquierda del campo)
+        function drawLine(label, value, x, y, width, textColor) {
             ctx.fillStyle = textColor;
-            ctx.font = `bold ${labelSize}px 'Segoe UI', sans-serif`;
-            ctx.fillText(label.toUpperCase(), x, y - 5);
-
-            // Valor (Centro/Izquierda del campo)
-            ctx.font = `bold ${valueSize}px 'Courier New', monospace`;
+            // Etiqueta
+            ctx.font = "bold 12px Arial";
+            ctx.fillText(label.toUpperCase() + ":", x, y);
             
-            // Si no hay valor, ponemos guiones para mantener la estética
-            const displayVal = value ? value : ""; 
-            ctx.fillText(displayVal, x, y + 15);
+            const labelWidth = ctx.measureText(label.toUpperCase() + ": ").width;
 
-            // Línea de base (Subrayado)
-            // Se dibuja desde X hasta X + Width - padding
-            const padding = 10;
-            const lineEnd = x + width - padding;
+            // Valor
+            ctx.font = "bold 20px 'Courier New', monospace";
+            ctx.fillText(value || "", x + labelWidth, y);
 
+            // Línea de subrayado
             ctx.strokeStyle = textColor;
             ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.moveTo(x, y + 20);
-            ctx.lineTo(lineEnd, y + 20);
+            ctx.moveTo(x + labelWidth, y + 5);
+            ctx.lineTo(x + width - 10, y + 5); // El "-10" evita que toque el borde derecho
             ctx.stroke();
         }
 
@@ -231,82 +191,68 @@
             const boxColor = document.getElementById('boxColor').value;
             const textColor = document.getElementById('textColor').value;
 
-            // 1. Limpiar y Fondo
-            ctx.clearRect(0,0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Fondo
             if(bgImg.src) {
                 ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
             } else {
-                ctx.fillStyle = "#0a1520";
+                ctx.fillStyle = "#001a33";
                 ctx.fillRect(0,0, canvas.width, canvas.height);
             }
 
-            // 2. MI INDICATIVO (ARRIBA) - Agregado según petición
+            // 2. TU INDICATIVO (ARRIBA IZQUIERDA)
             const myCall = document.getElementById('myCall').value;
-            const myLoc = document.getElementById('myLoc').value;
+            const myInfo = document.getElementById('myInfo').value;
             
-            if(myCall) {
-                // Sombra para que se lea sobre cualquier foto
-                ctx.shadowColor = "rgba(0,0,0,0.8)";
-                ctx.shadowBlur = 10;
-                
-                // Indicativo grande
-                ctx.fillStyle = "#ffffff"; // Siempre blanco o puedes usar textColor
-                ctx.font = "bold 60px sans-serif";
-                ctx.fillText(myCall.toUpperCase(), 40, 70);
+            ctx.shadowColor = "black";
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = "white";
+            ctx.font = "bold 70px sans-serif";
+            ctx.fillText(myCall.toUpperCase(), 50, 80);
+            
+            ctx.font = "bold 25px sans-serif";
+            ctx.fillStyle = "#00f2ff";
+            ctx.fillText(myInfo, 50, 115);
+            ctx.shadowBlur = 0;
 
-                // Locator / QTH pequeño debajo
-                ctx.font = "bold 25px sans-serif";
-                ctx.fillStyle = "#cccccc";
-                ctx.fillText(myLoc, 40, 105);
-                
-                ctx.shadowBlur = 0; // Reset sombra
-            }
-
-            // 3. CAJA DE DATOS QSO (ABAJO)
-            // Calculamos margenes para que no se salga
-            const margin = 40;
-            const boxW = canvas.width - (margin * 2); 
-            const boxH = 180;
-            const boxX = margin;
-            const boxY = canvas.height - boxH - 30; // 30px desde abajo
-
-            // Dibujar rectángulo semitransparente
-            ctx.fillStyle = boxColor + "D9"; // Opacidad alta
-            ctx.fillRect(boxX, boxY, boxW, boxH);
+            // 3. CAJA DE DATOS (RECTÁNGULO)
+            const bX = 50, bY = 320, bW = 800, bH = 180;
+            ctx.fillStyle = boxColor + "CC"; // Transparencia
+            ctx.fillRect(bX, bY, bW, bH);
             ctx.strokeStyle = textColor;
             ctx.lineWidth = 2;
-            ctx.strokeRect(boxX, boxY, boxW, boxH);
+            ctx.strokeRect(bX, bY, bW, bH);
 
-            // --- FILAS DE DATOS ---
-            // Usamos lógica de rejilla (Grid) para que no se salgan las líneas
+            // 4. DATOS DENTRO DEL RECTÁNGULO
+            const startX = bX + 25;
+            const col = (bW - 50) / 4; // Dividir en columnas para que no se salgan las líneas
 
-            const startX = boxX + 20; // Margen interno izquierdo
-            const contentW = boxW - 40; // Ancho útil dentro de la caja
+            // Fila 1: To Radio
+            drawLine("Confirming QSO with", document.getElementById('toCall').value, startX, bY + 45, bW - 25, textColor);
 
-            // FILA 1: TO RADIO (Ocupa todo el ancho)
-            const urCall = document.getElementById('urCall').value;
-            drawField("Confirming QSO With:", urCall, startX, boxY + 30, contentW, textColor);
+            // Fila 2: Fecha, Hora, Banda, Modo, RST
+            const row2Y = bY + 100;
+            const subCol = (bW - 50) / 5;
+            drawLine("Date", document.getElementById('qDate').value, startX, row2Y, subCol, textColor);
+            drawLine("Time", document.getElementById('qTime').value, startX + subCol, row2Y, subCol, textColor);
+            drawLine("Band", document.getElementById('qBand').value, startX + (subCol*2), row2Y, subCol, textColor);
+            drawLine("Mode", document.getElementById('qMode').value, startX + (subCol*3), row2Y, subCol, textColor);
+            drawLine("RST",  document.getElementById('qRst').value,  startX + (subCol*4), row2Y, subCol, textColor);
 
-            // FILA 2: DATOS TECNICOS (Dividimos el ancho en 5 columnas)
-            const colW = contentW / 5;
-            const row2Y = boxY + 85;
+            // Fila 3: Comentarios
+            drawLine("Remarks", document.getElementById('qMsg').value, startX, bY + 155, bW - 25, textColor);
             
-            drawField("Date", document.getElementById('qsoDate').value, startX + (colW * 0), row2Y, colW, textColor);
-            drawField("Time", document.getElementById('qsoTime').value, startX + (colW * 1), row2Y, colW, textColor);
-            drawField("Band", document.getElementById('qsoBand').value, startX + (colW * 2), row2Y, colW, textColor);
-            drawField("Mode", document.getElementById('qsoMode').value, startX + (colW * 3), row2Y, colW, textColor);
-            drawField("RST",  document.getElementById('qsoRst').value,  startX + (colW * 4), row2Y, colW, textColor);
-
-            // FILA 3: COMENTARIOS
-            const row3Y = boxY + 140;
-            drawField("Remarks / PSE QSL / TNX", document.getElementById('qsoMsg').value, startX, row3Y, contentW, textColor);
+            // Marca de agua sutil
+            ctx.font = "10px Arial";
+            ctx.fillStyle = "rgba(255,255,255,0.3)";
+            ctx.fillText("Qsl-Caribeño", 810, 540);
         }
 
-        function downloadQSL() {
+        function download() {
             const link = document.createElement('a');
-            const call = document.getElementById('urCall').value || "QSL";
-            link.download = `${call}_card.png`;
-            link.href = canvas.toDataURL("image/png");
+            link.download = `Qsl_Caribeno_${document.getElementById('toCall').value || 'card'}.png`;
+            link.href = canvas.toDataURL();
             link.click();
         }
 
