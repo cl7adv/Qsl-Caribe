@@ -3,27 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL ELITE PRO v14.1 - DV MODE & COUNTRY</title>
+    <title>QSL ELITE PRO v14.3 - GLOBAL PREFIX SYSTEM</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    
     <style>
         :root { --bg-dark: #0e2431; --neon: #00ff99; --pink: #ff00ff; --light: #e6faff; }
-        body { font-family: 'Segoe UI', Verdana, sans-serif; background: #050a14; color: var(--light); margin: 0; display: flex; flex-direction: column; align-items: center; }
-        header { padding: 20px; text-align: center; width: 100%; background: var(--bg-dark); border-bottom: 3px solid var(--neon); box-shadow: 0 4px 15px rgba(0,255,153,0.3); }
+        body { font-family: 'Segoe UI', sans-serif; background: #050a14; color: var(--light); margin: 0; display: flex; flex-direction: column; align-items: center; }
+        header { padding: 15px; text-align: center; width: 100%; background: var(--bg-dark); border-bottom: 3px solid var(--neon); box-shadow: 0 4px 15px rgba(0,255,153,0.3); }
         .main-wrapper { display: flex; flex-direction: row; gap: 20px; padding: 20px; width: 100%; max-width: 1600px; box-sizing: border-box; }
         .side-bar { flex: 0 0 350px; background: var(--bg-dark); padding: 20px; border-radius: 15px; border: 2px solid var(--neon); height: 88vh; overflow-y: auto; }
-        .section-title { color: var(--neon); font-size: 0.85em; margin: 20px 0 10px; display: block; border-bottom: 1px solid #333; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
-        input, select { width: 100%; padding: 10px; background: #050a14; border: 1px solid var(--neon); border-radius: 8px; color: white; margin-bottom: 10px; font-size: 0.9em; box-sizing: border-box; }
+        .section-title { color: var(--neon); font-size: 0.8em; margin: 15px 0 8px; display: block; border-bottom: 1px solid #333; text-transform: uppercase; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; background: #050a14; border: 1px solid var(--neon); border-radius: 8px; color: white; margin-bottom: 10px; box-sizing: border-box; }
         .btn { width: 100%; padding: 15px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin: 5px 0; }
         .btn-zip { background: var(--pink); color: white; display: none; box-shadow: 0 0 15px var(--pink); }
         .btn-previa { background: var(--neon); color: #000; }
-        .canvas-area { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .canvas-area { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
         canvas { width: 100%; max-width: 1000px; height: auto; border-radius: 12px; border: 2px solid var(--neon); background: #000; cursor: move; }
-        #previewContainer { width: 95%; max-width: 1500px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 30px; display: none; background: rgba(0,0,0,0.5); margin: 20px 0; border-radius: 20px; }
-        .qsl-mini { background: #111; padding: 10px; border-radius: 10px; border: 1px solid #444; text-align: center; }
-        .qsl-mini img { width: 100%; border-radius: 5px; margin-bottom: 8px; }
-        .logo-ctrl { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        #previewContainer { width: 95%; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; padding: 20px; display: none; }
+        .logo-ctrl { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #333; }
         .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .gal-img { width: 100%; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; }
         .gal-img.active { border-color: var(--pink); }
@@ -31,55 +28,54 @@
 </head>
 <body>
 
-<header><h1>QSL ELITE PRO v14.1 - DV MODE UPDATE</h1></header>
+<header><h1>QSL ELITE PRO v14.3 - GLOBAL SYSTEM</h1></header>
 
 <div class="main-wrapper">
     <div class="side-bar">
-        <span class="section-title">📂 Paso 1: Log ADIF</span>
+        <span class="section-title">📂 Log ADIF</span>
         <input type="file" id="adifInput" accept=".adi,.adif" onchange="handleADIF(event)">
-        <button class="btn btn-zip" id="btnZip" onclick="generateAndZip()">Descargar .ZIP (Todo)</button>
+        <button class="btn btn-zip" id="btnZip" onclick="generateAndZip()">Generar Pack .ZIP</button>
 
-        <span class="section-title">🎨 Estilo</span>
+        <span class="section-title">🎨 Fondo y Estilo</span>
         <div class="gallery">
             <img class="gal-img" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800" onclick="changeBG(this)">
             <img class="gal-img" src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800" onclick="changeBG(this)">
         </div>
         <select id="tableStyle" onchange="draw()">
-            <option value="modern">Moderno</option>
-            <option value="normal" selected>Clásico</option>
-            <option value="transparent">Minimalista</option>
+            <option value="normal" selected>Clásico Radio</option>
+            <option value="modern">Moderno Digital</option>
+            <option value="transparent">Transparente</option>
         </select>
 
-        <span class="section-title">👤 Mis Datos (Auto)</span>
-        <input type="text" id="myCall" placeholder="Mi Indicativo" oninput="draw()">
-        <input type="text" id="myLocator" placeholder="Mi Locator" oninput="draw()">
-        <input type="text" id="myCountry" placeholder="Mi País" value="CUBA" oninput="draw()">
+        <span class="section-title">👤 Mis Datos (Auto-País)</span>
+        <input type="text" id="myCall" placeholder="Mi Indicativo" oninput="updateAutoCountry()">
+        <input type="text" id="myCountry" placeholder="País (Auto)" oninput="draw()">
 
-        <span class="section-title">📡 Datos QSO</span>
-        <input type="text" id="toCall" placeholder="Destino" oninput="draw()">
+        <span class="section-title">📡 Datos Previa</span>
+        <input type="text" id="toCall" placeholder="Indicativo Destino" oninput="draw()">
         <div style="display:flex; gap:5px;">
             <input type="text" id="qBand" placeholder="Band" oninput="draw()">
             <input type="text" id="qMode" placeholder="Mode" oninput="draw()">
             <input type="text" id="qRst" placeholder="RST" oninput="draw()">
         </div>
 
-        <span class="section-title">🖼️ Logos (4)</span>
+        <span class="section-title">🖼️ Logos (Arrastrables)</span>
         <div id="logosContainer">
             <script>
                 for(let i=0; i<4; i++) {
                     document.write(`<div class="logo-ctrl">
                         <input type="file" accept="image/*" onchange="loadLogo(${i}, event)">
-                        <input type="range" id="size${i}" min="40" max="500" value="150" oninput="draw()">
+                        <input type="range" id="size${i}" min="40" max="600" value="180" oninput="draw()">
                     </div>`);
                 }
             </script>
         </div>
-        <button class="btn btn-previa" onclick="downloadPreview()">Previa HD</button>
+        <button class="btn btn-previa" onclick="downloadPreview()">Guardar Previa HD</button>
     </div>
 
     <div class="canvas-area">
         <canvas id="qslCanvas" width="1800" height="1100"></canvas>
-        <p id="msg" style="color:var(--neon); margin-top:15px; font-weight:bold;"></p>
+        <p id="msg" style="color:var(--neon); margin-top:10px; font-weight:bold;"></p>
     </div>
 </div>
 
@@ -90,17 +86,43 @@
     const ctx = canvas.getContext('2d');
     let bgImg = new Image(); bgImg.crossOrigin = "anonymous";
     let adifRecords = [];
-    let logos = Array.from({length: 4}, () => ({ img: new Image(), x: 1500, y: 100, active: false }));
-    
-    const locatorDB = {
-        "CL7ADV": { loc: "EL98xx", country: "CUBA" },
-        "CO7SCS": { loc: "EL90as", country: "CUBA" },
-        "CM7ABC": { loc: "EL90ar", country: "CUBA" }
+    let logos = Array.from({length: 4}, () => ({ img: new Image(), x: 1400, y: 100, active: false }));
+
+    // BASE DE DATOS MUNDIAL DE PREFIJOS (ITU)
+    const worldPrefixes = {
+        "AM":"SPAIN","AN":"SPAIN","AO":"SPAIN","EA":"SPAIN","EB":"SPAIN","EC":"SPAIN","ED":"SPAIN","EE":"SPAIN","EF":"SPAIN","EG":"SPAIN","EH":"SPAIN",
+        "CL":"CUBA","CM":"CUBA","CO":"CUBA","T4":"CUBA",
+        "W":"USA","K":"USA","N":"USA","AA":"USA","AB":"USA","AC":"USA","AD":"USA","AE":"USA","AF":"USA","AG":"USA","AI":"USA","AJ":"USA","AK":"USA","AL":"USA",
+        "PY":"BRAZIL","PP":"BRAZIL","PR":"BRAZIL","PS":"BRAZIL","PU":"BRAZIL","PV":"BRAZIL","PW":"BRAZIL","PX":"BRAZIL",
+        "LU":"ARGENTINA","AY":"ARGENTINA","AZ":"ARGENTINA","LO":"ARGENTINA","LP":"ARGENTINA","LQ":"ARGENTINA","LR":"ARGENTINA","LS":"ARGENTINA","LT":"ARGENTINA","LV":"ARGENTINA","LW":"ARGENTINA",
+        "G":"UNITED KINGDOM","M":"UNITED KINGDOM","2E":"UNITED KINGDOM","GX":"UNITED KINGDOM","MX":"UNITED KINGDOM",
+        "I":"ITALY","IK":"ITALY","IU":"ITALY","IZ":"ITALY","IA":"ITALY","IB":"ITALY","ID":"ITALY","IE":"ITALY","IF":"ITALY","IH":"ITALY","II":"ITALY","IL":"ITALY","IM":"ITALY","IP":"ITALY","IQ":"ITALY","IR":"ITALY","IS":"ITALY","IV":"ITALY","IW":"ITALY",
+        "F":"FRANCE","TM":"FRANCE","HW":"FRANCE","HX":"FRANCE","HY":"FRANCE","TK":"FRANCE",
+        "DL":"GERMANY","DF":"GERMANY","DG":"GERMANY","DH":"GERMANY","DJ":"GERMANY","DK":"GERMANY","DM":"GERMANY","DN":"GERMANY","DO":"GERMANY","DP":"GERMANY","DQ":"GERMANY","DR":"GERMANY",
+        "JA":"JAPAN","JH":"JAPAN","JR":"JAPAN","JE":"JAPAN","JF":"JAPAN","JG":"JAPAN","JI":"JAPAN","JJ":"JAPAN","JK":"JAPAN","JL":"JAPAN","JM":"JAPAN","JN":"JAPAN","JO":"JAPAN","JP":"JAPAN","JQ":"JAPAN","JS":"JAPAN","7J":"JAPAN","7K":"JAPAN","7L":"JAPAN","7M":"JAPAN","7N":"JAPAN","8J":"JAPAN","8K":"JAPAN","8L":"JAPAN","8M":"JAPAN","8N":"JAPAN",
+        "XE":"MEXICO","XF":"MEXICO","XG":"MEXICO","XH":"MEXICO","XI":"MEXICO",
+        "CX":"URUGUAY","CE":"CHILE","HK":"COLOMBIA","YV":"VENEZUELA","OA":"PERU","ZP":"PARAGUAY","TI":"COSTA RICA","TG":"GUATEMALA","HR":"HONDURAS","YS":"EL SALVADOR","YN":"NICARAGUA","HO":"PANAMA","HP":"PANAMA","HI":"DOMINICAN REPUBLIC","KP":"PUERTO RICO",
+        "VE":"CANADA","VO":"CANADA","VY":"CANADA","VA":"CANADA",
+        "VK":"AUSTRALIA","AX":"AUSTRALIA","VZ":"AUSTRALIA",
+        "ZL":"NEW ZEALAND","ZM":"NEW ZEALAND",
+        "UR":"UKRAINE","UT":"UKRAINE","UV":"UKRAINE","UW":"UKRAINE","UX":"UKRAINE","UY":"UKRAINE","UZ":"UKRAINE","EM":"UKRAINE","EN":"UKRAINE","EO":"UKRAINE",
+        "RA":"RUSSIA","RB":"RUSSIA","RC":"RUSSIA","RD":"RUSSIA","RE":"RUSSIA","RF":"RUSSIA","RG":"RUSSIA","RN":"RUSSIA","RO":"RUSSIA","RT":"RUSSIA","RU":"RUSSIA","RV":"RUSSIA","RW":"RUSSIA","RX":"RUSSIA","RY":"RUSSIA","RZ":"RUSSIA","UA":"RUSSIA","UB":"RUSSIA","UC":"RUSSIA","UD":"RUSSIA","UF":"RUSSIA","UG":"RUSSIA","UH":"RUSSIA","UI":"RUSSIA","Z3":"MACEDONIA","S5":"SLOVENIA","9A":"CROATIA","E7":"BOSNIA","OM":"SLOVAKIA","OK":"CZECH REP","LZ":"BULGARIA","YO":"ROMANIA","HA":"HUNGARY","SP":"POLAND","CT":"PORTUGAL","HB":"SWITZERLAND","OE":"AUSTRIA","LA":"NORWAY","SM":"SWEDEN","OH":"FINLAND","OZ":"DENMARK","ON":"BELGIUM","PA":"NETHERLANDS","LX":"LUXEMBOURG"
     };
 
     let posCall = { x: 100, y: 220 };
     let posTable = { x: 100, y: 800 };
     let dragObj = null; let offset = { x:0, y:0 }; let activeLogoIdx = -1;
+
+    function updateAutoCountry() {
+        const call = document.getElementById('myCall').value.toUpperCase();
+        let country = "RADIO STATION";
+        for (let len = 2; len >= 1; len--) {
+            let pref = call.substring(0, len);
+            if (worldPrefixes[pref]) { country = worldPrefixes[pref]; break; }
+        }
+        document.getElementById('myCountry').value = country;
+        draw();
+    }
 
     function handleADIF(event) {
         const file = event.target.files[0];
@@ -108,30 +130,22 @@
         reader.onload = async (e) => {
             const text = e.target.result;
             adifRecords = parseADIF(text);
-            
             const matchOp = text.match(/<STATION_CALLSIGN:\d+>([^<]*)/i) || text.match(/<OPERATOR:\d+>([^<]*)/i);
             if(matchOp) {
-                const op = matchOp[1].trim().toUpperCase();
-                if(locatorDB[op]) {
-                    document.getElementById('myCall').value = op;
-                    document.getElementById('myLocator').value = locatorDB[op].loc;
-                    document.getElementById('myCountry').value = locatorDB[op].country;
-                } else {
-                    document.getElementById('myCall').value = op;
-                }
+                document.getElementById('myCall').value = matchOp[1].trim().toUpperCase();
+                updateAutoCountry();
             }
-
             if(adifRecords.length > 0) {
                 document.getElementById('btnZip').style.display = 'block';
-                document.getElementById('msg').innerText = `✅ ${adifRecords.length} QSO's LISTOS`;
-                await updateGallery();
+                document.getElementById('msg').innerText = `LOG: ${adifRecords.length} QSO's`;
+                updateGallery();
             }
         };
         reader.readAsText(file);
     }
 
     function parseADIF(text) {
-        const results = [];
+        const res = [];
         const entries = text.split(/<eor>|<EOR>/i);
         entries.forEach(e => {
             if(!e.trim()) return;
@@ -141,31 +155,14 @@
                 const reg = new RegExp(`<${t}:(\\d+)>([^<]*)`, "i");
                 const m = e.match(reg);
                 if(m) {
-                    let value = m[2].trim();
-                    // Abreviar DIGITAL VOICE a DV
-                    if(t === 'MODE' && (value.toUpperCase() === 'DIGITALVOICE' || value.toUpperCase() === 'DIGITAL VOICE')) {
-                        value = 'DV';
-                    }
-                    item[tags[t]] = value;
+                    let val = m[2].trim();
+                    if(t === 'MODE' && (val.toUpperCase().includes('DIGITAL') || val.toUpperCase().includes('VOICE'))) val = 'DV';
+                    item[tags[t]] = val;
                 }
             }
-            if(item.toCall) results.push(item);
+            if(item.toCall) res.push(item);
         });
-        return results;
-    }
-
-    async function updateGallery() {
-        const container = document.getElementById('previewContainer');
-        container.innerHTML = "<h2 style='grid-column: 1/-1; color:white;'>Vista Previa</h2>"; 
-        container.style.display = "grid";
-        for(let i=0; i < Math.min(adifRecords.length, 8); i++) {
-            fillData(adifRecords[i]);
-            await new Promise(r => setTimeout(r, 60));
-            const div = document.createElement('div');
-            div.className = 'qsl-mini';
-            div.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.4)}"><p>${adifRecords[i].toCall}</p>`;
-            container.appendChild(div);
-        }
+        return res;
     }
 
     function fillData(rec) {
@@ -183,31 +180,18 @@
 
     async function generateAndZip() {
         const zip = new JSZip();
-        document.getElementById('msg').innerText = "🚀 Generando ZIP...";
+        document.getElementById('msg').innerText = "⚡ Generando...";
         for(let i=0; i<adifRecords.length; i++) {
             fillData(adifRecords[i]);
-            await new Promise(r => setTimeout(r, 40));
+            await new Promise(r => setTimeout(r, 30));
             const blob = await new Promise(res => canvas.toBlob(res, 'image/png', 0.9));
-            zip.file(`QSL_${adifRecords[i].toCall}.png`, blob);
+            zip.file(`QSL_${adifRecords[i].toCall}_${i}.png`, blob);
         }
-        zip.generateAsync({type:"blob"}).then(blob => {
-            saveAs(blob, `PACK_QSL_${document.getElementById('myCall').value}.zip`);
-            document.getElementById('msg').innerText = "✅ DESCARGADO";
+        zip.generateAsync({type:"blob"}).then(b => { 
+            saveAs(b, `QSL_PACK_${document.getElementById('myCall').value}.zip`);
+            document.getElementById('msg').innerText = "✅ ZIP Listo";
         });
     }
-
-    function changeBG(el) { document.querySelectorAll('.gal-img').forEach(i => i.classList.remove('active')); el.classList.add('active'); bgImg.src = el.src; }
-
-    function loadLogo(idx, e) {
-        const f = e.target.files[0];
-        if(f) {
-            const r = new FileReader();
-            r.onload = (ev) => { logos[idx].img.src = ev.target.result; logos[idx].active = true; logos[idx].img.onload = draw; };
-            r.readAsDataURL(f);
-        }
-    }
-
-    bgImg.onload = draw;
 
     function draw() {
         ctx.clearRect(0,0,1800,1100);
@@ -215,57 +199,51 @@
         
         logos.forEach((l, i) => { if(l.active) { let s = document.getElementById(`size${i}`).value; ctx.drawImage(l.img, l.x, l.y, s, s); } });
 
-        ctx.save(); ctx.shadowBlur = 20; ctx.shadowColor = "black";
-        ctx.fillStyle = "#ff00ff"; ctx.font = "bold 180px Verdana";
-        ctx.fillText((document.getElementById('myCall').value || "MYCALL").toUpperCase(), posCall.x, posCall.y);
-        
-        ctx.fillStyle = "#00ff99"; ctx.font = "bold 60px Verdana";
-        ctx.fillText("LOC: " + (document.getElementById('myLocator').value || "------").toUpperCase(), posCall.x + 10, posCall.y + 80);
-        
-        ctx.fillStyle = "white"; ctx.font = "bold 45px Verdana";
-        ctx.fillText((document.getElementById('myCountry').value || "COUNTRY").toUpperCase(), posCall.x + 12, posCall.y + 145);
+        ctx.save(); ctx.shadowBlur = 15; ctx.shadowColor = "black";
+        ctx.fillStyle = "#ff00ff"; ctx.font = "bold 190px Arial";
+        ctx.fillText((document.getElementById('myCall').value || "CALLSIGN").toUpperCase(), posCall.x, posCall.y);
+        ctx.fillStyle = "#00ff99"; ctx.font = "bold 80px Arial";
+        ctx.fillText((document.getElementById('myCountry').value || "COUNTRY").toUpperCase(), posCall.x + 10, posCall.y + 110);
         ctx.restore();
 
         const style = document.getElementById('tableStyle').value;
-        const x = posTable.x, y = posTable.y;
-        const w = 1620, h = 220;
+        const x = posTable.x, y = posTable.y, w = 1620, h = 220;
 
         if(style === 'normal') {
             ctx.fillStyle = "rgba(14, 36, 49, 0.9)"; ctx.fillRect(x, y, w, h);
             ctx.strokeStyle = "#00ff99"; ctx.lineWidth = 6; ctx.strokeRect(x, y, w, h);
         } else if(style === 'modern') {
-            ctx.fillStyle = "black"; ctx.fillRect(x, y, w, 60);
-            ctx.fillStyle = "white"; ctx.fillRect(x, y+60, w, 110);
-            ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.strokeRect(x, y, w, 220);
+            ctx.fillStyle = "black"; ctx.fillRect(x, y, w, 65);
+            ctx.fillStyle = "white"; ctx.fillRect(x, y+65, w, 115);
+            ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.strokeRect(x, y, w, 230);
         }
 
         const labels = ["QSO WITH", "DATE", "TIME (UTC)", "BAND", "MODE", "RST"];
         const d = window.currentQsoData || {date:"--/--/--", time:"00:00 UTC"};
-        
-        // Aplicar la lógica de DV también en la vista manual
-        let currentMode = document.getElementById('qMode').value;
-        if(currentMode.toUpperCase() === 'DIGITALVOICE' || currentMode.toUpperCase() === 'DIGITAL VOICE') {
-            currentMode = 'DV';
-        }
-
-        const vals = [document.getElementById('toCall').value || "---", d.date, d.time, document.getElementById('qBand').value || "---", currentMode || "---", document.getElementById('qRst').value || "59"];
+        let mod = document.getElementById('qMode').value;
+        if(mod.toUpperCase().includes('DIGITAL') || mod.toUpperCase().includes('VOICE')) mod = 'DV';
+        const vals = [document.getElementById('toCall').value || "---", d.date, d.time, document.getElementById('qBand').value || "---", mod || "---", document.getElementById('qRst').value || "59"];
         
         labels.forEach((l, i) => {
-            let posX = x + 40 + (i * 265);
-            ctx.font = "bold 22px Verdana"; ctx.fillStyle = (style === 'modern') ? "white" : "#00ff99";
-            ctx.fillText(l, posX, y + 40);
-            ctx.font = "bold 44px 'Courier New'"; ctx.fillStyle = (style === 'modern') ? "black" : "white";
-            ctx.fillText(vals[i], posX, y + 130);
+            let px = x + 40 + (i * 268);
+            ctx.font = "bold 24px Arial"; ctx.fillStyle = (style === 'modern') ? "white" : "#00ff99";
+            ctx.fillText(l, px, y + 45);
+            ctx.font = "bold 48px 'Courier New'"; ctx.fillStyle = (style === 'modern') ? "black" : "white";
+            ctx.fillText(vals[i], px, y + 140);
         });
     }
+
+    function changeBG(el) { document.querySelectorAll('.gal-img').forEach(i => i.classList.remove('active')); el.classList.add('active'); bgImg.src = el.src; }
+    function loadLogo(idx, e) { const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload = (ev) => { logos[idx].img.src = ev.target.result; logos[idx].active = true; logos[idx].img.onload = draw; }; r.readAsDataURL(f); } }
+    bgImg.onload = draw;
 
     canvas.onmousedown = (e) => {
         const r = canvas.getBoundingClientRect();
         const mx = (e.clientX - r.left) * (canvas.width / r.width);
         const my = (e.clientY - r.top) * (canvas.height / r.height);
-        for(let i=0; i<4; i++) { if(logos[i].active) { let s = parseInt(document.getElementById(`size${i}`).value); if(mx > logos[i].x && mx < logos[i].x + s && my > logos[i].y && my < logos[i].y + s) { dragObj = 'logo'; activeLogoIdx = i; offset = {x: mx - logos[i].x, y: my - logos[i].y}; return; } } }
+        for(let i=0; i<4; i++) { if(logos[i].active) { let s = parseInt(document.getElementById(`size${i}`).value); if(mx > logos[i].x && mx < logos[i].x+s && my > logos[i].y && my < logos[i].y+s) { dragObj = 'logo'; activeLogoIdx = i; offset = {x: mx - logos[i].x, y: my - logos[i].y}; return; } } }
         if(my > posTable.y && my < posTable.y + 250) { dragObj = 'table'; offset = {x: mx - posTable.x, y: my - posTable.y}; }
-        else if(my > posCall.y - 150 && my < posCall.y + 150) { dragObj = 'call'; offset = {x: mx - posCall.x, y: my - posCall.y}; }
+        else if(my > posCall.y - 180 && my < posCall.y + 150) { dragObj = 'call'; offset = {x: mx - posCall.x, y: my - posCall.y}; }
     };
     window.onmousemove = (e) => {
         if(!dragObj) return;
@@ -278,7 +256,7 @@
         draw();
     };
     window.onmouseup = () => dragObj = null;
-    function downloadPreview() { saveAs(canvas.toDataURL("image/png", 1.0), `PREVIA_HD.png`); }
+    function downloadPreview() { saveAs(canvas.toDataURL("image/png", 1.0), `PREVIA_QSL.png`); }
     window.onload = () => changeBG(document.querySelector('.gal-img'));
 </script>
 </body>
