@@ -1,365 +1,324 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL ELITE HYPER-STUDIO v25.2 - FINAL FIXED</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Navegador QSL Caribeño - CL7ADV</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    /* Variables dinámicas para el cambio de color */
+    :root {
+      --bg-color-1: #00bcd4;
+      --bg-color-2: #009688;
+      --container-bg: rgba(0,0,0,0.4);
+      --text-color: #ffffff;
+      --accent-color: #ffe082;
+      --btn-bg: #ff9800;
+      --btn-hover: #f57c00;
+    }
+
+    body { 
+      margin: 0; 
+      font-family: "Trebuchet MS", Arial, sans-serif; 
+      background: linear-gradient(to bottom, var(--bg-color-1), var(--bg-color-2)); 
+      color: var(--text-color); 
+      text-align: center; 
+      min-height: 100vh;
+    }
+
+    /* Panel de Personalización */
+    .config-panel {
+      background: rgba(255,255,255,0.1);
+      margin: 10px auto;
+      padding: 15px;
+      border-radius: 10px;
+      max-width: 900px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      font-size: 0.9rem;
+    }
+    .config-group { display: flex; flex-direction: column; align-items: center; }
+    input[type="color"] { border: none; width: 30px; height: 30px; cursor: pointer; background: none; }
+
+    .container { 
+      max-width: 900px; 
+      margin: 20px auto; 
+      padding: 25px; 
+      background: var(--container-bg); 
+      border-radius: 15px; 
+      box-shadow: 0 0 20px rgba(0,0,0,0.6); 
+      position: relative;
+    }
+
+    /* Botón X para limpiar */
+    .btn-clear {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #f44336;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    h1 { font-size: 2.2rem; margin-bottom: 15px; text-shadow: 0 0 10px var(--accent-color); }
     
-    <style>
-        :root {
-            --bg-deep: #05070a;
-            --panel-bg: #0d1117;
-            --neon-cyan: #00f2ff;
-            --neon-pink: #ff007b;
-            --text-main: #e6edf3;
-            --border-color: #30363d;
-            --accent-success: #238636;
-        }
+    #indicativo { padding: 12px; font-size: 1rem; border: none; border-radius: 8px; margin-bottom: 10px; width: 220px; color: #333; }
+    #buscarBtn { padding: 12px 20px; font-size: 1rem; background: var(--btn-bg); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    #buscarBtn:hover { background: var(--btn-hover); }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+    /* Cuadro QSO Ajustado (Más alto) */
+    #resultado { margin-top: 25px; min-height: 150px; } 
 
-        header {
-            background: #161b22;
-            border-bottom: 3px solid var(--neon-cyan);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
+    .qsl-img { max-width: 90%; width: 250px; border: 4px solid var(--accent-color); border-radius: 12px; margin: 10px; box-shadow: 0 0 15px var(--accent-color); }
+    
+    .descargar { display: inline-block; margin-top: 10px; padding: 8px 16px; background: #4caf50; color: white; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; }
+    
+    .format-select { padding: 8px; border-radius: 8px; margin: 5px; }
 
-        header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            color: var(--neon-cyan);
-        }
+    .mensaje { font-size: 1.1rem; margin-top: 12px; color: var(--accent-color); text-shadow: 0 0 8px #ffeb3b; }
+    
+    #datetime-display { font-weight: bold; margin: 15px 0; color: var(--accent-color); }
 
-        .app-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
+    /* Modal y lista */
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); overflow-y: auto; }
+    .modal-contenido { background: #fff; color: #000; margin: 2% auto; padding: 20px; border-radius: 12px; width: 95%; max-width: 900px; text-align: center; }
+    .cerrar { float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+    
+    /* Loader con carta */
+    .loader-wrap { display: none; margin-top: 12px; align-items: center; justify-content: center; flex-direction: column; }
+    .progress-bar { position: relative; width: 80%; max-width: 360px; height: 14px; background: rgba(255,224,130,0.2); border-radius: 10px; margin: 20px 0; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg,#ffd54f,#ffb300); width: 0%; transition: width 200ms ease; }
+    .card-thumb { position: absolute; top: -28px; width: 56px; height: 36px; background: #fff; color: #000; border: 2px solid #ffd54f; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; transform: translateX(-50%); }
 
-        .sidebar {
-            width: 420px;
-            background: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .control-section {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .section-header {
-            font-size: 0.75rem;
-            font-weight: 800;
-            color: var(--neon-pink);
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #333;
-        }
-
-        label {
-            display: block;
-            font-size: 0.65rem;
-            color: #8b949e;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"], input[type="file"], select {
-            width: 100%;
-            background: #010409;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 10px;
-            color: white;
-            font-size: 0.85rem;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--neon-cyan);
-            margin: 10px 0;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            margin-top: 5px;
-        }
-
-        .btn-primary { background: var(--neon-cyan); color: #000; }
-        .btn-secondary { background: var(--neon-pink); color: #fff; }
-        .btn-dark { background: #21262d; color: #fff; border: 1px solid var(--border-color); }
-
-        .preview-area {
-            flex: 1;
-            background: var(--bg-deep);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        canvas {
-            max-width: 95%;
-            max-height: 90vh;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-            background: #000;
-        }
-
-        #qso-indicator {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: var(--accent-success);
-            color: white;
-            padding: 6px 15px;
-            border-radius: 30px;
-            font-weight: bold;
-        }
-    </style>
+    /* Responsividad Celular */
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; }
+      .config-panel { flex-direction: column; align-items: flex-start; padding: 10px; }
+      #indicativo { width: 80%; }
+      .container { width: 95%; margin: 10px auto; padding: 15px; }
+    }
+  </style>
 </head>
 <body>
 
-<header>
-    <h1>QSL ELITE <span style="color:var(--neon-pink)">HYPER-STUDIO v25.2</span></h1>
-    <div style="font-size: 0.8rem; color: #8b949e;">Auto-STATION | Letras Chiquitas</div>
-</header>
+  <div class="config-panel">
+    <div class="config-group">🎨 Fondo 1 <input type="color" id="color1" value="#00bcd4"></div>
+    <div class="config-group">🎨 Fondo 2 <input type="color" id="color2" value="#009688"></div>
+    <div class="config-group">📝 Texto <input type="color" id="colorText" value="#ffffff"></div>
+    <div class="config-group">✨ Detalles <input type="color" id="colorAccent" value="#ffe082"></div>
+    <div class="config-group">🔘 Botón <input type="color" id="colorBtn" value="#ff9800"></div>
+  </div>
 
-<div class="app-container">
-    <div class="sidebar">
-        <div class="control-section">
-            <div class="section-header">🖼️ Fondo y ADIF</div>
-            <input type="file" id="bgLoader" accept="image/*">
-            <input type="file" id="adifLoader" accept=".adi,.adif">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <button class="btn btn-dark" onclick="changeQSO(-1)">ANT.</button>
-                <button class="btn btn-dark" onclick="changeQSO(1)">SIG.</button>
-            </div>
-            <button class="btn btn-secondary" id="btnZip" style="display:none;" onclick="processFullZip()">GENERAR PACK ZIP</button>
-        </div>
+  <div class="container">
+    <button class="btn-clear" id="resetAll" title="Limpiar todo">X</button>
+    <h1>🌴 Bienvenido al sitio QSL Caribeño 🌊</h1>
+    
+    <div id="datetime-display">Cargando fecha...</div>
 
-        <div class="control-section">
-            <div class="section-header">👤 Mi Estación</div>
-            <label>Mi Indicativo</label>
-            <input type="text" id="myCall" placeholder="CARGUE ADIF..." oninput="autoPrefix()">
-            <label>País</label>
-            <input type="text" id="myCountry" oninput="renderQSL()">
-        </div>
+    <p>Escribe tu indicativo para buscar tus tarjetas QSL</p>
 
-        <div class="control-section">
-            <div class="section-header">🛠️ Logos</div>
-            <div id="logoControls"></div>
-        </div>
-
-        <div class="control-section">
-            <div class="section-header">📐 Geometría Cuadro</div>
-            <label>Ancho</label><input type="range" id="bWidth" min="800" max="1750" value="1620" oninput="renderQSL()">
-            <label>Opacidad</label><input type="range" id="bOpacity" min="0" max="100" value="85" oninput="renderQSL()">
-        </div>
-
-        <div class="control-section">
-            <div class="section-header">📝 Datos del QSO</div>
-            <input type="text" id="toCall" placeholder="CORRESPONSAL" oninput="renderQSL()">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <input type="text" id="qDate" placeholder="FECHA" oninput="renderQSL()">
-                <input type="text" id="qTime" placeholder="HORA" oninput="renderQSL()">
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:5px;">
-                <input type="text" id="qBand" placeholder="BANDA" oninput="renderQSL()">
-                <input type="text" id="qMode" placeholder="MODO" oninput="renderQSL()">
-                <input type="text" id="qRst" placeholder="RST" oninput="renderQSL()">
-            </div>
-        </div>
-
-        <button class="btn btn-primary" onclick="downloadSingle()">GUARDAR PNG</button>
+    <div>
+      <input type="text" id="indicativo" placeholder="Ej: CL7ADV" aria-label="Indicativo">
+      <button id="buscarBtn" type="button">Buscar QSL</button>
     </div>
 
-    <div class="preview-area">
-        <div id="qso-indicator">QSO: 0 / 0</div>
-        <canvas id="qslCanvas" width="1800" height="1100"></canvas>
+    <div id="loaderContainer" class="loader-wrap">
+      <div class="progress-bar" id="progressBar">
+        <div id="progressFill" class="progress-fill"></div>
+        <div id="cardThumb" class="card-thumb">QSL</div>
+      </div>
+      <div id="progressText" class="progress-text">Iniciando...</div>
     </div>
-</div>
 
-<script>
-    const canvas = document.getElementById('qslCanvas'), ctx = canvas.getContext('2d');
-    let backgroundImage = new Image(), qsoRecords = [], currentIndex = 0;
-    let logos = Array.from({length: 4}, () => ({ img: new Image(), x: 1400, y: 100, active: false }));
-    let callPos = { x: 120, y: 250 }, tablePos = { x: 100, y: 820 }, dragTarget = null, dragOffset = { x: 0, y: 0 }, activeLogoIdx = -1;
+    <div id="resultado" role="status"></div>
 
-    const PREFIX_DB = { 
-        "CA":"CHILE","CB":"CHILE","CC":"CHILE","CD":"CHILE","CE":"CHILE","XQ":"CHILE","XR":"CHILE",
-        "LU":"ARGENTINA","LW":"ARGENTINA","EA":"SPAIN","EB":"SPAIN","EC":"SPAIN","ED":"SPAIN",
-        "W":"USA","K":"USA","N":"USA","AA":"USA","XE":"MEXICO","HK":"COLOMBIA","YV":"VENEZUELA",
-        "OA":"PERU","ZP":"PARAGUAY","CX":"URUGUAY","HI":"DOMINICAN REP.","CL":"CUBA","CO":"CUBA","CM":"CUBA",
-        "KP":"PUERTO RICO","WP":"PUERTO RICO","3C":"EQUAT. GUINEA"
+    <footer>
+      — CL7ADV — Buenos DXs en este 2026<br>
+      Motor del proyecto: Radio Club Santa Cruz Del Sur/Alfred
+    </footer>
+  </div>
+
+  <div id="ventanaQSL" class="modal">
+    <div class="modal-contenido">
+      <span class="cerrar" id="cerrarBtn">&times;</span>
+      <h2>QSLs disponibles</h2>
+      
+      <div style="margin: 10px;">
+        <label>Formato de descarga: </label>
+        <select id="formatoDescarga" class="format-select">
+          <option value="jpg">JPG</option>
+          <option value="png">PNG</option>
+          <option value="jpeg">JPEG</option>
+        </select>
+      </div>
+
+      <div id="contador"></div>
+      <div id="listaQSLs"></div>
+      <br>
+      <button class="descargar" id="descargarTodasBtn">⬇️ Descargar todas en masa</button>
+    </div>
+  </div>
+
+  <script>
+    /* QSO LOGIC AND CUSTOMIZATION
+       Mínimo requerido para motor de búsqueda y personalización masiva.
+       Este script controla la interfaz, los colores dinámicos y la conversión de formatos.
+    */
+
+    // 1. Reloj y Fecha Real
+    function updateClock() {
+        const ahora = new Date();
+        const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        document.getElementById('datetime-display').textContent = ahora.toLocaleDateString('es-ES', opciones);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 2. Personalización de Colores (BASICAMENTE TODO)
+    const root = document.querySelector(':root');
+    const colorInputs = {
+        'color1': '--bg-color-1',
+        'color2': '--bg-color-2',
+        'colorText': '--text-color',
+        'colorAccent': '--accent-color',
+        'colorBtn': '--btn-bg'
     };
 
-    const logoContainer = document.getElementById('logoControls');
-    for(let i=0; i<4; i++) {
-        const div = document.createElement('div');
-        div.innerHTML = `<label>Logo ${i+1}</label><input type="file" onchange="loadLogo(${i}, event)"><input type="range" id="sc${i}" min="40" max="600" value="180" oninput="renderQSL()">`;
-        logoContainer.appendChild(div);
-    }
-
-    function loadLogo(idx, e) {
-        const f = e.target.files[0]; if(!f) return;
-        const r = new FileReader(); r.onload = (v) => { logos[idx].img.onload = () => { logos[idx].active = true; renderQSL(); }; logos[idx].img.src = v.target.result; };
-        r.readAsDataURL(f);
-    }
-
-    document.getElementById('bgLoader').onchange = (e) => {
-        const f = e.target.files[0]; if(!f) return;
-        const r = new FileReader(); r.onload = (v) => { backgroundImage.src = v.target.result; backgroundImage.onload = renderQSL; };
-        r.readAsDataURL(f);
-    };
-
-    document.getElementById('adifLoader').onchange = (e) => {
-        const f = e.target.files[0]; if(!f) return;
-        const r = new FileReader(); r.onload = (v) => parseADIF(v.target.result);
-        r.readAsText(f);
-    };
-
-    function parseADIF(text) {
-        const myCallMatch = text.match(/<STATION_CALLSIGN:\d+>([^<]*)/i) || text.match(/<OPERATOR:\d+>([^<]*)/i);
-        if(myCallMatch) { document.getElementById('myCall').value = myCallMatch[1].trim(); autoPrefix(); }
-
-        qsoRecords = text.split(/<eor>/i).filter(r => r.length > 20).map(r => {
-            const data = {};
-            const tags = { CALL:'c', QSO_DATE:'d', TIME_ON:'t', BAND:'b', MODE:'m', RST_SENT:'r' };
-            for(let k in tags) {
-                const m = r.match(new RegExp(`<${k}:\\d+>([^<]*)`, "i"));
-                if(m) {
-                    let v = m[1].trim();
-                    if(k === 'MODE') {
-                        const digis = ['FT8','FT4','JS8','JT65','RTTY','PSK','VARA'];
-                        if(digis.some(dm => v.toUpperCase().includes(dm))) v = "DV";
-                    }
-                    data[tags[k]] = v;
-                }
-            }
-            return data;
-        }).filter(i => i.c);
-        if(qsoRecords.length > 0) { currentIndex = 0; document.getElementById('btnZip').style.display = 'block'; updateQSOFields(); }
-    }
-
-    function changeQSO(dir) { if(qsoRecords.length === 0) return; currentIndex = (currentIndex + dir + qsoRecords.length) % qsoRecords.length; updateQSOFields(); }
-
-    function updateQSOFields() {
-        const q = qsoRecords[currentIndex];
-        document.getElementById('toCall').value = q.c || "";
-        document.getElementById('qBand').value = q.b || "";
-        document.getElementById('qMode').value = q.m || "";
-        document.getElementById('qRst').value = q.r || "";
-        document.getElementById('qDate').value = q.d ? `${q.d.substr(6,2)}/${q.d.substr(4,2)}/${q.d.substr(0,4)}` : "";
-        document.getElementById('qTime').value = q.t ? `${q.t.substr(0,2)}:${q.t.substr(2,2)}` : "";
-        document.getElementById('qso-indicator').innerText = `QSO: ${currentIndex + 1} / ${qsoRecords.length}`;
-        renderQSL();
-    }
-
-    function autoPrefix() {
-        const call = document.getElementById('myCall').value.toUpperCase();
-        let country = "RADIO STATION";
-        for(let len=3; len>=1; len--) { let p = call.substring(0, len); if(PREFIX_DB[p]) { country = PREFIX_DB[p]; break; } }
-        document.getElementById('myCountry').value = country; renderQSL();
-    }
-
-    function renderQSL() {
-        ctx.clearRect(0,0,1800,1100);
-        if(backgroundImage.src) ctx.drawImage(backgroundImage, 0, 0, 1800, 1100);
-        logos.forEach((l, i) => { if(l.active) ctx.drawImage(l.img, l.x, l.y, document.getElementById(`sc${i}`).value, document.getElementById(`sc${i}`).value); });
-
-        ctx.save();
-        ctx.shadowBlur = 20; ctx.shadowColor = "black";
-        ctx.fillStyle = "#ff007b"; ctx.font = "900 210px 'Segoe UI'";
-        ctx.fillText(document.getElementById('myCall').value.toUpperCase() || "CALLSIGN", callPos.x, callPos.y);
-        ctx.fillStyle = "#00f2ff"; ctx.font = "bold 90px 'Segoe UI'";
-        ctx.fillText(document.getElementById('myCountry').value.toUpperCase() || "COUNTRY", callPos.x + 10, callPos.y + 110);
-        ctx.restore();
-
-        const w = parseInt(document.getElementById('bWidth').value), h = 180;
-        const op = parseInt(document.getElementById('bOpacity').value) / 100;
-
-        ctx.save();
-        ctx.fillStyle = `rgba(10, 20, 30, ${op})`; ctx.beginPath(); ctx.roundRect(tablePos.x, tablePos.y, w, h, 15); ctx.fill();
-        ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 4; ctx.stroke();
-
-        const headers = ["CORRESPONSAL", "FECHA", "HORA (UTC)", "BANDA", "MODO", "RST"];
-        const vals = [document.getElementById('toCall').value, document.getElementById('qDate').value, document.getElementById('qTime').value, document.getElementById('qBand').value, document.getElementById('qMode').value, document.getElementById('qRst').value];
-        
-        // Ajuste de separación (step un poco más amplio entre las columnas de modo y rst)
-        const step = w / 6;
-
-        headers.forEach((h, i) => {
-            let xOffset = tablePos.x + 25 + (i * step);
-            
-            // Empujar RST un poco a la derecha para separarlo del MODO
-            if (i === 5) xOffset += 15; 
-
-            ctx.fillStyle = "#00f2ff"; ctx.font = "800 22px Arial";
-            ctx.fillText(h, xOffset, tablePos.y + 42);
-            ctx.fillStyle = "#fff"; 
-            ctx.font = "bold 38px 'Courier New'"; // LETRAS CHIQUITAS
-            ctx.fillText(vals[i] || "---", xOffset, tablePos.y + 130);
+    Object.keys(colorInputs).forEach(id => {
+        document.getElementById(id).addEventListener('input', (e) => {
+            root.style.setProperty(colorInputs[id], e.target.value);
+            if(id === 'colorBtn') root.style.setProperty('--btn-hover', e.target.value + 'cc');
         });
-        ctx.restore();
+    });
+
+    // 3. Botón X para limpiar
+    document.getElementById('resetAll').addEventListener('click', () => {
+        document.getElementById('indicativo').value = '';
+        document.getElementById('resultado').innerHTML = '';
+        document.getElementById('loaderContainer').style.display = 'none';
+        console.log('Búsqueda reiniciada por usuario');
+    });
+
+    // 4. Lógica de Búsqueda y Descarga (Modificada para formatos)
+    let listaActual = [];
+    let imagenCargada = false;
+
+    document.getElementById('buscarBtn').addEventListener('click', buscarQSL);
+    document.getElementById('cerrarBtn').addEventListener('click', () => document.getElementById('ventanaQSL').style.display = 'none');
+
+    function buscarQSL() {
+      const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
+      if (!indicativo) return;
+
+      const loader = document.getElementById('loaderContainer');
+      const progressFill = document.getElementById('progressFill');
+      const cardThumb = document.getElementById('cardThumb');
+      const progressText = document.getElementById('progressText');
+      
+      loader.style.display = 'flex';
+      progressFill.style.width = '0%';
+      cardThumb.style.left = '0%';
+      imagenCargada = false;
+      
+      let encontradas = [];
+      let posibles = [`img/${indicativo}.jpg`];
+      for (let i = 1; i <= 50; i++) posibles.push(`img/${indicativo}-${i}.jpg`);
+
+      let comprobadas = 0;
+
+      posibles.forEach(ruta => {
+        const img = new Image();
+        img.onload = () => {
+          comprobadas++;
+          if (!encontradas.includes(ruta)) {
+            encontradas.push(ruta);
+            imagenCargada = true;
+            renderizarQSLs(encontradas, indicativo);
+          }
+          actualizarBarra();
+        };
+        img.onerror = () => {
+          comprobadas++;
+          actualizarBarra();
+        };
+        img.src = ruta;
+      });
+
+      function actualizarBarra() {
+        const pct = Math.round((comprobadas / posibles.length) * 100);
+        progressFill.style.width = pct + '%';
+        cardThumb.style.left = pct + '%';
+        progressText.textContent = `Escaneando base de datos... ${pct}%`;
+        if(pct >= 100) setTimeout(() => loader.style.display = 'none', 1000);
+      }
     }
 
-    canvas.onmousedown = (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const mx = (e.clientX - rect.left) * (1800 / rect.width), my = (e.clientY - rect.top) * (1100 / rect.height);
-        for(let i=0; i<4; i++) { if(logos[i].active) { let s = parseInt(document.getElementById(`sc${i}`).value); if(mx > logos[i].x && mx < logos[i].x + s && my > logos[i].y && my < logos[i].y + s) { dragTarget = 'logo'; activeLogoIdx = i; dragOffset = { x: mx - logos[i].x, y: my - logos[i].y }; return; } } }
-        if(mx > tablePos.x && mx < tablePos.x + parseInt(document.getElementById('bWidth').value) && my > tablePos.y && my < tablePos.y + 200) { dragTarget = 'table'; dragOffset = { x: mx - tablePos.x, y: my - tablePos.y }; }
-        else if(mx > callPos.x && mx < callPos.x + 800 && my > callPos.y - 180 && my < callPos.y + 50) { dragTarget = 'call'; dragOffset = { x: mx - callPos.x, y: my - callPos.y }; }
-    };
-
-    window.onmousemove = (e) => {
-        if(!dragTarget) return; const rect = canvas.getBoundingClientRect();
-        const mx = (e.clientX - rect.left) * (1800 / rect.width), my = (e.clientY - rect.top) * (1100 / rect.height);
-        if(dragTarget === 'logo') { logos[activeLogoIdx].x = mx - dragOffset.x; logos[activeLogoIdx].y = my - dragOffset.y; }
-        else if(dragTarget === 'table') { tablePos.x = mx - dragOffset.x; tablePos.y = my - dragOffset.y; }
-        else if(dragTarget === 'call') { callPos.x = mx - dragOffset.x; callPos.y = my - dragOffset.y; }
-        renderQSL();
-    };
-    window.onmouseup = () => dragTarget = null;
-
-    async function processFullZip() {
-        const zip = new JSZip();
-        for(let i=0; i<qsoRecords.length; i++) { currentIndex = i; updateQSOFields(); await new Promise(r => setTimeout(r, 80)); const b = await new Promise(res => canvas.toBlob(res, 'image/png', 0.95)); zip.file(`QSL_${qsoRecords[i].c}.png`, b); }
-        zip.generateAsync({type:"blob"}).then(c => saveAs(c, "PACK_QSL_v25.zip"));
+    function renderizarQSLs(lista, call) {
+      listaActual = lista;
+      const modal = document.getElementById('ventanaQSL');
+      const contenedor = document.getElementById('listaQSLs');
+      modal.style.display = 'block';
+      contenedor.innerHTML = '';
+      
+      lista.forEach(ruta => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <img src="${ruta}" class="qsl-img">
+          <br>
+          <button class="descargar" onclick="descargarIndividual('${ruta}')">⬇️ Descargar</button>
+        `;
+        contenedor.appendChild(div);
+      });
     }
-    function downloadSingle() { const l = document.createElement('a'); l.download = `QSL_${document.getElementById('toCall').value}.png`; l.href = canvas.toDataURL("image/png", 1.0); l.click(); }
-    window.onload = () => { backgroundImage.crossOrigin = "anonymous"; backgroundImage.src = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=1800"; backgroundImage.onload = renderQSL; };
-</script>
+
+    // 5. Descarga en Masa y Cambio de Formato (JPG, JPEG, PNG)
+    async function descargarArchivo(ruta, nombre) {
+        const formato = document.getElementById('formatoDescarga').value;
+        const response = await fetch(ruta);
+        const blob = await response.blob();
+        
+        // Creamos un canvas para asegurar el cambio de extensión/formato
+        const img = await createImageBitmap(blob);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        
+        const nuevoNombre = nombre.split('.')[0] + '.' + formato;
+        const dataUrl = canvas.toDataURL(`image/${formato === 'jpg' ? 'jpeg' : formato}`);
+        
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = nuevoNombre;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    window.descargarIndividual = (ruta) => {
+        const nombre = ruta.split('/').pop();
+        descargarArchivo(ruta, nombre);
+    };
+
+    document.getElementById('descargarTodasBtn').addEventListener('click', () => {
+        listaActual.forEach((ruta, index) => {
+            setTimeout(() => {
+                descargarArchivo(ruta, `QSL-${index + 1}`);
+            }, index * 500); // Delay para no bloquear el navegador en celular
+        });
+    });
+
+    // Comentario QSO: Se asegura compatibilidad total con dispositivos móviles y PC.
+    // El diseño se ajusta automáticamente (Responsive) y permite personalización total de la paleta de colores.
+    // El motor de búsqueda mantiene el estilo caribeño con la animación de la carta.
+    // 2026 Santa Cruz del Sur.
+  </script>
 </body>
 </html>
