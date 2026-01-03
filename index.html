@@ -3,54 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de QSL Pro</title>
+    <title>QSL Generator Pro - Dark Mode</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #f0f2f5; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 20px; }
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        canvas { border: 1px solid #ccc; max-width: 100%; height: auto; margin-top: 10px; }
-        button { padding: 10px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
-        .input-group { display: flex; flex-direction: column; }
+        :root {
+            --dark-bg: #0a0e14;
+            --panel-bg: #161b22;
+            --neon-blue: #00f2ff;
+            --neon-green: #39ff14;
+            --text-color: #e6edf3;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 20px;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            padding: 20px;
+            max-width: 1200px;
+            width: 95%;
+            align-items: flex-start;
+        }
+
+        /* Panel Izquierdo: Controles */
+        .controls-panel {
+            flex: 1;
+            background: var(--panel-bg);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+            min-width: 300px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"], input[type="date"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 5px var(--neon-blue);
+        }
+
+        /* Botones Neón */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .btn-update {
+            background: transparent;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            box-shadow: inset 0 0 5px var(--neon-blue), 0 0 5px var(--neon-blue);
+        }
+
+        .btn-update:hover {
+            background: var(--neon-blue);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        .btn-download {
+            background: transparent;
+            color: var(--neon-green);
+            border: 2px solid var(--neon-green);
+            box-shadow: inset 0 0 5px var(--neon-green), 0 0 5px var(--neon-green);
+            margin-top: 20px;
+        }
+
+        .btn-download:hover {
+            background: var(--neon-green);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        /* Panel Derecho: Vista Previa */
+        .preview-panel {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            max-width: 100%;
+            border-radius: 10px;
+            border: 2px solid #30363d;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background-color: #1a1a1a;
+        }
+
+        .preview-label {
+            margin-bottom: 10px;
+            font-style: italic;
+            color: #8b949e;
+        }
+
+        @media (max-width: 900px) {
+            .main-container { flex-direction: column; }
+            .controls-panel { width: 100%; }
+        }
     </style>
 </head>
 <body>
 
-    <h2>Generador de Tarjetas QSL</h2>
+    <header>
+        <h1>QSL GENERATOR <span style="font-weight: 100;">V2.0</span></h1>
+    </header>
 
-    <div class="container">
-        <div class="controls">
+    <div class="main-container">
+        <div class="controls-panel">
             <div class="input-group">
-                <label>Imagen de Fondo:</label>
+                <label>Fondo de Tarjeta</label>
                 <input type="file" id="bgInput" accept="image/*">
             </div>
-            
+
             <div class="input-group">
-                <label>Indicativo (To Station):</label>
+                <label>To Station (Callsign)</label>
                 <input type="text" id="callsign" placeholder="EA1ABC">
             </div>
+
             <div class="input-group">
-                <label>Fecha:</label>
+                <label>Fecha del QSO</label>
                 <input type="date" id="qsoDate">
             </div>
+
             <div class="input-group">
-                <label>Banda/Frecuencia:</label>
-                <input type="text" id="qsoBand" placeholder="40m / 7.150">
+                <label>Banda</label>
+                <input type="text" id="qsoBand" placeholder="40m / 7.150 MHz">
             </div>
+
             <div class="input-group">
-                <label>Modo:</label>
-                <input type="text" id="qsoMode" placeholder="SSB / FT8">
+                <label>Modo</label>
+                <input type="text" id="qsoMode" placeholder="SSB / FT8 / CW">
             </div>
+
             <div class="input-group">
-                <label>RST:</label>
+                <label>RST</label>
                 <input type="text" id="qsoRst" placeholder="59">
             </div>
+
+            <button class="btn btn-update" onclick="generateQSL()">Actualizar Vista</button>
+            <button class="btn btn-download" onclick="downloadQSL()">Descargar PNG</button>
         </div>
 
-        <button onclick="generateQSL()">Actualizar Vista Previa</button>
-        <button onclick="downloadQSL()" style="background: #28a745;">Descargar QSL</button>
-        
-        <br>
-        <canvas id="qslCanvas" width="800" height="500"></canvas>
+        <div class="preview-panel">
+            <span class="preview-label">Vista previa de la tarjeta:</span>
+            <canvas id="qslCanvas" width="800" height="500"></canvas>
+        </div>
     </div>
 
     <script>
@@ -58,7 +201,6 @@
         const ctx = canvas.getContext('2d');
         let backgroundImage = new Image();
 
-        // Manejar la carga de imagen
         document.getElementById('bgInput').addEventListener('change', function(e) {
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -69,39 +211,52 @@
         });
 
         function generateQSL() {
-            // Limpiar canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Dibujar fondo (ajustado al tamaño del canvas)
             if (backgroundImage.src) {
                 ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
             } else {
-                ctx.fillStyle = "#ddd";
+                ctx.fillStyle = "#1a1a1a";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#000";
-                ctx.fillText("Selecciona una imagen de fondo", 300, 250);
+                ctx.fillStyle = "#555";
+                ctx.font = "20px Arial";
+                ctx.fillText("Sube una imagen para empezar", 260, 250);
             }
 
-            // Estilo del texto
-            ctx.fillStyle = "white"; // Color del texto
-            ctx.strokeStyle = "black"; // Contorno para que se lea en cualquier fondo
-            ctx.lineWidth = 4;
-            ctx.font = "bold 30px Arial";
+            // Estética de los datos sobre la tarjeta
+            ctx.fillStyle = "white";
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 5;
+            ctx.lineJoin = "round";
 
-            const call = document.getElementById('callsign').value || "DE EA0QSL";
-            const date = document.getElementById('qsoDate').value;
-            const band = document.getElementById('qsoBand').value;
-            const mode = document.getElementById('qsoMode').value;
-            const rst = document.getElementById('qsoRst').value;
+            const call = document.getElementById('callsign').value || "CALLSIGN";
+            const date = document.getElementById('qsoDate').value || "YYYY-MM-DD";
+            const band = document.getElementById('qsoBand').value || "BAND";
+            const mode = document.getElementById('qsoMode').value || "MODE";
+            const rst = document.getElementById('qsoRst').value || "59";
 
-            // Dibujar los datos en posiciones específicas
+            // Título/Callsign Principal
+            ctx.font = "bold 45px sans-serif";
             drawText("To: " + call, 50, 80);
             
-            ctx.font = "24px Arial";
-            drawText("Date: " + date, 50, 400);
-            drawText("Band: " + band, 50, 440);
-            drawText("Mode: " + mode, 300, 440);
-            drawText("RST: " + rst, 550, 440);
+            // Línea divisoria decorativa opcional
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "rgba(255,255,255,0.5)";
+            ctx.beginPath();
+            ctx.moveTo(50, 100);
+            ctx.lineTo(300, 100);
+            ctx.stroke();
+
+            // Bloque de datos inferior
+            ctx.font = "bold 22px sans-serif";
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 4;
+            
+            const bottomY = 440;
+            drawText("DATE: " + date, 50, bottomY);
+            drawText("BAND: " + band, 250, bottomY);
+            drawText("MODE: " + mode, 450, bottomY);
+            drawText("RST: " + rst, 650, bottomY);
         }
 
         function drawText(text, x, y) {
@@ -111,10 +266,13 @@
 
         function downloadQSL() {
             const link = document.createElement('a');
-            link.download = 'mi_qsl.png';
-            link.href = canvas.toDataURL();
+            link.download = `QSL_${document.getElementById('callsign').value || 'card'}.png`;
+            link.href = canvas.toDataURL("image/png");
             link.click();
         }
+
+        // Generar una vista inicial
+        window.onload = generateQSL;
     </script>
 </body>
 </html>
