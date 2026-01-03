@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qsl-Caribeño - Galería Pro</title>
+    <title>QSL-CARIBEÑO V7.0 - Galería Automática</title>
     <style>
         :root {
             --navy-deep: #000c1d;
@@ -45,25 +45,36 @@
             overflow-y: auto;
         }
 
-        /* Galería Estilizada */
+        /* Galería Automática */
+        .gallery-container {
+            margin: 15px 0;
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
-            margin-top: 10px;
         }
 
         .gallery-item {
             width: 100%;
-            height: 60px;
+            height: 55px;
             object-fit: cover;
             border-radius: 4px;
             cursor: pointer;
             border: 2px solid transparent;
             transition: 0.2s;
+            opacity: 0.7;
         }
 
-        .gallery-item:hover { border-color: var(--neon-blue); transform: scale(1.05); }
+        .gallery-item:hover, .gallery-item.active { 
+            border-color: var(--neon-green); 
+            transform: scale(1.05); 
+            opacity: 1;
+        }
 
         .section-label {
             color: var(--neon-green);
@@ -86,6 +97,7 @@
             border-radius: 4px;
             color: white;
             box-sizing: border-box;
+            font-size: 0.9rem;
         }
 
         .btn-download {
@@ -107,7 +119,7 @@
             border-radius: 4px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             border: 1px solid var(--neon-blue);
-            cursor: crosshair;
+            cursor: move;
         }
 
         .hint { color: var(--neon-blue); font-size: 0.8rem; margin-top: 10px; }
@@ -120,58 +132,60 @@
 </head>
 <body>
 
-    <header><h1>QSL-CARIBEÑO <span style="font-weight: 100;">V6.0</span></h1></header>
+    <header><h1>QSL-CARIBEÑO <span style="font-weight: 100;">V7.0</span></h1></header>
 
     <div class="main-container">
         <div class="controls-panel">
-            <span class="section-label">1. Imagen de Fondo</span>
+            
+            <span class="section-label">1. Seleccionar Fondo Postal</span>
+            <div class="gallery-container">
+                <div class="gallery-grid" id="gallery">
+                    <img class="gallery-item" src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=500" onclick="changeBackground(this)">
+                    <img class="gallery-item" src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=500" onclick="changeBackground(this)">
+                    <img class="gallery-item" src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=500" onclick="changeBackground(this)">
+                    <img class="gallery-item" src="https://images.unsplash.com/photo-1534531173927-aeb928d54385?w=500" onclick="changeBackground(this)">
+                    <img class="gallery-item" src="https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=500" onclick="changeBackground(this)">
+                    <img class="gallery-item" src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500" onclick="changeBackground(this)">
+                </div>
+            </div>
             <div class="input-group">
+                <label>O sube tu propia foto:</label>
                 <input type="file" id="bgInput" accept="image/*">
             </div>
 
-            <label>O elige una predeterminada:</label>
-            <div class="gallery-grid">
-                <img class="gallery-item" src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=400" onclick="setGalleryImage(this.src)" title="Playa Caribe">
-                <img class="gallery-item" src="https://images.unsplash.com/photo-1544274433-8994a382e78d?w=400" onclick="setGalleryImage(this.src)" title="Atardecer Tropical">
-                <img class="gallery-item" src="https://images.unsplash.com/photo-1516216628859-9bccecad13fc?w=400" onclick="setGalleryImage(this.src)" title="Antenas de Radio">
-                <img class="gallery-item" src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=400" onclick="setGalleryImage(this.src)" title="Circuito Tech">
-                <img class="gallery-item" src="https://images.unsplash.com/photo-1595013054018-97999335da9b?w=400" onclick="setGalleryImage(this.src)" title="Isla Palmeras">
-                <img class="gallery-item" src="https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=400" onclick="setGalleryImage(this.src)" title="Mar Azul">
-            </div>
-
-            <span class="section-label">2. Ajustes de Diseño</span>
+            <span class="section-label">2. Diseño y Colores</span>
             <div class="input-group">
-                <label>Ancho de Caja de Datos</label>
-                <input type="range" id="boxWidthRange" min="400" max="850" value="800" oninput="draw()">
+                <label>Ancho de Tabla</label>
+                <input type="range" id="boxWidthRange" min="400" max="850" value="820" oninput="draw()">
             </div>
             <div style="display: flex; gap:10px;">
-                <div style="flex:1;"><label>Color Caja</label><input type="color" id="boxColor" value="#000000" oninput="draw()"></div>
-                <div style="flex:1;"><label>Color Texto</label><input type="color" id="textColor" value="#ffffff" oninput="draw()"></div>
+                <div style="flex:1;"><label>Color Tabla</label><input type="color" id="boxColor" value="#000000" oninput="draw()"></div>
+                <div style="flex:1;"><label>Color Texto/Líneas</label><input type="color" id="textColor" value="#ffffff" oninput="draw()"></div>
             </div>
 
             <span class="section-label">3. Tus Datos (DE)</span>
             <div class="input-group"><input type="text" id="myCall" value="HI8-QSL" oninput="draw()"></div>
-            <div class="input-group"><input type="text" id="myInfo" placeholder="Nombre / QTH" oninput="draw()"></div>
+            <div class="input-group"><input type="text" id="myInfo" value="República Dominicana" oninput="draw()"></div>
 
-            <span class="section-label">4. Datos del QSO</span>
-            <div class="input-group"><input type="text" id="toCall" placeholder="Confirmando con:" oninput="draw()"></div>
+            <span class="section-label">4. Datos del QSO (PARA)</span>
+            <div class="input-group"><input type="text" id="toCall" placeholder="Indicativo Destino" oninput="draw()"></div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <input type="date" id="qDate" oninput="draw()">
                 <input type="time" id="qTime" oninput="draw()">
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                <input type="text" id="qBand" placeholder="Band" oninput="draw()">
-                <input type="text" id="qMode" placeholder="Mode" oninput="draw()">
+                <input type="text" id="qBand" placeholder="Banda" oninput="draw()">
+                <input type="text" id="qMode" placeholder="Modo" oninput="draw()">
                 <input type="text" id="qRst" placeholder="RST" oninput="draw()">
             </div>
-            <div class="input-group"><input type="text" id="qMsg" placeholder="Comentarios / 73" oninput="draw()"></div>
+            <div class="input-group"><input type="text" id="qMsg" placeholder="Comentarios / 73!" oninput="draw()"></div>
 
             <button class="btn-download" onclick="download()">Descargar QSL</button>
         </div>
 
         <div class="preview-panel">
             <canvas id="qslCanvas" width="900" height="550"></canvas>
-            <p class="hint">🖱️ Arrastra los elementos en la tarjeta para acomodarlos.</p>
+            <p class="hint">🖱️ Arrastra con el mouse el indicativo o la tabla para ubicarlos.</p>
         </div>
     </div>
 
@@ -179,25 +193,32 @@
         const canvas = document.getElementById('qslCanvas');
         const ctx = canvas.getContext('2d');
         let bgImg = new Image();
-        bgImg.crossOrigin = "anonymous"; // Importante para permitir descargar imágenes externas
+        bgImg.crossOrigin = "anonymous";
 
         let posMyCall = { x: 50, y: 80, w: 300 };
-        let posDataBox = { x: 50, y: 320, h: 180 };
+        let posDataBox = { x: 40, y: 330, h: 180 };
         let dragTarget = null;
         let dragOffset = { x: 0, y: 0 };
 
-        // Función para la Galería
-        function setGalleryImage(url) {
-            bgImg.src = url;
+        // Función para cambiar el fondo AUTOMÁTICAMENTE
+        function changeBackground(element) {
+            // Quitar clase activa de otros
+            document.querySelectorAll('.gallery-item').forEach(img => img.classList.remove('active'));
+            // Añadir clase al seleccionado
+            element.classList.add('active');
+            
+            bgImg.src = element.src;
             bgImg.onload = draw;
         }
 
+        // Subida manual
         document.getElementById('bgInput').addEventListener('change', (e) => {
             const r = new FileReader();
             r.onload = (ev) => { bgImg.src = ev.target.result; bgImg.onload = draw; }
             r.readAsDataURL(e.target.files[0]);
         });
 
+        // Eventos de arrastre
         canvas.addEventListener('mousedown', (e) => {
             const rect = canvas.getBoundingClientRect();
             const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
@@ -241,7 +262,7 @@
             ctx.font = "bold 11px Arial";
             ctx.fillText(label.toUpperCase() + ":", x, y);
             const labelW = ctx.measureText(label.toUpperCase() + ": ").width;
-            ctx.font = "bold 18px 'Courier New', monospace";
+            ctx.font = "bold 19px 'Courier New', monospace";
             ctx.fillText(value || "", x + labelW, y);
             ctx.strokeStyle = textColor;
             ctx.lineWidth = 1.5;
@@ -257,24 +278,20 @@
             const currentBoxW = parseInt(document.getElementById('boxWidthRange').value);
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if(bgImg.src) { 
-                ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height); 
-            } else { 
-                ctx.fillStyle = "#001a33"; ctx.fillRect(0,0, canvas.width, canvas.height); 
-            }
+            if(bgImg.src) { ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height); }
 
-            // Indicativo
-            ctx.shadowColor = "black"; ctx.shadowBlur = 10; ctx.fillStyle = "white";
-            ctx.font = "bold 65px sans-serif";
+            // Mi Indicativo
+            ctx.shadowColor = "black"; ctx.shadowBlur = 12; ctx.fillStyle = "white";
+            ctx.font = "bold 70px sans-serif";
             const myCallText = document.getElementById('myCall').value.toUpperCase();
             ctx.fillText(myCallText, posMyCall.x, posMyCall.y);
             posMyCall.w = ctx.measureText(myCallText).width + 20;
-            ctx.font = "bold 22px sans-serif"; ctx.fillStyle = "#00f2ff";
+            ctx.font = "bold 25px sans-serif"; ctx.fillStyle = var(--neon-blue);
             ctx.fillText(document.getElementById('myInfo').value, posMyCall.x, posMyCall.y + 35);
             ctx.shadowBlur = 0;
 
-            // Caja Datos
-            ctx.fillStyle = boxColor + "D9";
+            // Caja de Datos
+            ctx.fillStyle = boxColor + "CC";
             ctx.fillRect(posDataBox.x, posDataBox.y, currentBoxW, posDataBox.h);
             ctx.strokeStyle = textColor;
             ctx.lineWidth = 2;
@@ -284,13 +301,13 @@
             const contentW = currentBoxW - 40;
             drawLine("Confirming QSO with", document.getElementById('toCall').value, startX, posDataBox.y + 45, currentBoxW - 20, textColor);
             const subCol = contentW / 5;
-            const r2 = posDataBox.y + 100;
+            const r2 = posDataBox.y + 105;
             drawLine("Date", document.getElementById('qDate').value, startX, r2, subCol, textColor);
             drawLine("Time", document.getElementById('qTime').value, startX + subCol, r2, subCol, textColor);
             drawLine("Band", document.getElementById('qBand').value, startX + (subCol*2), r2, subCol, textColor);
             drawLine("Mode", document.getElementById('qMode').value, startX + (subCol*3), r2, subCol, textColor);
             drawLine("RST",  document.getElementById('qRst').value,  startX + (subCol*4), r2, subCol, textColor);
-            drawLine("Remarks", document.getElementById('qMsg').value, startX, posDataBox.y + 155, currentBoxW - 20, textColor);
+            drawLine("Remarks", document.getElementById('qMsg').value, startX, posDataBox.y + 160, currentBoxW - 20, textColor);
         }
 
         function download() {
@@ -300,9 +317,10 @@
             link.click();
         }
 
-        // Cargar una imagen por defecto al abrir
+        // Carga inicial por defecto
         window.onload = () => {
-            setGalleryImage("https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=900");
+            const firstImg = document.querySelector('.gallery-item');
+            changeBackground(firstImg);
         };
     </script>
 </body>
