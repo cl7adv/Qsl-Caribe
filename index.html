@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v10.3 - Custom Colors</title>
+    <title>QSL ELITE v10.3 - Custom Colors & Logos</title>
     <style>
         :root {
             --bg-dark: #0e2431; /* Color exacto solicitado */
@@ -64,6 +64,10 @@
 
         .color-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 10px; }
         .color-item label { font-size: 0.6em; text-align: center; }
+
+        .logo-control-unit {
+            border: 1px solid #333; padding: 10px; border-radius: 8px; margin-bottom: 10px; background: rgba(255,255,255,0.05);
+        }
 
         .btn-download {
             width: 100%; padding: 15px; background: var(--neon-green);
@@ -138,12 +142,28 @@
             </div>
             <input type="text" id="qMsg" placeholder="73 / Radio, hermandad y comunidad" oninput="draw()">
 
+            <span class="section-label">5. Logos (Max 4)</span>
+            <div id="logosContainer">
+                <script>
+                    for(let i=1; i<=4; i++) {
+                        document.write(`
+                            <div class="logo-control-unit">
+                                <label style="color:var(--neon-pink)">LOGO ${i}</label>
+                                <input type="file" id="logoFile${i}" accept="image/*" onchange="loadLogo(${i}, event)">
+                                <label>Tamaño</label>
+                                <input type="range" id="logoSize${i}" min="20" max="200" value="80" oninput="draw()">
+                            </div>
+                        `);
+                    }
+                </script>
+            </div>
+
             <button class="btn-download" onclick="showDownloadMenu()">Descargar QSL</button>
         </div>
 
         <div class="preview-panel">
             <canvas id="qslCanvas" width="900" height="550"></canvas>
-            <p style="font-size: 0.7rem; color: #8b949e; margin-top: 10px;">📱 Arrastra para mover el texto.</p>
+            <p style="font-size: 0.7rem; color: #8b949e; margin-top: 10px;">📱 Arrastra para mover el texto y los logos.</p>
         </div>
     </div>
 
@@ -162,14 +182,33 @@
         let bgImg = new Image();
         bgImg.crossOrigin = "anonymous";
 
+        // Estado de logos
+        let logos = [
+            { img: new Image(), x: 750, y: 50, size: 80, active: false },
+            { img: new Image(), x: 750, y: 150, size: 80, active: false },
+            { img: new Image(), x: 750, y: 250, size: 80, active: false },
+            { img: new Image(), x: 750, y: 350, size: 80, active: false }
+        ];
+
         let posMyCall = { x: 50, y: 110, w: 300 };
         let posDataBox = { x: 60, y: 320 };
         let dragTarget = null;
+        let dragIndex = -1;
         let dragOffset = { x: 0, y: 0 };
 
         function changeBG(el) {
             document.querySelectorAll('.gallery-item').forEach(img => img.classList.remove('active'));
             if(el) { el.classList.add('active'); bgImg.src = el.src; }
+        }
+
+        function loadLogo(num, event) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                logos[num-1].img.src = e.target.result;
+                logos[num-1].active = true;
+                logos[num-1].img.onload = draw;
+            };
+            if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
         }
 
         bgImg.onload = draw;
@@ -206,8 +245,23 @@
 
         function startDrag(e) {
             const coords = getCoords(e);
+            
+            // Check logos first (higher Z-index)
+            for(let i=0; i<4; i++) {
+                if(logos[i].active) {
+                    const s = parseInt(document.getElementById(`logoSize${i+1}`).value);
+                    if(coords.x >= logos[i].x && coords.x <= logos[i].x + s && coords.y >= logos[i].y && coords.y <= logos[i].y + s) {
+                        dragTarget = 'logo';
+                        dragIndex = i;
+                        dragOffset.x = coords.x - logos[i].x;
+                        dragOffset.y = coords.y - logos[i].y;
+                        return;
+                    }
+                }
+            }
+
             const bw = parseInt(document.getElementById('boxW').value);
-            const bh = 180; // Altura fija para simplificar arrastre
+            const bh = 180;
 
             if (coords.x >= posDataBox.x && coords.x <= posDataBox.x + bw && coords.y >= posDataBox.y && coords.y <= posDataBox.y + bh) {
                 dragTarget = 'dataBox';
@@ -224,8 +278,11 @@
             const coords = getCoords(e);
             if (dragTarget === 'dataBox') {
                 posDataBox.x = coords.x - dragOffset.x; posDataBox.y = coords.y - dragOffset.y;
-            } else {
+            } else if (dragTarget === 'myCall') {
                 posMyCall.x = coords.x - dragOffset.x; posMyCall.y = coords.y - dragOffset.y;
+            } else if (dragTarget === 'logo') {
+                logos[dragIndex].x = coords.x - dragOffset.x;
+                logos[dragIndex].y = coords.y - dragOffset.y;
             }
             draw();
             e.preventDefault();
@@ -263,13 +320,25 @@
             ctx.clearRect(0,0,900,550);
             if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
 
-            // Marca de agua
+            // Marca de agua OPTIMIZADA (Más pequeña y transparente)
+            ctx.save();
+            ctx.globalAlpha = 0.3;
             const watermark = "ZMR-CUBA";
-            ctx.font = "bold 24px Verdana"; ctx.textAlign = "right";
-            ctx.strokeStyle = "black"; ctx.lineWidth = 4; ctx.strokeText(watermark, 880, 40);
-            ctx.fillStyle = "#ff0000"; ctx.fillText(watermark, 880, 40); ctx.textAlign = "left";
+            ctx.font = "bold 14px Verdana"; ctx.textAlign = "right";
+            ctx.fillStyle = "white"; 
+            ctx.fillText(watermark, 890, 20); 
+            ctx.restore();
+            ctx.textAlign = "left";
 
-            // Mi Indicativo (COLOR PERSONALIZADO)
+            // Logos
+            for(let i=0; i<4; i++) {
+                if(logos[i].active) {
+                    const s = parseInt(document.getElementById(`logoSize${i+1}`).value);
+                    ctx.drawImage(logos[i].img, logos[i].x, logos[i].y, s, s);
+                }
+            }
+
+            // Mi Indicativo
             ctx.shadowColor = "rgba(0,0,0,0.9)"; ctx.shadowBlur = 15;
             ctx.fillStyle = cColor; ctx.font = "bold 95px Verdana";
             const call = document.getElementById('myCall').value.toUpperCase();
