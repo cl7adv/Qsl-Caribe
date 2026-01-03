@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qsl-Caribeño Pro</title>
+    <title>Qsl-Caribeño Pro - Editor Libre</title>
     <style>
         :root {
             --navy-deep: #000c1d;
@@ -21,30 +21,27 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
         }
 
-        header { padding: 20px; text-align: center; }
-        header h1 { margin: 0; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); letter-spacing: 2px; }
+        header { padding: 15px; text-align: center; }
+        header h1 { margin: 0; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); font-size: 1.8rem; }
 
         .main-container {
             display: flex;
             flex-direction: row;
             gap: 20px;
-            padding: 20px;
-            max-width: 1400px;
-            width: 95%;
+            padding: 10px;
+            max-width: 1450px;
+            width: 98%;
         }
 
-        /* Panel de control */
         .controls-panel {
             flex: 0 0 320px;
             background: var(--panel-bg);
             padding: 20px;
             border-radius: 12px;
             border: 1px solid var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
-            max-height: 90vh;
+            height: 85vh;
             overflow-y: auto;
         }
 
@@ -84,30 +81,37 @@
             text-transform: uppercase;
         }
 
-        /* Vista previa */
-        .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
         canvas {
             max-width: 100%;
-            border-radius: 8px;
+            border-radius: 4px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            border: 2px solid var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            cursor: move; /* Indica que se puede mover */
         }
+
+        .hint { color: #5c7d9d; font-size: 0.8rem; margin-top: 10px; }
 
         @media (max-width: 1000px) {
             .main-container { flex-direction: column; }
-            .controls-panel { width: 100%; }
+            .controls-panel { width: 100%; height: auto; }
         }
     </style>
 </head>
 <body>
 
-    <header><h1>QSL-CARIBEÑO <span style="font-weight: 100;">V3.5</span></h1></header>
+    <header><h1>QSL-CARIBEÑO <span style="font-weight: 100;">V4.0</span></h1></header>
 
     <div class="main-container">
         <div class="controls-panel">
             <div class="input-group">
                 <label>Fondo de Tarjeta</label>
                 <input type="file" id="bgInput" accept="image/*">
+            </div>
+
+            <div class="input-group">
+                <label>Ancho de la Caja de Datos</label>
+                <input type="range" id="boxWidthRange" min="400" max="850" value="800" oninput="draw()">
             </div>
 
             <div style="display: flex; gap:10px;">
@@ -117,41 +121,31 @@
 
             <span class="section-label">De: (Tu Estación)</span>
             <div class="input-group">
-                <label>Tu Indicativo</label>
-                <input type="text" id="myCall" placeholder="EA1ABC" value="HI8-QSL" oninput="draw()">
+                <input type="text" id="myCall" placeholder="TU INDICATIVO" value="HI8-QSL" oninput="draw()">
             </div>
             <div class="input-group">
-                <label>Tu Nombre / QTH</label>
-                <input type="text" id="myInfo" placeholder="Pedro - Santo Domingo" oninput="draw()">
+                <input type="text" id="myInfo" placeholder="Tu Nombre / QTH" oninput="draw()">
             </div>
 
-            <span class="section-label">Para: (Detalles del QSO)</span>
-            <div class="input-group">
-                <label>Confirmando QSO con:</label>
-                <input type="text" id="toCall" placeholder="W1AW" oninput="draw()">
-            </div>
-
+            <span class="section-label">Para: (Detalles QSO)</span>
+            <div class="input-group"><label>Confirmando con:</label><input type="text" id="toCall" oninput="draw()"></div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="input-group"><label>Fecha</label><input type="date" id="qDate" oninput="draw()"></div>
-                <div class="input-group"><label>Hora (UTC)</label><input type="time" id="qTime" oninput="draw()"></div>
+                <input type="date" id="qDate" oninput="draw()">
+                <input type="time" id="qTime" oninput="draw()">
             </div>
-
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                <div class="input-group"><label>Banda</label><input type="text" id="qBand" placeholder="40m" oninput="draw()"></div>
-                <div class="input-group"><label>Modo</label><input type="text" id="qMode" placeholder="SSB" oninput="draw()"></div>
-                <div class="input-group"><label>RST</label><input type="text" id="qRst" placeholder="59" oninput="draw()"></div>
+                <input type="text" id="qBand" placeholder="Band" oninput="draw()">
+                <input type="text" id="qMode" placeholder="Mode" oninput="draw()">
+                <input type="text" id="qRst" placeholder="RST" oninput="draw()">
             </div>
-
-            <div class="input-group">
-                <label>Comentarios / Remarks</label>
-                <input type="text" id="qMsg" placeholder="Gracias por el contacto, 73!" oninput="draw()">
-            </div>
+            <div class="input-group"><label>Comentarios:</label><input type="text" id="qMsg" oninput="draw()"></div>
 
             <button class="btn-download" onclick="download()">Descargar QSL</button>
         </div>
 
         <div class="preview-panel">
             <canvas id="qslCanvas" width="900" height="550"></canvas>
+            <p class="hint">🖱️ Haz clic y arrastra el recuadro negro para moverlo por la tarjeta.</p>
         </div>
     </div>
 
@@ -160,98 +154,109 @@
         const ctx = canvas.getContext('2d');
         let bgImg = new Image();
 
+        // Variables de posicionamiento de la caja
+        let boxX = 50;
+        let boxY = 320;
+        let isDragging = false;
+        let dragOffsetX, dragOffsetY;
+
         document.getElementById('bgInput').addEventListener('change', (e) => {
             const r = new FileReader();
             r.onload = (ev) => { bgImg.src = ev.target.result; bgImg.onload = draw; }
             r.readAsDataURL(e.target.files[0]);
         });
 
+        // Eventos para arrastrar (Mouse)
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+            const currentBoxW = parseInt(document.getElementById('boxWidthRange').value);
+
+            if (mouseX >= boxX && mouseX <= boxX + currentBoxW && mouseY >= boxY && mouseY <= boxY + 180) {
+                isDragging = true;
+                dragOffsetX = mouseX - boxX;
+                dragOffsetY = mouseY - boxY;
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+                boxX = mouseX - dragOffsetX;
+                boxY = mouseY - dragOffsetY;
+                draw();
+            }
+        });
+
+        window.addEventListener('mouseup', () => isDragging = false);
+
         function drawLine(label, value, x, y, width, textColor) {
             ctx.fillStyle = textColor;
-            // Etiqueta
-            ctx.font = "bold 12px Arial";
+            ctx.font = "bold 11px Arial";
             ctx.fillText(label.toUpperCase() + ":", x, y);
-            
-            const labelWidth = ctx.measureText(label.toUpperCase() + ": ").width;
-
-            // Valor
-            ctx.font = "bold 20px 'Courier New', monospace";
-            ctx.fillText(value || "", x + labelWidth, y);
-
-            // Línea de subrayado
+            const labelW = ctx.measureText(label.toUpperCase() + ": ").width;
+            ctx.font = "bold 18px 'Courier New', monospace";
+            ctx.fillText(value || "", x + labelW, y);
             ctx.strokeStyle = textColor;
             ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.moveTo(x + labelWidth, y + 5);
-            ctx.lineTo(x + width - 10, y + 5); // El "-10" evita que toque el borde derecho
+            ctx.moveTo(x + labelW, y + 5);
+            ctx.lineTo(x + width - 10, y + 5);
             ctx.stroke();
         }
 
         function draw() {
             const boxColor = document.getElementById('boxColor').value;
             const textColor = document.getElementById('textColor').value;
+            const currentBoxW = parseInt(document.getElementById('boxWidthRange').value);
+            const boxH = 180;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Fondo
             if(bgImg.src) {
                 ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
             } else {
-                ctx.fillStyle = "#001a33";
-                ctx.fillRect(0,0, canvas.width, canvas.height);
+                ctx.fillStyle = "#001a33"; ctx.fillRect(0,0, canvas.width, canvas.height);
             }
 
-            // 2. TU INDICATIVO (ARRIBA IZQUIERDA)
-            const myCall = document.getElementById('myCall').value;
-            const myInfo = document.getElementById('myInfo').value;
-            
-            ctx.shadowColor = "black";
-            ctx.shadowBlur = 10;
-            ctx.fillStyle = "white";
-            ctx.font = "bold 70px sans-serif";
-            ctx.fillText(myCall.toUpperCase(), 50, 80);
-            
-            ctx.font = "bold 25px sans-serif";
-            ctx.fillStyle = "#00f2ff";
-            ctx.fillText(myInfo, 50, 115);
+            // TU INDICATIVO (ARRIBA)
+            ctx.shadowColor = "black"; ctx.shadowBlur = 10; ctx.fillStyle = "white";
+            ctx.font = "bold 65px sans-serif";
+            ctx.fillText(document.getElementById('myCall').value.toUpperCase(), 50, 80);
+            ctx.font = "bold 22px sans-serif"; ctx.fillStyle = "#00f2ff";
+            ctx.fillText(document.getElementById('myInfo').value, 50, 110);
             ctx.shadowBlur = 0;
 
-            // 3. CAJA DE DATOS (RECTÁNGULO)
-            const bX = 50, bY = 320, bW = 800, bH = 180;
-            ctx.fillStyle = boxColor + "CC"; // Transparencia
-            ctx.fillRect(bX, bY, bW, bH);
+            // CAJA DE DATOS (MOVIBLE)
+            ctx.fillStyle = boxColor + "D9";
+            ctx.fillRect(boxX, boxY, currentBoxW, boxH);
             ctx.strokeStyle = textColor;
             ctx.lineWidth = 2;
-            ctx.strokeRect(bX, bY, bW, bH);
+            ctx.strokeRect(boxX, boxY, currentBoxW, boxH);
 
-            // 4. DATOS DENTRO DEL RECTÁNGULO
-            const startX = bX + 25;
-            const col = (bW - 50) / 4; // Dividir en columnas para que no se salgan las líneas
+            const startX = boxX + 20;
+            const contentW = currentBoxW - 40;
 
-            // Fila 1: To Radio
-            drawLine("Confirming QSO with", document.getElementById('toCall').value, startX, bY + 45, bW - 25, textColor);
-
-            // Fila 2: Fecha, Hora, Banda, Modo, RST
-            const row2Y = bY + 100;
-            const subCol = (bW - 50) / 5;
-            drawLine("Date", document.getElementById('qDate').value, startX, row2Y, subCol, textColor);
-            drawLine("Time", document.getElementById('qTime').value, startX + subCol, row2Y, subCol, textColor);
-            drawLine("Band", document.getElementById('qBand').value, startX + (subCol*2), row2Y, subCol, textColor);
-            drawLine("Mode", document.getElementById('qMode').value, startX + (subCol*3), row2Y, subCol, textColor);
-            drawLine("RST",  document.getElementById('qRst').value,  startX + (subCol*4), row2Y, subCol, textColor);
-
-            // Fila 3: Comentarios
-            drawLine("Remarks", document.getElementById('qMsg').value, startX, bY + 155, bW - 25, textColor);
-            
-            // Marca de agua sutil
-            ctx.font = "10px Arial";
-            ctx.fillStyle = "rgba(255,255,255,0.3)";
-            ctx.fillText("Qsl-Caribeño", 810, 540);
+            // Fila 1
+            drawLine("Confirming QSO with", document.getElementById('toCall').value, startX, boxY + 45, currentBoxW - 20, textColor);
+            // Fila 2
+            const subCol = contentW / 5;
+            const r2 = boxY + 100;
+            drawLine("Date", document.getElementById('qDate').value, startX, r2, subCol, textColor);
+            drawLine("Time", document.getElementById('qTime').value, startX + subCol, r2, subCol, textColor);
+            drawLine("Band", document.getElementById('qBand').value, startX + (subCol*2), r2, subCol, textColor);
+            drawLine("Mode", document.getElementById('qMode').value, startX + (subCol*3), r2, subCol, textColor);
+            drawLine("RST",  document.getElementById('qRst').value,  startX + (subCol*4), r2, subCol, textColor);
+            // Fila 3
+            drawLine("Remarks", document.getElementById('qMsg').value, startX, boxY + 155, currentBoxW - 20, textColor);
         }
 
         function download() {
             const link = document.createElement('a');
-            link.download = `Qsl_Caribeno_${document.getElementById('toCall').value || 'card'}.png`;
+            link.download = `Qsl_Caribeno.png`;
             link.href = canvas.toDataURL();
             link.click();
         }
