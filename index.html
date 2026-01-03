@@ -4,26 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>QSL Caribe — Generador</title>
-  <style>
-    body {
-      margin: 0; padding: 0;
-      font-family: system-ui, Segoe UI, Arial;
-      background: #06121f; color: #eaf6ff;
-    }
-    header { padding: 20px; background: #0c2c45; color: #fff; }
-    main { display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; }
-    .panel { background: #10223a; padding: 16px; border-radius: 10px; }
-    label { font-size: 12px; display: block; margin-bottom: 4px; }
-    input, select, textarea {
-      width: 100%; padding: 8px; margin-bottom: 10px;
-      border-radius: 6px; border: 1px solid #444; background: #0c1d30; color: #fff;
-    }
-    button { margin: 4px; padding: 10px 14px; border-radius: 6px; border: none; cursor: pointer; }
-    button.primary { background: #3fd0c9; color: #06121f; }
-    button.secondary { background: #ffd36e; color: #06121f; }
-    button.danger { background: #ff6b6b; color: #fff; }
-    canvas { width: 100%; height: auto; background: #071420; border-radius: 10px; }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>
@@ -35,6 +16,7 @@
     <section class="panel">
       <h2>Datos del QSO</h2>
       <form id="qsoForm">
+        <!-- Campos del formulario -->
         <label for="indicativo">Indicativo</label>
         <input id="indicativo" placeholder="CM2ABC" required />
 
@@ -58,7 +40,8 @@
 
         <label for="modo">Modo</label>
         <select id="modo">
-          <option>SSB</option><option>CW</option><option>FT8</option><option>FM</option><option>AM</option><option>DIGI</option>
+          <option>SSB</option><option>CW</option><option>FT8</option>
+          <option>FM</option><option>AM</option><option>DIGI</option>
         </select>
 
         <label for="rst">Señal (RST)</label>
@@ -87,108 +70,140 @@
       <canvas id="qslCanvas" width="1200" height="800"></canvas>
     </section>
   </main>
-  <script>
-    const form = document.getElementById('qsoForm');
-    const canvas = document.getElementById('qslCanvas');
-    const ctx = canvas.getContext('2d');
-    const fondoInput = document.getElementById('fondo');
 
-    const fontTitle = "700 62px system-ui, Segoe UI, Arial";
-    const fontLabel = "700 20px system-ui, Segoe UI, Arial";
-    const fontText  = "400 22px system-ui, Segoe UI, Arial";
-
-    document.getElementById('btnGenerar').addEventListener('click', () => drawCard(readData()));
-    document.getElementById('btnDescargar').addEventListener('click', downloadPNG);
-    document.getElementById('btnImprimir').addEventListener('click', () => window.print());
-    document.getElementById('btnLimpiar').addEventListener('click', () => { form.reset(); drawCard(defaultData()); });
-
-    drawCard(defaultData());
-
-    function defaultData() {
-      return {
-        indicativo: "CM2ABC",
-        nombre: "Alfred",
-        ubicacion: "Santa Cruz del Sur, Camagüey",
-        pais: "Cuba",
-        fecha: new Date().toISOString().slice(0,10),
-        hora: new Date().toISOString().slice(11,16),
-        frecuencia: "14.070",
-        modo: "SSB",
-        rst: "59",
-        qsl: "eQSL / LoTW",
-        notas: "Gracias por el QSO. 73 y DX!"
-      };
-    }
-
-    function readData() {
-      const get = id => document.getElementById(id).value.trim();
-      return {
-        indicativo: get("indicativo") || "—",
-        nombre: get("nombre"),
-        ubicacion: get("ubicacion"),
-        pais: get("pais"),
-        fecha: get("fecha"),
-        hora: get("hora"),
-        frecuencia: get("frecuencia"),
-        modo: get("modo"),
-        rst: get("rst"),
-        qsl: get("qsl"),
-        notas: get("notas"),
-      };
-    }
-
-    function downloadPNG() {
-      const url = canvas.toDataURL("image/png");
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `QSL_${Date.now()}.png`;
-      a.click();
-    }
-
-    function drawCard(d) {
-      const W = canvas.width, H = canvas.height;
-      ctx.clearRect(0,0,W,H);
-
-      if (fondoInput && fondoInput.files && fondoInput.files[0]) {
-        const img = new Image();
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, W, H);
-          drawOverlay(d);
-        };
-        img.src = URL.createObjectURL(fondoInput.files[0]);
-      } else {
-        const g = ctx.createLinearGradient(0,0,0,H);
-        g.addColorStop(0, "#062036");
-        g.addColorStop(1, "#103251");
-        ctx.fillStyle = g;
-        ctx.fillRect(0,0,W,H);
-        drawOverlay(d);
-      }
-    }
-
-    function drawOverlay(d) {
-      const pad = 40;
-      ctx.fillStyle = "rgba(0,0,0,0.5)";
-      ctx.fillRect(pad, pad, canvas.width - pad*2, canvas.height - pad*2);
-
-      ctx.fillStyle = "#fff";
-      ctx.font = fontTitle;
-      ctx.fillText((d.indicativo || "—").toUpperCase(), pad+30, pad+50);
-
-      ctx.font = fontLabel;
-      ctx.fillText("Fecha: " + (d.fecha || "—"), pad+30, pad+150);
-      ctx.fillText("Hora (UTC): " + (d.hora || "—"), pad+30, pad+190);
-      ctx.fillText("Frecuencia: " + (d.frecuencia || "—"), pad+30, pad+230);
-      ctx.fillText("Modo: " + (d.modo || "—"), pad+30, pad+270);
-      ctx.fillText("RST: " + (d.rst || "—"), pad+30, pad+310);
-      ctx.fillText("QSL vía: " + (d.q      ctx.fillText("Operador: " + (d.nombre || "—"), pad+30, pad+390);
-      ctx.fillText("QTH: " + (d.ubicacion || "—"), pad+30, pad+430);
-      ctx.fillText("País: " + (d.pais || "—"), pad+30, pad+470);
-
-      ctx.font = fontText;
-      ctx.fillText("Notas: " + (d.notas || "—"), pad+30, pad+520);
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
+body {
+  margin: 0; padding: 0;
+  font-family: system-ui, Segoe UI, Arial;
+  background: #06121f; color: #eaf6ff;
+}
+header { padding: 20px; background: #0c2c45; color: #fff; }
+main { display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; }
+.panel { background: #10223a; padding: 16px; border-radius: 10px; }
+label { font-size: 12px; display: block; margin-bottom: 4px; }
+input, select, textarea {
+  width: 100%; padding: 8px; margin-bottom: 10px;
+  border-radius: 6px; border: 1px solid #444; background: #0c1d30; color: #fff;
+}
+button { margin: 4px; padding: 10px 14px; border-radius: 6px; border: none; cursor: pointer; }
+button.primary { background: #3fd0c9; color: #06121f; }
+button.secondary { background: #ffd36e; color: #06121f; }
+button.danger { background: #ff6b6b; color: #fff; }
+canvas { width: 100%; height: auto; background: #071420; border-radius: 10px; }
+const form = document.getElementById('qsoForm');
+const canvas = document.getElementById('qslCanvas');
+const ctx = canvas.getContext('2d');
+const fondoInput = document.getElementById('fondo');
 
+const fontTitle = "700 62px system-ui, Segoe UI, Arial";
+const fontLabel = "700 20px system-ui, Segoe UI, Arial";
+const fontText  = "400 22px system-ui, Segoe UI, Arial";
+
+document.getElementById('btnGenerar').addEventListener('click', () => drawCard(readData()));
+document.getElementById('btnDescargar').addEventListener('click', downloadPNG);
+document.getElementById('btnImprimir').addEventListener('click', () => window.print());
+document.getElementById('btnLimpiar').addEventListener('click', () => { form.reset(); drawCard(defaultData()); });
+
+drawCard(defaultData());
+
+function defaultData() {
+  return {
+    indicativo: "CM2ABC",
+    nombre: "Alfred",
+    ubicacion: "Santa Cruz del Sur, Camagüey",
+    pais: "Cuba",
+    fecha: new Date().toISOString().slice(0,10),
+    hora: new Date().toISOString().slice(11,16),
+    frecuencia: "14.070",
+    modo: "SSB",
+    rst: "59",
+    qsl: "eQSL / LoTW",
+    notas: "Gracias por el QSO. 73 y DX!"
+  };
+}
+
+function readData() {
+  const get = id => document.getElementById(id).value.trim();
+  return {
+    indicativo: get("indicativo") || "—",
+    nombre: get("nombre"),
+    ubicacion: get("ubicacion"),
+    pais: get("pais"),
+    fecha: get("fecha"),
+    hora: get("hora"),
+    frecuencia: get("frecuencia"),
+    modo: get("modo"),
+    rst: get("rst"),
+    qsl: get("qsl"),
+    notas: get("notas"),
+  };
+}
+
+function downloadPNG() {
+  const url = canvas.toDataURL("image/png");
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `QSL_${Date.now()}.png`;
+  a.click();
+}
+
+function drawCard(d) {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  if (fondoInput && fondoInput.files && fondoInput.files[0]) {
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, W, H);
+      drawOverlay(d);
+    };
+    img.src = URL.createObjectURL(fondoInput.files[0]);
+  } else {
+    const g = ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0, "#062036");
+    g.addColorStop(1, "#103251");
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,W,H);
+    drawOverlay(d);
+  }
+}
+
+function drawOverlay(d) {
+  const pad = 40;
+  ctx.fillStyle = "rgba(0,0,0,0.5)";
+  ctx.fillRect(pad, pad, canvas.width - pad*2, canvas.height - pad*2);
+
+  // Marco decorativo
+  ctx.strokeStyle = "#3fd0c9";
+  ctx.lineWidth = 6;
+  ctx.strokeRect(pad, pad, canvas.width - pad*2, canvas.height - pad*2);
+
+  ctx.fillStyle = "#fff";
+  ctx.font = fontTitle;
+  ctx.textAlign = "left";
+  ctx.fillText((d.indicativo || "—").toUpperCase(), pad+30, pad+80);
+
+  ctx.font = fontLabel;
+  ctx.fillText("Fecha: " + (d.fecha || "—"), pad+30, pad+150);
+  ctx.fillText("Hora (UTC): " + (d.hora || "—"), pad+30, pad+190);
+  ctx.fillText("Frecuencia: " + (d.frecuencia || "—"), pad+30, pad+230);
+  ctx.fillText("Modo: " + (d.modo || "—"), pad+30, pad+270);
+  ctx.fillText("RST: " + (d.rst || "—"), pad+30, pad+310);
+  ctx.fillText("QSL vía: " + (d.qsl || "—"), pad+30, pad+350);
+  ctx.fillText("Operador: " + (d.nombre || "—"), pad+30, pad+390);
+  ctx.fillText("QTH: " + (d.ubicacion || "—"), pad+30, pad+430);
+  ctx.fillText("País: " + (d.pais || "—"), pad+30, pad+470);
+
+  ctx.font = fontText;
+  drawMultilineText("Notas: " + (d.notas || "—"), pad+30, pad+520, 28);
+}
+
+// Función para texto multilínea
+function drawMultilineText(text, x, y, lineHeight) {
+  const lines = text.split("\n");
+  lines.forEach((line, i) => {
+    ctx.fillText(line, x, y + (i * lineHeight));
+  });
+}
