@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL Generator Pro - Full Data Block</title>
+    <title>QSL Generator Pro - Final Version</title>
     <style>
         :root {
             --navy-deep: #000c1d;
@@ -24,277 +24,293 @@
             min-height: 100vh;
         }
 
-        header { padding: 20px; text-align: center; }
-        header h1 { margin: 0; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); letter-spacing: 2px; }
+        header { padding: 15px; text-align: center; }
+        header h1 { margin: 0; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); letter-spacing: 2px; font-size: 1.5rem; }
 
         .main-container {
             display: flex;
             flex-direction: row;
-            gap: 25px;
+            gap: 20px;
             padding: 20px;
-            max-width: 1300px;
+            max-width: 1400px;
             width: 95%;
             align-items: flex-start;
         }
 
-        /* --- Panel Izquierdo (Controles) --- */
+        /* --- Panel Izquierdo --- */
         .controls-panel {
-            flex: 0 0 320px;
+            flex: 0 0 300px;
             background: var(--panel-bg);
-            padding: 25px;
-            border-radius: 12px;
+            padding: 20px;
+            border-radius: 10px;
             border: 1px solid var(--neon-blue);
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+            max-height: 90vh;
+            overflow-y: auto; /* Scroll si la pantalla es pequeña */
         }
 
-        .input-group { margin-bottom: 15px; }
+        .section-title {
+            color: var(--neon-green);
+            font-size: 0.9em;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group { margin-bottom: 10px; }
         label { 
             display: block; 
-            margin-bottom: 6px; 
-            font-size: 0.85em; 
-            color: var(--neon-blue); 
+            margin-bottom: 4px; 
+            font-size: 0.8em; 
+            color: #8b949e; 
             font-weight: bold; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
         }
         
         input {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             background: #00254d;
             border: 1px solid #004080;
             border-radius: 4px;
             color: white;
             box-sizing: border-box;
-            font-size: 14px;
+            font-size: 13px;
         }
         
-        input:focus {
-            outline: none;
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 8px rgba(0, 242, 255, 0.3);
-        }
-
-        .color-group { display: flex; gap: 10px; margin-top: 5px; }
-        .color-item { flex: 1; text-align: center; }
-        input[type="color"] { height: 40px; padding: 2px; cursor: pointer; }
+        input:focus { outline: none; border-color: var(--neon-blue); }
 
         .btn {
             width: 100%;
-            padding: 14px;
-            margin-top: 20px;
+            padding: 12px;
+            margin-top: 15px;
             border: none;
             border-radius: 4px;
             font-weight: bold;
-            font-size: 16px;
             cursor: pointer;
-            transition: 0.3s;
             text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-download {
-            background: transparent;
-            color: var(--neon-green);
-            border: 2px solid var(--neon-green);
-            box-shadow: inset 0 0 10px rgba(57, 255, 20, 0.2);
-        }
-
-        .btn-download:hover {
             background: var(--neon-green);
             color: #000;
-            box-shadow: 0 0 25px var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green);
         }
+        .btn:hover { box-shadow: 0 0 20px var(--neon-green); transform: scale(1.02); }
 
-        /* --- Panel Derecho (Canvas) --- */
+        /* --- Panel Derecho --- */
         .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; }
         
         canvas {
-            max-width: 100%;
-            border: 3px solid #004080;
+            width: 100%;
+            max-width: 900px; /* Limite visual */
+            height: auto;
+            border: 2px solid #004080;
             border-radius: 6px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-            background-image: linear-gradient(45deg, #111 25%, transparent 25%), linear-gradient(-45deg, #111 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #111 75%), linear-gradient(-45deg, transparent 75%, #111 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
         }
 
-        @media (max-width: 1000px) {
+        @media (max-width: 900px) {
             .main-container { flex-direction: column; }
-            .controls-panel { width: 100%; }
+            .controls-panel { width: 100%; max-height: none; }
         }
     </style>
 </head>
 <body>
 
-    <header><h1>QSL MAKER <span style="font-weight: 100;">GITHUB EDITION</span></h1></header>
+    <header><h1>QSL CREATOR <span style="font-weight: 100;">V3.0</span></h1></header>
 
     <div class="main-container">
         <div class="controls-panel">
             <div class="input-group">
-                <label>1. Imagen de Fondo</label>
+                <label>Fondo de Tarjeta</label>
                 <input type="file" id="bgInput" accept="image/*">
             </div>
 
-            <div class="color-group">
-                <div class="color-item">
-                    <label>Fondo Caja</label>
-                    <input type="color" id="boxColor" value="#000000" oninput="generateQSL()">
-                </div>
-                <div class="color-item">
-                    <label>Texto/Líneas</label>
-                    <input type="color" id="textColor" value="#ffffff" oninput="generateQSL()">
-                </div>
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                 <div style="flex:1;"><label>Caja Color</label><input type="color" id="boxColor" value="#000000" oninput="draw()"></div>
+                 <div style="flex:1;"><label>Texto Color</label><input type="color" id="textColor" value="#ffffff" oninput="draw()"></div>
             </div>
 
-            <hr style="border: 0; border-top: 1px solid #004080; margin: 25px 0;">
+            <div class="section-title">MI ESTACIÓN (Arriba)</div>
+            <div class="input-group">
+                <label>Mi Indicativo (DE)</label>
+                <input type="text" id="myCall" placeholder="EA0MY" value="MY-CALL" oninput="draw()">
+            </div>
+            <div class="input-group">
+                <label>Mi QTH / Locator</label>
+                <input type="text" id="myLoc" placeholder="IN80aa" value="IN80aa" oninput="draw()">
+            </div>
 
+            <div class="section-title">DATOS DEL QSO</div>
             <div class="input-group">
-                <label>To Station (Indicativo)</label>
-                <input type="text" id="callsign" placeholder="EA1ABC" oninput="generateQSL()">
+                <label>To Radio (Destinatario)</label>
+                <input type="text" id="urCall" placeholder="W1AW" oninput="draw()">
             </div>
             
-            <div class="input-group">
-                <label>Fecha</label>
-                <input type="date" id="qsoDate" oninput="generateQSL()">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div class="input-group">
+                    <label>Fecha</label>
+                    <input type="date" id="qsoDate" oninput="draw()">
+                </div>
+                <div class="input-group">
+                    <label>Hora (UTC)</label>
+                    <input type="time" id="qsoTime" oninput="draw()">
+                </div>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
                 <div class="input-group">
                     <label>Banda</label>
-                    <input type="text" id="qsoBand" placeholder="40m" oninput="generateQSL()">
+                    <input type="text" id="qsoBand" placeholder="20m" oninput="draw()">
                 </div>
                 <div class="input-group">
                     <label>Modo</label>
-                    <input type="text" id="qsoMode" placeholder="FT8" oninput="generateQSL()">
+                    <input type="text" id="qsoMode" placeholder="SSB" oninput="draw()">
                 </div>
                 <div class="input-group">
                     <label>RST</label>
-                    <input type="text" id="qsoRst" placeholder="59" oninput="generateQSL()">
+                    <input type="text" id="qsoRst" placeholder="59" oninput="draw()">
                 </div>
             </div>
 
             <div class="input-group">
-                <label>Comentario (Opcional)</label>
-                <input type="text" id="qsoComment" placeholder="TNX QSO / 73!" oninput="generateQSL()">
+                <label>Comentario / PSE QSL / TNX</label>
+                <input type="text" id="qsoMsg" placeholder="TNX 73!" oninput="draw()">
             </div>
 
-            <button class="btn btn-download" onclick="downloadQSL()">Descargar Tarjeta</button>
+            <button class="btn" onclick="downloadQSL()">DESCARGAR PNG</button>
         </div>
 
         <div class="preview-panel">
-            <canvas id="qslCanvas" width="800" height="500"></canvas>
+            <canvas id="qslCanvas" width="900" height="550"></canvas>
         </div>
     </div>
 
     <script>
         const canvas = document.getElementById('qslCanvas');
         const ctx = canvas.getContext('2d');
-        let backgroundImage = new Image();
+        let bgImg = new Image();
 
-        // Cargar imagen
-        document.getElementById('bgInput').addEventListener('change', function(e) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                backgroundImage.src = event.target.result;
-                backgroundImage.onload = generateQSL;
-            }
-            reader.readAsDataURL(e.target.files[0]);
+        document.getElementById('bgInput').addEventListener('change', (e) => {
+            const r = new FileReader();
+            r.onload = (ev) => { bgImg.src = ev.target.result; bgImg.onload = draw; }
+            r.readAsDataURL(e.target.files[0]);
         });
 
-        // Función auxiliar para dibujar datos subrayados
-        function drawUnderlinedData(label, value, x, y, endX, textColor) {
-            // Etiqueta (ej: DATE:)
-            ctx.fillStyle = textColor;
-            ctx.font = "bold 13px 'Segoe UI', sans-serif";
-            ctx.textAlign = "left";
-            ctx.fillText(label.toUpperCase() + ":", x, y);
-
-            // Medir ancho de la etiqueta para saber donde empezar el valor
-            const labelWidth = ctx.measureText(label.toUpperCase() + ": ").width;
+        // Función Maestra para dibujar líneas y texto ajustado
+        function drawField(label, value, x, y, width, textColor) {
+            const labelSize = 11;
+            const valueSize = 18;
             
-            // El Valor (ej: 2024-05-20)
-            ctx.font = "bold 20px 'Courier New', monospace";
-            ctx.fillText(value, x + labelWidth, y);
+            // Etiqueta (Arriba izquierda del campo)
+            ctx.fillStyle = textColor;
+            ctx.font = `bold ${labelSize}px 'Segoe UI', sans-serif`;
+            ctx.fillText(label.toUpperCase(), x, y - 5);
 
-            // La línea debajo
+            // Valor (Centro/Izquierda del campo)
+            ctx.font = `bold ${valueSize}px 'Courier New', monospace`;
+            
+            // Si no hay valor, ponemos guiones para mantener la estética
+            const displayVal = value ? value : ""; 
+            ctx.fillText(displayVal, x, y + 15);
+
+            // Línea de base (Subrayado)
+            // Se dibuja desde X hasta X + Width - padding
+            const padding = 10;
+            const lineEnd = x + width - padding;
+
             ctx.strokeStyle = textColor;
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.moveTo(x + labelWidth, y + 5);
-            ctx.lineTo(endX, y + 5);
+            ctx.moveTo(x, y + 20);
+            ctx.lineTo(lineEnd, y + 20);
             ctx.stroke();
         }
 
-        function generateQSL() {
+        function draw() {
             const boxColor = document.getElementById('boxColor').value;
             const textColor = document.getElementById('textColor').value;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 1. DIBUJAR FONDO
-            if (backgroundImage.src) {
-                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+            // 1. Limpiar y Fondo
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            if(bgImg.src) {
+                ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
             } else {
-                // Fondo por defecto si no hay imagen
-                ctx.fillStyle = "#0a0e14";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#333";
-                ctx.font = "20px Arial";
-                ctx.fillText("Sube tu imagen de fondo", 300, 250);
+                ctx.fillStyle = "#0a1520";
+                ctx.fillRect(0,0, canvas.width, canvas.height);
             }
 
-            // 2. DIBUJAR LA CAJA CONTENEDORA (RECTÁNGULO ELEGANTE)
-            // Hacemos la caja más alta para que quepa el indicativo y el comentario
-            const boxX = 40;
-            const boxY = 310;
-            const boxW = 720;
-            const boxH = 160;
+            // 2. MI INDICATIVO (ARRIBA) - Agregado según petición
+            const myCall = document.getElementById('myCall').value;
+            const myLoc = document.getElementById('myLoc').value;
+            
+            if(myCall) {
+                // Sombra para que se lea sobre cualquier foto
+                ctx.shadowColor = "rgba(0,0,0,0.8)";
+                ctx.shadowBlur = 10;
+                
+                // Indicativo grande
+                ctx.fillStyle = "#ffffff"; // Siempre blanco o puedes usar textColor
+                ctx.font = "bold 60px sans-serif";
+                ctx.fillText(myCall.toUpperCase(), 40, 70);
 
-            ctx.fillStyle = boxColor + "D9"; // D9 = ~85% opacidad
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = "rgba(0,0,0,0.8)";
+                // Locator / QTH pequeño debajo
+                ctx.font = "bold 25px sans-serif";
+                ctx.fillStyle = "#cccccc";
+                ctx.fillText(myLoc, 40, 105);
+                
+                ctx.shadowBlur = 0; // Reset sombra
+            }
+
+            // 3. CAJA DE DATOS QSO (ABAJO)
+            // Calculamos margenes para que no se salga
+            const margin = 40;
+            const boxW = canvas.width - (margin * 2); 
+            const boxH = 180;
+            const boxX = margin;
+            const boxY = canvas.height - boxH - 30; // 30px desde abajo
+
+            // Dibujar rectángulo semitransparente
+            ctx.fillStyle = boxColor + "D9"; // Opacidad alta
             ctx.fillRect(boxX, boxY, boxW, boxH);
-            ctx.shadowBlur = 0;
-
-            // Borde de la caja
             ctx.strokeStyle = textColor;
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 2;
             ctx.strokeRect(boxX, boxY, boxW, boxH);
 
-            // 3. DATOS
-            const call = document.getElementById('callsign').value || "";
-            const date = document.getElementById('qsoDate').value || "";
-            const band = document.getElementById('qsoBand').value || "";
-            const mode = document.getElementById('qsoMode').value || "";
-            const rst = document.getElementById('qsoRst').value || "";
-            const comment = document.getElementById('qsoComment').value || "";
+            // --- FILAS DE DATOS ---
+            // Usamos lógica de rejilla (Grid) para que no se salgan las líneas
 
-            // FILA 1: INDICATIVO (To Station) - Grande y prominente
-            drawUnderlinedData("To Radio", call, boxX + 30, boxY + 45, boxX + boxW - 30, textColor);
+            const startX = boxX + 20; // Margen interno izquierdo
+            const contentW = boxW - 40; // Ancho útil dentro de la caja
 
-            // FILA 2: DATOS TÉCNICOS
-            const row2Y = boxY + 95;
-            drawUnderlinedData("Date", date, boxX + 30, row2Y, boxX + 200, textColor);
-            drawUnderlinedData("Band", band, boxX + 220, row2Y, boxX + 350, textColor);
-            drawUnderlinedData("Mode", mode, boxX + 370, row2Y, boxX + 530, textColor);
-            drawUnderlinedData("RST", rst, boxX + 550, row2Y, boxX + boxW - 30, textColor);
+            // FILA 1: TO RADIO (Ocupa todo el ancho)
+            const urCall = document.getElementById('urCall').value;
+            drawField("Confirming QSO With:", urCall, startX, boxY + 30, contentW, textColor);
 
-            // FILA 3: COMENTARIO
+            // FILA 2: DATOS TECNICOS (Dividimos el ancho en 5 columnas)
+            const colW = contentW / 5;
+            const row2Y = boxY + 85;
+            
+            drawField("Date", document.getElementById('qsoDate').value, startX + (colW * 0), row2Y, colW, textColor);
+            drawField("Time", document.getElementById('qsoTime').value, startX + (colW * 1), row2Y, colW, textColor);
+            drawField("Band", document.getElementById('qsoBand').value, startX + (colW * 2), row2Y, colW, textColor);
+            drawField("Mode", document.getElementById('qsoMode').value, startX + (colW * 3), row2Y, colW, textColor);
+            drawField("RST",  document.getElementById('qsoRst').value,  startX + (colW * 4), row2Y, colW, textColor);
+
+            // FILA 3: COMENTARIOS
             const row3Y = boxY + 140;
-            drawUnderlinedData("Rmks", comment, boxX + 30, row3Y, boxX + boxW - 30, textColor);
+            drawField("Remarks / PSE QSL / TNX", document.getElementById('qsoMsg').value, startX, row3Y, contentW, textColor);
         }
 
         function downloadQSL() {
             const link = document.createElement('a');
-            const call = document.getElementById('callsign').value || "QSL";
-            link.download = `QSL_${call}.png`;
+            const call = document.getElementById('urCall').value || "QSL";
+            link.download = `${call}_card.png`;
             link.href = canvas.toDataURL("image/png");
             link.click();
         }
 
-        // Iniciar
-        window.onload = generateQSL;
+        window.onload = draw;
     </script>
 </body>
 </html>
