@@ -3,634 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL ELITE HYPER-STUDIO v21.0</title>
+    <title>QSL ELITE v22.0 - AUTO-DV EDITION</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    
     <style>
-        :root {
-            --bg-deep: #05070a;
-            --panel-bg: #0d1117;
-            --neon-cyan: #00f2ff;
-            --neon-pink: #ff007b;
-            --text-main: #e6edf3;
-            --border-color: #30363d;
-            --accent-success: #238636;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* --- Header --- */
-        header {
-            background: #161b22;
-            border-bottom: 3px solid var(--neon-cyan);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 100;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 10px rgba(0,242,255,0.4);
-        }
-
-        /* --- Layout Principal --- */
-        .app-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* --- Sidebar Izquierda (Controles) --- */
-        .sidebar {
-            width: 420px;
-            background: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 20px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--neon-cyan) var(--panel-bg);
-        }
-
-        .sidebar::-webkit-scrollbar { width: 6px; }
-        .sidebar::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 10px; }
-
-        .control-section {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .section-header {
-            font-size: 0.75rem;
-            font-weight: 800;
-            color: var(--neon-pink);
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 5px;
-        }
-
-        /* --- Inputs y Controles --- */
-        .input-group { margin-bottom: 12px; }
-        label {
-            display: block;
-            font-size: 0.65rem;
-            color: #8b949e;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input[type="text"], input[type="file"] {
-            width: 100%;
-            background: #010409;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 10px;
-            color: white;
-            font-size: 0.85rem;
-            box-sizing: border-box;
-            transition: border 0.3s ease;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--neon-cyan);
-            outline: none;
-            box-shadow: 0 0 5px rgba(0,242,255,0.2);
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 6px;
-            background: #30363d;
-            border-radius: 5px;
-            outline: none;
-            accent-color: var(--neon-cyan);
-            margin: 10px 0;
-        }
-
-        /* --- Botones --- */
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            transition: all 0.2s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-primary { background: var(--neon-cyan); color: #000; }
-        .btn-secondary { background: var(--neon-pink); color: #fff; }
-        .btn-dark { background: #21262d; color: #fff; border: 1px solid var(--border-color); }
-        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
-
-        .nav-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        /* --- Area de Visualización --- */
-        .preview-area {
-            flex: 1;
-            background: var(--bg-deep);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding: 30px;
-        }
-
-        canvas {
-            max-width: 100%;
-            max-height: 85vh;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-            background: #000;
-        }
-
-        #qso-indicator {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: var(--accent-success);
-            color: white;
-            padding: 6px 15px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            box-shadow: 0 0 15px rgba(35,134,54,0.4);
-        }
-
-        .footer-info {
-            position: absolute;
-            bottom: 10px;
-            font-size: 0.7rem;
-            color: #484f58;
-        }
+        :root { --bg: #03060e; --panel: #0b121e; --neon: #00f2ff; --pink: #ff007b; --text: #e6edf3; --border: #1f2937; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        header { background: #0d1117; border-bottom: 3px solid var(--neon); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 410px; background: var(--panel); border-right: 1px solid var(--border); padding: 18px; overflow-y: auto; scrollbar-width: thin; }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--neon); }
+        .ctrl-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 15px; }
+        .label-s { font-size: 0.65rem; color: var(--neon); font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 10px; border-bottom: 1px solid #333; }
+        label { display: block; font-size: 0.65rem; color: #9ca3af; text-transform: uppercase; margin: 8px 0 4px; }
+        input[type="text"], input[type="file"], select { width: 100%; background: #010409; border: 1px solid var(--border); border-radius: 5px; padding: 9px; color: white; font-size: 0.85rem; box-sizing: border-box; }
+        input[type="range"] { width: 100%; accent-color: var(--neon); margin: 8px 0; }
+        .btn { width: 100%; padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.2s; margin-top: 5px; }
+        .btn-zip { background: var(--pink); color: white; display: none; }
+        .btn-hd { background: var(--neon); color: #000; margin-top: 15px; }
+        .btn-nav { background: #1f2937; color: white; width: 48%; display: inline-block; }
+        .preview-pane { flex: 1; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 20px; }
+        canvas { max-width: 100%; max-height: 90vh; border-radius: 8px; box-shadow: 0 0 50px rgba(0,0,0,0.9); }
+        #qso-tag { position: absolute; top: 20px; right: 20px; background: #10b981; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>QSL ELITE <span style="color:var(--neon-pink)">HYPER-STUDIO</span></h1>
-    <div style="font-size: 0.8rem; color: #8b949e;">Versión 21.0 | High Performance Rendering</div>
+    <h1 style="margin:0; font-size:1.3rem; letter-spacing:2px;">QSL PRO <span style="color:var(--pink)">v22.0</span></h1>
+    <div style="font-size:0.7rem; color:#6b7280;">MODO AUTO-DV ACTIVO</div>
 </header>
 
-<div class="app-container">
+<div class="main-container">
     <div class="sidebar">
         
-        <div class="control-section">
-            <div class="section-header">🖼️ Fondo Personalizado</div>
-            <div class="input-group">
-                <label>Cargar Imagen de fondo</label>
-                <input type="file" id="bgLoader" accept="image/*">
+        <div class="ctrl-card">
+            <span class="label-s">📁 ARCHIVO ADIF</span>
+            <input type="file" id="adifIn" accept=".adi,.adif" onchange="loadADIF(event)">
+            <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                <button class="btn btn-nav" onclick="nav(-1)">◀ PREV</button>
+                <button class="btn btn-nav" onclick="nav(1)">NEXT ▶</button>
+            </div>
+            <button class="btn btn-zip" id="bz" onclick="generateZip()">DESCARGAR PACK ZIP</button>
+        </div>
+
+        <div class="ctrl-card">
+            <span class="label-s">🎨 ESTILO DE BLOQUE</span>
+            <label>Seleccionar Diseño</label>
+            <select id="blockMode" onchange="draw()">
+                <option value="standard">Diseño Estándar (Moderno)</option>
+                <option value="compact">Diseño Compacto (Limpio)</option>
+                <option value="minimal">Diseño Minimalista (Sin bordes)</option>
+            </select>
+        </div>
+
+        <div class="ctrl-card">
+            <span class="label-s">👤 MI ESTACIÓN</span>
+            <label>Indicativo</label>
+            <input type="text" id="mCall" placeholder="EA1ABC" oninput="autoDX()">
+            <label>País</label>
+            <input type="text" id="mCountry" oninput="draw()">
+            <label>Fondo</label>
+            <input type="file" accept="image/*" onchange="loadBG(event)">
+        </div>
+
+        <div class="ctrl-card">
+            <span class="label-s">🛠️ LOGOS (4 MÓVILES)</span>
+            <script>
+                for(let i=0; i<4; i++) {
+                    document.write(`
+                    <div style="margin-bottom:8px; border-bottom:1px solid #222;">
+                        <input type="file" accept="image/*" onchange="loadL(${i}, event)">
+                        <input type="range" id="s${i}" min="40" max="600" value="180" oninput="draw()">
+                    </div>`);
+                }
+            </script>
+        </div>
+
+        <div class="ctrl-card">
+            <span class="label-s">📐 GEOMETRÍA CUADRO</span>
+            <label>Ancho</label><input type="range" id="bW" min="800" max="1750" value="1620" oninput="draw()">
+            <label>Alto</label><input type="range" id="bH" min="100" max="500" value="180" oninput="draw()">
+            <label>Opacidad</label><input type="range" id="bO" min="0" max="100" value="85" oninput="draw()">
+            <label>Borde</label><input type="range" id="bS" min="1" max="15" value="4" oninput="draw()">
+        </div>
+
+        <div class="ctrl-card">
+            <span class="label-s">📡 DATOS QSO ACTUAL</span>
+            <input type="text" id="tCall" placeholder="TO CALL" oninput="draw()">
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="qD" placeholder="FECHA">
+                <input type="text" id="qT" placeholder="HORA">
+            </div>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="qB" placeholder="BANDA">
+                <input type="text" id="qM" placeholder="MODO">
+                <input type="text" id="qR" placeholder="RST">
             </div>
         </div>
 
-        <div class="control-section">
-            <div class="section-header">📡 Lector de Log ADIF</div>
-            <input type="file" id="adifLoader" accept=".adi,.adif">
-            <div class="nav-controls">
-                <button class="btn btn-dark" onclick="changeQSO(-1)">ANTERIOR</button>
-                <button class="btn btn-dark" onclick="changeQSO(1)">SIGUIENTE</button>
-            </div>
-            <button class="btn btn-secondary" id="btnZip" style="margin-top:10px; display:none;" onclick="processFullZip()">GENERAR PACK ZIP</button>
-        </div>
-
-        <div class="control-section">
-            <div class="section-header">👤 Estación Remitente</div>
-            <div class="input-group">
-                <label>Mi Indicativo</label>
-                <input type="text" id="myCall" placeholder="EJ: EA1ABC" oninput="autoPrefix()">
-            </div>
-            <div class="input-group">
-                <label>Mi País (Manual o Auto)</label>
-                <input type="text" id="myCountry" placeholder="ESPAÑA" oninput="renderQSL()">
-            </div>
-        </div>
-
-        <div class="control-section">
-            <div class="section-header">🛠️ Gestión de Logos</div>
-            <div id="logoControls">
-                </div>
-        </div>
-
-        <div class="control-section">
-            <div class="section-header">📐 Propiedades del Cuadro</div>
-            <div class="input-group">
-                <label>Anchura</label>
-                <input type="range" id="bWidth" min="800" max="1750" value="1620" oninput="renderQSL()">
-            </div>
-            <div class="input-group">
-                <label>Altura</label>
-                <input type="range" id="bHeight" min="120" max="500" value="180" oninput="renderQSL()">
-            </div>
-            <div class="input-group">
-                <label>Opacidad Fondo</label>
-                <input type="range" id="bOpacity" min="0" max="100" value="85" oninput="renderQSL()">
-            </div>
-            <div class="input-group">
-                <label>Grosor del Borde</label>
-                <input type="range" id="bStroke" min="1" max="15" value="4" oninput="renderQSL()">
-            </div>
-        </div>
-
-        <div class="control-section">
-            <div class="section-header">📝 Datos del Contacto</div>
-            <div class="input-group">
-                <label>Indicativo Corresponsal</label>
-                <input type="text" id="toCall" oninput="renderQSL()">
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div class="input-group"><label>Fecha</label><input type="text" id="qDate" oninput="renderQSL()"></div>
-                <div class="input-group"><label>Hora UTC</label><input type="text" id="qTime" oninput="renderQSL()"></div>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                <div class="input-group"><label>Banda</label><input type="text" id="qBand" oninput="renderQSL()"></div>
-                <div class="input-group"><label>Modo</label><input type="text" id="qMode" oninput="renderQSL()"></div>
-                <div class="input-group"><label>RST</label><input type="text" id="qRst" oninput="renderQSL()"></div>
-            </div>
-        </div>
-
-        <button class="btn btn-primary" onclick="downloadSingle()">GUARDAR QSL ACTUAL (PNG)</button>
-        <div style="height: 50px;"></div>
+        <button class="btn btn-hd" onclick="saveHQ()">GUARDAR QSL (PNG)</button>
+        <div style="height:40px;"></div>
     </div>
 
-    <div class="preview-area">
-        <div id="qso-indicator">QSO: 0 / 0</div>
-        <canvas id="qslCanvas" width="1800" height="1100"></canvas>
-        <div class="footer-info">Utilice el ratón para arrastrar los elementos sobre la QSL.</div>
+    <div class="preview-pane">
+        <div id="qso-tag">QSO: 0 / 0</div>
+        <canvas id="cv" width="1800" height="1100"></canvas>
     </div>
 </div>
 
 <script>
-    const canvas = document.getElementById('qslCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Estados Globales
-    let backgroundImage = new Image();
-    let qsoRecords = [];
-    let currentIndex = 0;
-    let logos = Array.from({length: 4}, () => ({ img: new Image(), x: 1400, y: 100, active: false }));
-    
-    // Coordenadas de Elementos Movibles
-    let callPos = { x: 120, y: 250 };
-    let tablePos = { x: 100, y: 820 };
-    
-    // Lógica de Arrastre
-    let dragTarget = null;
-    let dragOffset = { x: 0, y: 0 };
-    let activeLogoIdx = -1;
+    const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+    let bg = new Image(), logos = Array.from({length:4},()=>({img:new Image(),x:1400,y:100,ok:false}));
+    let pC = {x:120,y:250}, pT = {x:100,y:820}, drag=null, off={x:0,y:0}, actL=-1;
+    let records = [], cur = 0;
 
-    // Base de Datos de Prefijos Global (Habla Hispana + USA + Principales)
-    const PREFIX_DB = {
-        // CHILE
+    const PREFIXES = {
         "CA":"CHILE","CB":"CHILE","CC":"CHILE","CD":"CHILE","CE":"CHILE","XQ":"CHILE","XR":"CHILE","3G":"CHILE",
-        // ARGENTINA
         "LU":"ARGENTINA","LW":"ARGENTINA","AY":"ARGENTINA","AZ":"ARGENTINA","LO":"ARGENTINA","LT":"ARGENTINA",
-        "L1":"ARGENTINA","L2":"ARGENTINA","L3":"ARGENTINA","L4":"ARGENTINA","L5":"ARGENTINA","L6":"ARGENTINA",
-        // ESPAÑA
         "EA":"SPAIN","EB":"SPAIN","EC":"SPAIN","ED":"SPAIN","EE":"SPAIN","EF":"SPAIN","EG":"SPAIN","EH":"SPAIN",
-        "AM":"SPAIN","AN":"SPAIN","AO":"SPAIN",
-        // USA
-        "W":"USA","K":"USA","N":"USA","AA":"USA","AB":"USA","AC":"USA","AD":"USA","K1":"USA","K2":"USA","K3":"USA",
-        "K4":"USA","K5":"USA","K6":"USA","K7":"USA","K8":"USA","K9":"USA","K0":"USA",
-        // MEXICO
-        "XE":"MEXICO","XF":"MEXICO","XG":"MEXICO","4A":"MEXICO","4B":"MEXICO",
-        // COLOMBIA
-        "HK":"COLOMBIA","HJ":"COLOMBIA","5K":"COLOMBIA",
-        // VENEZUELA
-        "YV":"VENEZUELA","YW":"VENEZUELA","4M":"VENEZUELA",
-        // OTROS
-        "OA":"PERU","OB":"PERU","ZP":"PARAGUAY","CP":"BOLIVIA","CX":"URUGUAY","CV":"URUGUAY",
-        "HC":"ECUADOR","HD":"ECUADOR","TI":"COSTA RICA","TG":"GUATEMALA","HR":"HONDURAS",
-        "YS":"EL SALVADOR","YN":"NICARAGUA","HP":"PANAMA","HI":"DOMINICAN REP.","CO":"CUBA","CM":"CUBA",
-        "KP":"PUERTO RICO","WP":"PUERTO RICO","3C":"EQUAT. GUINEA"
+        "W":"USA","K":"USA","N":"USA","AA":"USA","K1":"USA","K2":"USA","K3":"USA","K4":"USA","K5":"USA","K6":"USA",
+        "XE":"MEXICO","HK":"COLOMBIA","YV":"VENEZUELA","OA":"PERU","ZP":"PARAGUAY","CX":"URUGUAY","HI":"DOMINICAN REP.","KP":"PUERTO RICO"
     };
 
-    // Inicialización de Controles de Logo
-    const logoContainer = document.getElementById('logoControls');
-    for(let i=0; i<4; i++) {
-        const div = document.createElement('div');
-        div.className = 'input-group';
-        div.style.borderBottom = "1px solid #222";
-        div.style.paddingBottom = "10px";
-        div.innerHTML = `
-            <label>Logo ${i+1}</label>
-            <input type="file" accept="image/*" onchange="loadLogo(${i}, event)">
-            <label>Escala</label>
-            <input type="range" id="sc${i}" min="40" max="600" value="180" oninput="renderQSL()">
-        `;
-        logoContainer.appendChild(div);
+    function autoDX() {
+        const c = document.getElementById('mCall').value.toUpperCase();
+        let f = "RADIO STATION";
+        for(let i=3; i>=1; i--) { let p=c.substring(0,i); if(PREFIXES[p]) { f=PREFIXES[p]; break; } }
+        document.getElementById('mCountry').value = f; draw();
     }
 
-    // --- FUNCIONES DE CARGA ---
+    function loadBG(e) { const f=e.target.files[0]; if(f){ const r=new FileReader(); r.onload=(ev)=>{ bg.src=ev.target.result; bg.onload=draw; }; r.readAsDataURL(f); } }
+    function loadL(i,e) { const f=e.target.files[0]; if(f){ const r=new FileReader(); r.onload=(ev)=>{ logos[i].img.onload=()=>{ logos[i].ok=true; draw(); }; logos[i].img.src=ev.target.result; }; r.readAsDataURL(f); } }
 
-    function loadLogo(idx, e) {
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            logos[idx].img.onload = () => {
-                logos[idx].active = true;
-                renderQSL();
-            };
-            logos[idx].img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-
-    document.getElementById('bgLoader').onchange = (e) => {
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            backgroundImage.src = event.target.result;
-            backgroundImage.onload = renderQSL;
-        };
-        reader.readAsDataURL(file);
-    };
-
-    // --- MOTOR ADIF ---
-
-    document.getElementById('adifLoader').onchange = (e) => {
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            parseADIF(event.target.result);
-        };
-        reader.readAsText(file);
-    };
-
-    function parseADIF(text) {
-        const records = text.split(/<eor>/i).filter(r => r.length > 20);
-        qsoRecords = records.map(r => {
-            const data = {};
-            const tags = { CALL:'c', QSO_DATE:'d', TIME_ON:'t', BAND:'b', MODE:'m', RST_SENT:'r' };
-            for(let key in tags) {
-                const match = r.match(new RegExp(`<${key}:\\d+>([^<]*)`, "i"));
-                if(match) {
-                    let val = match[1].trim();
-                    // Conversión Digital Voice / Modos Digitales
-                    if(key === 'MODE') {
-                        const digitalModos = ['FT8','FT4','JS8','JT65','JT9','PSK','RTTY','VARA','ARDOP'];
-                        if(digitalModos.some(m => val.toUpperCase().includes(m))) val = "DV";
+    function loadADIF(e) {
+        const f=e.target.files[0]; if(!f) return;
+        const r=new FileReader();
+        r.onload=(ev)=>{
+            const text = ev.target.result;
+            records = text.split(/<eor>/i).filter(x=>x.length>20).map(x=>{
+                const d = {};
+                const tags = {CALL:'c', QSO_DATE:'d', TIME_ON:'t', BAND:'b', MODE:'m', RST_SENT:'r'};
+                for(let k in tags){
+                    const m = x.match(new RegExp(`<${k}:\\d+>([^<]*)`,"i"));
+                    if(m){
+                        let v = m[1].trim();
+                        // MODO AUTO-DV
+                        if(k==='MODE'){
+                            const digi = ['FT8','FT4','JS8','JT65','RTTY','PSK','JT9','ARDOP','VARA','SIM31'];
+                            if(digi.some(mode => v.toUpperCase().includes(mode))) v = "DV";
+                        }
+                        d[tags[k]] = v;
                     }
-                    data[tags[key]] = val;
                 }
-            }
-            return data;
-        }).filter(item => item.c);
-
-        // Detectar mi indicativo si existe en el ADIF
-        const stationMatch = text.match(/<(?:STATION_CALLSIGN|OPERATOR):\d+>([^<]*)/i);
-        if(stationMatch) {
-            document.getElementById('myCall').value = stationMatch[1].trim().toUpperCase();
-            autoPrefix();
-        }
-
-        if(qsoRecords.length > 0) {
-            currentIndex = 0;
-            document.getElementById('btnZip').style.display = 'block';
-            updateQSOFields();
-        }
+                return d;
+            }).filter(d=>d.c);
+            cur=0; if(records.length>0){ document.getElementById('bz').style.display='block'; updateFields(); }
+        };
+        r.readAsText(f);
     }
 
-    function changeQSO(dir) {
-        if(qsoRecords.length === 0) return;
-        currentIndex = (currentIndex + dir + qsoRecords.length) % qsoRecords.length;
-        updateQSOFields();
+    function nav(dir) { if(records.length===0) return; cur=(cur+dir+records.length)%records.length; updateFields(); }
+
+    function updateFields() {
+        const r = records[cur];
+        document.getElementById('tCall').value = r.c || "";
+        document.getElementById('qB').value = r.b || "";
+        document.getElementById('qM').value = r.m || "";
+        document.getElementById('qR').value = r.r || "";
+        document.getElementById('qD').value = r.d ? `${r.d.substr(6,2)}/${r.d.substr(4,2)}/${r.d.substr(0,4)}` : "";
+        document.getElementById('qT').value = r.t ? `${r.t.substr(0,2)}:${r.t.substr(2,2)}` : "";
+        document.getElementById('qso-tag').innerText = `QSO: ${cur+1} / ${records.length}`;
+        draw();
     }
 
-    function updateQSOFields() {
-        const q = qsoRecords[currentIndex];
-        document.getElementById('toCall').value = q.c || "";
-        document.getElementById('qBand').value = q.b || "";
-        document.getElementById('qMode').value = q.m || "";
-        document.getElementById('qRst').value = q.r || "";
-        document.getElementById('qDate').value = q.d ? `${q.d.substr(6,2)}/${q.d.substr(4,2)}/${q.d.substr(0,4)}` : "";
-        document.getElementById('qTime').value = q.t ? `${q.t.substr(0,2)}:${q.t.substr(2,2)}` : "";
-        document.getElementById('qso-indicator').innerText = `QSO: ${currentIndex + 1} / ${qsoRecords.length}`;
-        renderQSL();
-    }
-
-    function autoPrefix() {
-        const call = document.getElementById('myCall').value.toUpperCase();
-        let country = "RADIO STATION";
-        for(let len=3; len>=1; len--) {
-            let p = call.substring(0, len);
-            if(PREFIX_DB[p]) { country = PREFIX_DB[p]; break; }
-        }
-        document.getElementById('myCountry').value = country;
-        renderQSL();
-    }
-
-    // --- MOTOR DE RENDERIZADO ---
-
-    function renderQSL() {
+    function draw() {
         ctx.clearRect(0,0,1800,1100);
+        if(bg.src) ctx.drawImage(bg,0,0,1800,1100);
+        logos.forEach((l,i)=>{ if(l.ok) ctx.drawImage(l.img, l.x, l.y, document.getElementById(`s${i}`).value, document.getElementById(`s${i}`).value); });
         
-        // 1. Dibujar Fondo
-        if(backgroundImage.src) {
-            ctx.drawImage(backgroundImage, 0, 0, 1800, 1100);
-        } else {
-            ctx.fillStyle = "#000";
-            ctx.fillRect(0,0,1800,1100);
-        }
-
-        // 2. Dibujar Logos
-        logos.forEach((l, i) => {
-            if(l.active) {
-                const size = document.getElementById(`sc${i}`).value;
-                ctx.drawImage(l.img, l.x, l.y, size, size);
-            }
-        });
-
-        // 3. Dibujar Mi Estación
         ctx.save();
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = "rgba(0,0,0,0.8)";
-        ctx.fillStyle = "#ff007b";
-        ctx.font = "900 210px 'Segoe UI'";
-        ctx.fillText(document.getElementById('myCall').value.toUpperCase() || "CALLSIGN", callPos.x, callPos.y);
-        
-        ctx.fillStyle = "#00f2ff";
-        ctx.font = "bold 90px 'Segoe UI'";
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = "#00f2ff";
-        ctx.fillText(document.getElementById('myCountry').value.toUpperCase() || "PAÍS", callPos.x + 10, callPos.y + 110);
+        ctx.shadowBlur=20; ctx.shadowColor="black";
+        ctx.fillStyle="#ff007b"; ctx.font="900 210px sans-serif";
+        ctx.fillText(document.getElementById('mCall').value.toUpperCase()||"CALLSIGN", pC.x, pC.y);
+        ctx.fillStyle="#00f2ff"; ctx.font="bold 90px sans-serif";
+        ctx.fillText(document.getElementById('mCountry').value.toUpperCase()||"COUNTRY", pC.x+10, pC.y+110);
         ctx.restore();
 
-        // 4. Dibujar Cuadro de Datos (ESTILO GLASS)
-        const w = parseInt(document.getElementById('bWidth').value);
-        const h = parseInt(document.getElementById('bHeight').value);
-        const op = parseInt(document.getElementById('bOpacity').value) / 100;
-        const stroke = parseInt(document.getElementById('bStroke').value);
+        const w=parseInt(document.getElementById('bW').value), h=parseInt(document.getElementById('bH').value);
+        const o=parseInt(document.getElementById('bO').value)/100, s=parseInt(document.getElementById('bS').value);
+        const mode = document.getElementById('blockMode').value;
 
         ctx.save();
-        ctx.fillStyle = `rgba(10, 20, 30, ${op})`;
-        // Rectángulo con bordes redondeados
-        ctx.beginPath();
-        ctx.roundRect(tablePos.x, tablePos.y, w, h, 15);
-        ctx.fill();
-        
-        ctx.strokeStyle = "#00f2ff";
-        ctx.lineWidth = stroke;
-        ctx.stroke();
+        if(mode !== 'minimal'){
+            ctx.fillStyle=`rgba(10,20,30,${o})`;
+            ctx.beginPath(); ctx.roundRect(pT.x, pT.y, w, h, 15); ctx.fill();
+            ctx.strokeStyle="#00f2ff"; ctx.lineWidth=s; ctx.stroke();
+            if(mode === 'standard'){ ctx.beginPath(); ctx.moveTo(pT.x, pT.y+65); ctx.lineTo(pT.x+w, pT.y+65); ctx.stroke(); }
+        }
 
-        // Línea Divisoria Superior
-        ctx.beginPath();
-        ctx.moveTo(tablePos.x, tablePos.y + 65);
-        ctx.lineTo(tablePos.x + w, tablePos.y + 65);
-        ctx.stroke();
+        const labels = ["TO CALL", "DATE", "TIME (UTC)", "BAND", "MODE", "RST"];
+        const vals = [document.getElementById('tCall').value, document.getElementById('qD').value, document.getElementById('qT').value, document.getElementById('qB').value, document.getElementById('qM').value, document.getElementById('qR').value];
+        const step = w / 6;
 
-        // Contenido de la Tabla
-        const headers = ["CORRESPONSAL", "FECHA", "HORA (UTC)", "BANDA", "MODO", "RST"];
-        const vals = [
-            document.getElementById('toCall').value,
-            document.getElementById('qDate').value,
-            document.getElementById('qTime').value,
-            document.getElementById('qBand').value,
-            document.getElementById('qMode').value,
-            document.getElementById('qRst').value
-        ];
-
-        const colWidth = w / 6;
-        headers.forEach((head, i) => {
-            // Header
-            ctx.fillStyle = "#00f2ff";
-            ctx.font = "800 24px Arial";
-            ctx.fillText(head, tablePos.x + 25 + (i * colWidth), tablePos.y + 42);
-            // Valor
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 52px 'Courier New'";
-            ctx.fillText(vals[i] || "---", tablePos.x + 25 + (i * colWidth), tablePos.y + 135);
+        labels.forEach((l, i) => {
+            ctx.fillStyle = "#00f2ff"; ctx.font = "800 22px Arial";
+            ctx.fillText(l, pT.x+25+(i*step), pT.y+42);
+            
+            // FECHA MÁS PEQUEÑA PARA QUE QUEPA TODO
+            let fSize = (i === 1) ? "bold 38px 'Courier New'" : "bold 50px 'Courier New'";
+            ctx.fillStyle = "white"; ctx.font = fSize;
+            ctx.fillText(vals[i]||"---", pT.x+25+(i*step), pT.y+130);
         });
         ctx.restore();
     }
 
-    // --- INTERACCION MOUSE (MOVIMIENTO) ---
-
-    canvas.onmousedown = (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = (e.clientX - rect.left) * (1800 / rect.width);
-        const mouseY = (e.clientY - rect.top) * (1100 / rect.height);
-
-        // Prioridad 1: Logos
-        for(let i=0; i<4; i++) {
-            if(logos[i].active) {
-                const s = parseInt(document.getElementById(`sc${i}`).value);
-                if(mouseX > logos[i].x && mouseX < logos[i].x + s && mouseY > logos[i].y && mouseY < logos[i].y + s) {
-                    dragTarget = 'logo';
-                    activeLogoIdx = i;
-                    dragOffset = { x: mouseX - logos[i].x, y: mouseY - logos[i].y };
-                    return;
-                }
-            }
-        }
-
-        // Prioridad 2: Cuadro de Datos
-        const bW = parseInt(document.getElementById('bWidth').value);
-        const bH = parseInt(document.getElementById('bHeight').value);
-        if(mouseX > tablePos.x && mouseX < tablePos.x + bW && mouseY > tablePos.y && mouseY < tablePos.y + bH) {
-            dragTarget = 'table';
-            dragOffset = { x: mouseX - tablePos.x, y: mouseY - tablePos.y };
-            return;
-        }
-
-        // Prioridad 3: Mi Indicativo
-        if(mouseX > callPos.x && mouseX < callPos.x + 800 && mouseY > callPos.y - 180 && mouseY < callPos.y + 50) {
-            dragTarget = 'call';
-            dragOffset = { x: mouseX - callPos.x, y: mouseY - callPos.y };
-        }
+    cv.onmousedown=(e)=>{
+        const r=cv.getBoundingClientRect(); const mx=(e.clientX-r.left)*(1800/r.width), my=(e.clientY-r.top)*(1100/r.height);
+        for(let i=0;i<4;i++){ if(logos[i].ok){ let s=parseInt(document.getElementById(`s${i}`).value); if(mx>logos[i].x && mx<logos[i].x+s && my>logos[i].y && my<logos[i].y+s){ drag='l'; actL=i; off={x:mx-logos[i].x, y:my-logos[i].y}; return; } } }
+        if(mx>pT.x && mx<pT.x+parseInt(document.getElementById('bW').value) && my>pT.y && my<pT.y+500){ drag='t'; off={x:mx-pT.x, y:my-pT.y}; }
+        else if(mx>pC.x && mx<pC.x+800 && my>pC.y-180 && my<pC.y+50){ drag='c'; off={x:mx-pC.x, y:my-pC.y}; }
     };
-
-    window.onmousemove = (e) => {
-        if(!dragTarget) return;
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = (e.clientX - rect.left) * (1800 / rect.width);
-        const mouseY = (e.clientY - rect.top) * (1100 / rect.height);
-
-        if(dragTarget === 'logo') {
-            logos[activeLogoIdx].x = mouseX - dragOffset.x;
-            logos[activeLogoIdx].y = mouseY - dragOffset.y;
-        } else if(dragTarget === 'table') {
-            tablePos.x = mouseX - dragOffset.x;
-            tablePos.y = mouseY - dragOffset.y;
-        } else if(dragTarget === 'call') {
-            callPos.x = mouseX - dragOffset.x;
-            callPos.y = mouseY - dragOffset.y;
-        }
-        renderQSL();
+    window.onmousemove=(e)=>{
+        if(!drag) return; const r=cv.getBoundingClientRect(); const mx=(e.clientX-r.left)*(1800/r.width), my=(e.clientY-r.top)*(1100/r.height);
+        if(drag==='l'){ logos[actL].x=mx-off.x; logos[actL].y=my-off.y; }
+        if(drag==='t'){ pT.x=mx-off.x; pT.y=my-off.y; }
+        if(drag==='c'){ pC.x=mx-off.x; pC.y=my-off.y; }
+        draw();
     };
+    window.onmouseup=()=>drag=null;
 
-    window.onmouseup = () => { dragTarget = null; };
-
-    // --- EXPORTACIÓN ---
-
-    async function processFullZip() {
-        const zip = new JSZip();
-        for(let i=0; i<qsoRecords.length; i++) {
-            currentIndex = i;
-            updateQSOFields();
-            // Pequeña espera para asegurar renderizado
-            await new Promise(r => setTimeout(r, 100));
-            const blob = await new Promise(res => canvas.toBlob(res, 'image/png', 0.95));
-            zip.file(`QSL_${qsoRecords[i].c}_${i+1}.png`, blob);
+    async function generateZip() {
+        const z=new JSZip();
+        for(let i=0; i<records.length; i++){
+            cur=i; updateFields(); await new Promise(r=>setTimeout(r,80));
+            const b=await new Promise(res=>cv.toBlob(res,'image/png',0.95));
+            z.file(`QSL_${records[i].c}_${i+1}.png`, b);
         }
-        zip.generateAsync({type:"blob"}).then(content => {
-            saveAs(content, "PACK_QSL_ELITE.zip");
-        });
+        z.generateAsync({type:"blob"}).then(c=>saveAs(c,"PACK_QSL_v22.zip"));
     }
-
-    function downloadSingle() {
-        const link = document.createElement('a');
-        link.download = `QSL_${document.getElementById('toCall').value || 'SINGLE'}.png`;
-        link.href = canvas.toDataURL("image/png", 1.0);
-        link.click();
-    }
-
-    // Inicialización
-    window.onload = () => {
-        backgroundImage.crossOrigin = "anonymous";
-        backgroundImage.src = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=1800";
-        backgroundImage.onload = renderQSL;
-    };
-
+    function saveHQ(){ saveAs(cv.toDataURL("image/png", 1.0), `QSL_${document.getElementById('tCall').value}.png`); }
+    window.onload=()=>{ bg.crossOrigin="anonymous"; bg.src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=1800"; bg.onload=draw; };
 </script>
 </body>
 </html>
