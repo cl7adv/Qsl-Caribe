@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL ELITE PRO v14.3 - GLOBAL PREFIX SYSTEM</title>
+    <title>QSL ELITE PRO v14.7 - GLOBAL DATABASE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
@@ -14,63 +14,57 @@
         .side-bar { flex: 0 0 350px; background: var(--bg-dark); padding: 20px; border-radius: 15px; border: 2px solid var(--neon); height: 88vh; overflow-y: auto; }
         .section-title { color: var(--neon); font-size: 0.8em; margin: 15px 0 8px; display: block; border-bottom: 1px solid #333; text-transform: uppercase; font-weight: bold; }
         input, select { width: 100%; padding: 10px; background: #050a14; border: 1px solid var(--neon); border-radius: 8px; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        label { font-size: 0.7em; color: var(--neon); }
         .btn { width: 100%; padding: 15px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin: 5px 0; }
         .btn-zip { background: var(--pink); color: white; display: none; box-shadow: 0 0 15px var(--pink); }
         .btn-previa { background: var(--neon); color: #000; }
-        .canvas-area { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .canvas-area { flex: 1; display: flex; flex-direction: column; align-items: center; }
         canvas { width: 100%; max-width: 1000px; height: auto; border-radius: 12px; border: 2px solid var(--neon); background: #000; cursor: move; }
-        #previewContainer { width: 95%; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; padding: 20px; display: none; }
-        .logo-ctrl { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #333; }
-        .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .gal-img { width: 100%; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; }
-        .gal-img.active { border-color: var(--pink); }
+        .ctrl-group { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
-<header><h1>QSL ELITE PRO v14.3 - GLOBAL SYSTEM</h1></header>
+<header><h1>QSL ELITE PRO v14.7 - GLOBAL</h1></header>
 
 <div class="main-wrapper">
     <div class="side-bar">
-        <span class="section-title">📂 Log ADIF</span>
+        <span class="section-title">📂 ADIF & ZIP</span>
         <input type="file" id="adifInput" accept=".adi,.adif" onchange="handleADIF(event)">
-        <button class="btn btn-zip" id="btnZip" onclick="generateAndZip()">Generar Pack .ZIP</button>
+        <button class="btn btn-zip" id="btnZip" onclick="generateAndZip()">DESCARGAR ZIP</button>
 
-        <span class="section-title">🎨 Fondo y Estilo</span>
-        <div class="gallery">
-            <img class="gal-img" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800" onclick="changeBG(this)">
-            <img class="gal-img" src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800" onclick="changeBG(this)">
-        </div>
-        <select id="tableStyle" onchange="draw()">
-            <option value="normal" selected>Clásico Radio</option>
-            <option value="modern">Moderno Digital</option>
-            <option value="transparent">Transparente</option>
-        </select>
+        <span class="section-title">👤 ESTACIÓN</span>
+        <input type="text" id="myCall" placeholder="Indicativo" oninput="updateAutoCountry()">
+        <input type="text" id="myCountry" placeholder="País (Auto/Manual)" oninput="draw()">
 
-        <span class="section-title">👤 Mis Datos (Auto-País)</span>
-        <input type="text" id="myCall" placeholder="Mi Indicativo" oninput="updateAutoCountry()">
-        <input type="text" id="myCountry" placeholder="País (Auto)" oninput="draw()">
-
-        <span class="section-title">📡 Datos Previa</span>
-        <input type="text" id="toCall" placeholder="Indicativo Destino" oninput="draw()">
-        <div style="display:flex; gap:5px;">
-            <input type="text" id="qBand" placeholder="Band" oninput="draw()">
-            <input type="text" id="qMode" placeholder="Mode" oninput="draw()">
-            <input type="text" id="qRst" placeholder="RST" oninput="draw()">
+        <span class="section-title">📐 AJUSTE CUADRO</span>
+        <div class="ctrl-group">
+            <label>Ancho</label><input type="range" id="boxW" min="800" max="1750" value="1620" oninput="draw()">
+            <label>Alto</label><input type="range" id="boxH" min="100" max="500" value="180" oninput="draw()">
+            <label>Opacidad</label><input type="range" id="boxOp" min="0" max="100" value="90" oninput="draw()">
         </div>
 
-        <span class="section-title">🖼️ Logos (Arrastrables)</span>
+        <span class="section-title">🖼️ LOGOS (4)</span>
         <div id="logosContainer">
             <script>
                 for(let i=0; i<4; i++) {
-                    document.write(`<div class="logo-ctrl">
+                    document.write(`<div class="ctrl-group">
                         <input type="file" accept="image/*" onchange="loadLogo(${i}, event)">
                         <input type="range" id="size${i}" min="40" max="600" value="180" oninput="draw()">
                     </div>`);
                 }
             </script>
         </div>
-        <button class="btn btn-previa" onclick="downloadPreview()">Guardar Previa HD</button>
+        
+        <span class="section-title">📡 DATOS QSO</span>
+        <input type="text" id="toCall" placeholder="Destino" oninput="draw()">
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="qBand" placeholder="Banda" oninput="draw()">
+            <input type="text" id="qMode" placeholder="Modo" oninput="draw()">
+            <input type="text" id="qRst" placeholder="RST" oninput="draw()">
+        </div>
+
+        <button class="btn btn-previa" onclick="downloadPreview()">GUARDAR HD</button>
     </div>
 
     <div class="canvas-area">
@@ -79,8 +73,6 @@
     </div>
 </div>
 
-<div id="previewContainer"></div>
-
 <script>
     const canvas = document.getElementById('qslCanvas');
     const ctx = canvas.getContext('2d');
@@ -88,30 +80,26 @@
     let adifRecords = [];
     let logos = Array.from({length: 4}, () => ({ img: new Image(), x: 1400, y: 100, active: false }));
 
-    // BASE DE DATOS MUNDIAL DE PREFIJOS (ITU)
+    // BASE DE DATOS GLOBAL (ITU)
     const worldPrefixes = {
-        "AM":"SPAIN","AN":"SPAIN","AO":"SPAIN","EA":"SPAIN","EB":"SPAIN","EC":"SPAIN","ED":"SPAIN","EE":"SPAIN","EF":"SPAIN","EG":"SPAIN","EH":"SPAIN",
-        "CL":"CUBA","CM":"CUBA","CO":"CUBA","T4":"CUBA",
-        "W":"USA","K":"USA","N":"USA","AA":"USA","AB":"USA","AC":"USA","AD":"USA","AE":"USA","AF":"USA","AG":"USA","AI":"USA","AJ":"USA","AK":"USA","AL":"USA",
-        "PY":"BRAZIL","PP":"BRAZIL","PR":"BRAZIL","PS":"BRAZIL","PU":"BRAZIL","PV":"BRAZIL","PW":"BRAZIL","PX":"BRAZIL",
-        "LU":"ARGENTINA","AY":"ARGENTINA","AZ":"ARGENTINA","LO":"ARGENTINA","LP":"ARGENTINA","LQ":"ARGENTINA","LR":"ARGENTINA","LS":"ARGENTINA","LT":"ARGENTINA","LV":"ARGENTINA","LW":"ARGENTINA",
-        "G":"UNITED KINGDOM","M":"UNITED KINGDOM","2E":"UNITED KINGDOM","GX":"UNITED KINGDOM","MX":"UNITED KINGDOM",
-        "I":"ITALY","IK":"ITALY","IU":"ITALY","IZ":"ITALY","IA":"ITALY","IB":"ITALY","ID":"ITALY","IE":"ITALY","IF":"ITALY","IH":"ITALY","II":"ITALY","IL":"ITALY","IM":"ITALY","IP":"ITALY","IQ":"ITALY","IR":"ITALY","IS":"ITALY","IV":"ITALY","IW":"ITALY",
-        "F":"FRANCE","TM":"FRANCE","HW":"FRANCE","HX":"FRANCE","HY":"FRANCE","TK":"FRANCE",
-        "DL":"GERMANY","DF":"GERMANY","DG":"GERMANY","DH":"GERMANY","DJ":"GERMANY","DK":"GERMANY","DM":"GERMANY","DN":"GERMANY","DO":"GERMANY","DP":"GERMANY","DQ":"GERMANY","DR":"GERMANY",
-        "JA":"JAPAN","JH":"JAPAN","JR":"JAPAN","JE":"JAPAN","JF":"JAPAN","JG":"JAPAN","JI":"JAPAN","JJ":"JAPAN","JK":"JAPAN","JL":"JAPAN","JM":"JAPAN","JN":"JAPAN","JO":"JAPAN","JP":"JAPAN","JQ":"JAPAN","JS":"JAPAN","7J":"JAPAN","7K":"JAPAN","7L":"JAPAN","7M":"JAPAN","7N":"JAPAN","8J":"JAPAN","8K":"JAPAN","8L":"JAPAN","8M":"JAPAN","8N":"JAPAN",
-        "XE":"MEXICO","XF":"MEXICO","XG":"MEXICO","XH":"MEXICO","XI":"MEXICO",
-        "CX":"URUGUAY","CE":"CHILE","HK":"COLOMBIA","YV":"VENEZUELA","OA":"PERU","ZP":"PARAGUAY","TI":"COSTA RICA","TG":"GUATEMALA","HR":"HONDURAS","YS":"EL SALVADOR","YN":"NICARAGUA","HO":"PANAMA","HP":"PANAMA","HI":"DOMINICAN REPUBLIC","KP":"PUERTO RICO",
-        "VE":"CANADA","VO":"CANADA","VY":"CANADA","VA":"CANADA",
-        "VK":"AUSTRALIA","AX":"AUSTRALIA","VZ":"AUSTRALIA",
-        "ZL":"NEW ZEALAND","ZM":"NEW ZEALAND",
-        "UR":"UKRAINE","UT":"UKRAINE","UV":"UKRAINE","UW":"UKRAINE","UX":"UKRAINE","UY":"UKRAINE","UZ":"UKRAINE","EM":"UKRAINE","EN":"UKRAINE","EO":"UKRAINE",
-        "RA":"RUSSIA","RB":"RUSSIA","RC":"RUSSIA","RD":"RUSSIA","RE":"RUSSIA","RF":"RUSSIA","RG":"RUSSIA","RN":"RUSSIA","RO":"RUSSIA","RT":"RUSSIA","RU":"RUSSIA","RV":"RUSSIA","RW":"RUSSIA","RX":"RUSSIA","RY":"RUSSIA","RZ":"RUSSIA","UA":"RUSSIA","UB":"RUSSIA","UC":"RUSSIA","UD":"RUSSIA","UF":"RUSSIA","UG":"RUSSIA","UH":"RUSSIA","UI":"RUSSIA","Z3":"MACEDONIA","S5":"SLOVENIA","9A":"CROATIA","E7":"BOSNIA","OM":"SLOVAKIA","OK":"CZECH REP","LZ":"BULGARIA","YO":"ROMANIA","HA":"HUNGARY","SP":"POLAND","CT":"PORTUGAL","HB":"SWITZERLAND","OE":"AUSTRIA","LA":"NORWAY","SM":"SWEDEN","OH":"FINLAND","OZ":"DENMARK","ON":"BELGIUM","PA":"NETHERLANDS","LX":"LUXEMBOURG"
+        // Iberoamérica
+        "EA":"SPAIN","EB":"SPAIN","EC":"SPAIN","AM":"SPAIN","AN":"SPAIN","AO":"SPAIN","CL":"CUBA","CM":"CUBA","CO":"CUBA","T4":"CUBA",
+        "LU":"ARGENTINA","AY":"ARGENTINA","AZ":"ARGENTINA","LW":"ARGENTINA","PY":"BRAZIL","PP":"BRAZIL","PR":"BRAZIL","PU":"BRAZIL",
+        "CE":"CHILE","XQ":"CHILE","HK":"COLOMBIA","HJ":"COLOMBIA","XE":"MEXICO","XF":"MEXICO","YV":"VENEZUELA","CX":"URUGUAY",
+        "OA":"PERU","ZP":"PARAGUAY","TI":"COSTA RICA","TG":"GUATEMALA","HR":"HONDURAS","YS":"EL SALVADOR","YN":"NICARAGUA",
+        "HP":"PANAMA","HI":"DOMINICAN REP.","HC":"ECUADOR","CP":"BOLIVIA","V3":"BELIZE","3C":"EQUAT. GUINEA","KP":"PUERTO RICO",
+        // Norteamérica y resto
+        "W":"USA","K":"USA","N":"USA","AA":"USA","VE":"CANADA","VO":"CANADA","VY":"CANADA","VA":"CANADA","VK":"AUSTRALIA","AX":"AUSTRALIA",
+        "ZL":"NEW ZEALAND","ZM":"NEW ZEALAND","G":"UNITED KINGDOM","M":"UNITED KINGDOM","2E":"UNITED KINGDOM","I":"ITALY","IK":"ITALY","IU":"ITALY","IZ":"ITALY",
+        "F":"FRANCE","TM":"FRANCE","DL":"GERMANY","DF":"GERMANY","DK":"GERMANY","JA":"JAPAN","JH":"JAPAN","7J":"JAPAN","8J":"JAPAN",
+        "RA":"RUSSIA","UA":"RUSSIA","UR":"UKRAINE","CT":"PORTUGAL","HB":"SWITZERLAND","OE":"AUSTRIA","LA":"NORWAY","SM":"SWEDEN","OH":"FINLAND","OZ":"DENMARK","ON":"BELGIUM","PA":"NETHERLANDS","LX":"LUXEMBOURG","SV":"GREECE",
+        "HA":"HUNGARY","SP":"POLAND","OK":"CZECH REP.","OM":"SLOVAKIA","S5":"SLOVENIA","9A":"CROATIA","E7":"BOSNIA","YO":"ROMANIA","LZ":"BULGARIA","ER":"MOLDOVA",
+        "VU":"INDIA","BY":"CHINA","HL":"SOUTH KOREA","DS":"SOUTH KOREA","6K":"SOUTH KOREA","BV":"TAIWAN","9V":"SINGAPORE","HS":"THAILAND","YB":"INDONESIA","9M":"MALAYSIA",
+        "SU":"EGYPT","ZS":"SOUTH AFRICA","5Z":"KENYA","CN":"MOROCCO","7X":"ALGERIA","ST":"SUDAN","A7":"QATAR","HZ":"SAUDI ARABIA","A6":"U.A.E","4X":"ISRAEL"
     };
 
-    let posCall = { x: 100, y: 220 };
-    let posTable = { x: 100, y: 800 };
-    let dragObj = null; let offset = { x:0, y:0 }; let activeLogoIdx = -1;
+    let posCall = { x: 100, y: 220 }, posTable = { x: 100, y: 800 };
+    let dragObj = null, offset = { x:0, y:0 }, activeLogoIdx = -1;
 
     function updateAutoCountry() {
         const call = document.getElementById('myCall').value.toUpperCase();
@@ -127,137 +115,111 @@
     function handleADIF(event) {
         const file = event.target.files[0];
         const reader = new FileReader();
-        reader.onload = async (e) => {
-            const text = e.target.result;
-            adifRecords = parseADIF(text);
-            const matchOp = text.match(/<STATION_CALLSIGN:\d+>([^<]*)/i) || text.match(/<OPERATOR:\d+>([^<]*)/i);
-            if(matchOp) {
-                document.getElementById('myCall').value = matchOp[1].trim().toUpperCase();
-                updateAutoCountry();
-            }
+        reader.onload = (e) => {
+            adifRecords = parseADIF(e.target.result);
+            const matchOp = e.target.result.match(/<(?:STATION_CALLSIGN|OPERATOR):\d+>([^<]*)/i);
+            if(matchOp) { document.getElementById('myCall').value = matchOp[1].trim().toUpperCase(); updateAutoCountry(); }
             if(adifRecords.length > 0) {
                 document.getElementById('btnZip').style.display = 'block';
-                document.getElementById('msg').innerText = `LOG: ${adifRecords.length} QSO's`;
-                updateGallery();
+                document.getElementById('msg').innerText = `${adifRecords.length} QSO'S CARGADOS`;
+                fillManualData(adifRecords[0]);
             }
         };
         reader.readAsText(file);
     }
 
     function parseADIF(text) {
-        const res = [];
-        const entries = text.split(/<eor>|<EOR>/i);
-        entries.forEach(e => {
-            if(!e.trim()) return;
+        return text.split(/<eor>/i).filter(e => e.trim().length > 10).map(e => {
             const item = {};
             const tags = { CALL:'toCall', QSO_DATE:'qDate', TIME_ON:'qTime', BAND:'qBand', MODE:'qMode', RST_SENT:'qRst' };
             for(let t in tags) {
-                const reg = new RegExp(`<${t}:(\\d+)>([^<]*)`, "i");
-                const m = e.match(reg);
+                const m = e.match(new RegExp(`<${t}:\\d+>([^<]*)`, "i"));
                 if(m) {
-                    let val = m[2].trim();
-                    if(t === 'MODE' && (val.toUpperCase().includes('DIGITAL') || val.toUpperCase().includes('VOICE'))) val = 'DV';
-                    item[tags[t]] = val;
+                    let v = m[1].trim();
+                    if(t === 'MODE' && (v.toUpperCase().includes('DIGITAL') || v.toUpperCase().includes('VOICE'))) v = 'DV';
+                    item[tags[t]] = v;
                 }
             }
-            if(item.toCall) res.push(item);
-        });
-        return res;
+            return item;
+        }).filter(i => i.toCall);
     }
 
-    function fillData(rec) {
+    function fillManualData(rec) {
+        if(!rec) return;
         document.getElementById('toCall').value = rec.toCall || "";
         document.getElementById('qBand').value = rec.qBand || "";
         document.getElementById('qMode').value = rec.qMode || "";
-        document.getElementById('qRst').value = rec.qRst || "59";
-        let d = rec.qDate || ""; let t = rec.qTime || "";
-        window.currentQsoData = { 
-            date: d ? `${d.substr(6,2)}/${d.substr(4,2)}/${d.substr(0,4)}` : "--/--/--",
-            time: t ? `${t.substr(0,2)}:${t.substr(2,2)} UTC` : "00:00 UTC"
-        };
+        document.getElementById('qRst').value = rec.qRst || "";
+        const d = rec.qDate || "20260103", t = rec.qTime || "000000";
+        window.qData = { date: `${d.substr(6,2)}/${d.substr(4,2)}/${d.substr(0,4)}`, time: `${t.substr(0,2)}:${t.substr(2,2)} UTC` };
         draw();
     }
 
     async function generateAndZip() {
         const zip = new JSZip();
-        document.getElementById('msg').innerText = "⚡ Generando...";
         for(let i=0; i<adifRecords.length; i++) {
-            fillData(adifRecords[i]);
-            await new Promise(r => setTimeout(r, 30));
+            fillManualData(adifRecords[i]);
+            await new Promise(r => setTimeout(r, 40));
             const blob = await new Promise(res => canvas.toBlob(res, 'image/png', 0.9));
-            zip.file(`QSL_${adifRecords[i].toCall}_${i}.png`, blob);
+            zip.file(`QSL_${adifRecords[i].toCall}.png`, blob);
         }
-        zip.generateAsync({type:"blob"}).then(b => { 
-            saveAs(b, `QSL_PACK_${document.getElementById('myCall').value}.zip`);
-            document.getElementById('msg').innerText = "✅ ZIP Listo";
-        });
+        zip.generateAsync({type:"blob"}).then(b => saveAs(b, `PACK_${document.getElementById('myCall').value}.zip`));
     }
 
     function draw() {
         ctx.clearRect(0,0,1800,1100);
         if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 1800, 1100);
-        
-        logos.forEach((l, i) => { if(l.active) { let s = document.getElementById(`size${i}`).value; ctx.drawImage(l.img, l.x, l.y, s, s); } });
+        logos.forEach((l, i) => { if(l.active) ctx.drawImage(l.img, l.x, l.y, document.getElementById(`size${i}`).value, document.getElementById(`size${i}`).value); });
 
         ctx.save(); ctx.shadowBlur = 15; ctx.shadowColor = "black";
         ctx.fillStyle = "#ff00ff"; ctx.font = "bold 190px Arial";
-        ctx.fillText((document.getElementById('myCall').value || "CALLSIGN").toUpperCase(), posCall.x, posCall.y);
+        ctx.fillText(document.getElementById('myCall').value.toUpperCase() || "MYCALL", posCall.x, posCall.y);
         ctx.fillStyle = "#00ff99"; ctx.font = "bold 80px Arial";
-        ctx.fillText((document.getElementById('myCountry').value || "COUNTRY").toUpperCase(), posCall.x + 10, posCall.y + 110);
+        ctx.fillText(document.getElementById('myCountry').value.toUpperCase() || "PAÍS", posCall.x + 10, posCall.y + 110);
         ctx.restore();
 
-        const style = document.getElementById('tableStyle').value;
-        const x = posTable.x, y = posTable.y, w = 1620, h = 220;
+        const x = posTable.x, y = posTable.y;
+        const w = parseInt(document.getElementById('boxW').value);
+        const h = parseInt(document.getElementById('boxH').value);
+        const op = parseInt(document.getElementById('boxOp').value) / 100;
 
-        if(style === 'normal') {
-            ctx.fillStyle = "rgba(14, 36, 49, 0.9)"; ctx.fillRect(x, y, w, h);
-            ctx.strokeStyle = "#00ff99"; ctx.lineWidth = 6; ctx.strokeRect(x, y, w, h);
-        } else if(style === 'modern') {
-            ctx.fillStyle = "black"; ctx.fillRect(x, y, w, 65);
-            ctx.fillStyle = "white"; ctx.fillRect(x, y+65, w, 115);
-            ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.strokeRect(x, y, w, 230);
-        }
+        ctx.fillStyle = `rgba(14, 36, 49, ${op})`;
+        ctx.fillRect(x, y, w, h);
+        ctx.strokeStyle = "#00ff99"; ctx.lineWidth = 4; ctx.strokeRect(x, y, w, h);
 
-        const labels = ["QSO WITH", "DATE", "TIME (UTC)", "BAND", "MODE", "RST"];
-        const d = window.currentQsoData || {date:"--/--/--", time:"00:00 UTC"};
-        let mod = document.getElementById('qMode').value;
-        if(mod.toUpperCase().includes('DIGITAL') || mod.toUpperCase().includes('VOICE')) mod = 'DV';
-        const vals = [document.getElementById('toCall').value || "---", d.date, d.time, document.getElementById('qBand').value || "---", mod || "---", document.getElementById('qRst').value || "59"];
-        
+        const labels = ["QSO WITH", "DATE", "TIME", "BAND", "MODE", "RST"];
+        const d = window.qData || {date:"--/--/--", time:"00:00 UTC"};
+        const vals = [document.getElementById('toCall').value, d.date, d.time, document.getElementById('qBand').value, document.getElementById('qMode').value, document.getElementById('qRst').value];
+        const spacing = w / 6;
         labels.forEach((l, i) => {
-            let px = x + 40 + (i * 268);
-            ctx.font = "bold 24px Arial"; ctx.fillStyle = (style === 'modern') ? "white" : "#00ff99";
-            ctx.fillText(l, px, y + 45);
-            ctx.font = "bold 48px 'Courier New'"; ctx.fillStyle = (style === 'modern') ? "black" : "white";
-            ctx.fillText(vals[i], px, y + 140);
+            ctx.font = "bold 24px Arial"; ctx.fillStyle = "#00ff99";
+            ctx.fillText(l, x + 30 + (i * spacing), y + 50);
+            ctx.font = "bold 44px 'Courier New'"; ctx.fillStyle = "white";
+            ctx.fillText(vals[i] || "---", x + 30 + (i * spacing), y + 130);
         });
     }
 
-    function changeBG(el) { document.querySelectorAll('.gal-img').forEach(i => i.classList.remove('active')); el.classList.add('active'); bgImg.src = el.src; }
     function loadLogo(idx, e) { const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload = (ev) => { logos[idx].img.src = ev.target.result; logos[idx].active = true; logos[idx].img.onload = draw; }; r.readAsDataURL(f); } }
-    bgImg.onload = draw;
-
+    
     canvas.onmousedown = (e) => {
         const r = canvas.getBoundingClientRect();
-        const mx = (e.clientX - r.left) * (canvas.width / r.width);
-        const my = (e.clientY - r.top) * (canvas.height / r.height);
+        const mx = (e.clientX - r.left) * (1800 / r.width), my = (e.clientY - r.top) * (1100 / r.height);
         for(let i=0; i<4; i++) { if(logos[i].active) { let s = parseInt(document.getElementById(`size${i}`).value); if(mx > logos[i].x && mx < logos[i].x+s && my > logos[i].y && my < logos[i].y+s) { dragObj = 'logo'; activeLogoIdx = i; offset = {x: mx - logos[i].x, y: my - logos[i].y}; return; } } }
-        if(my > posTable.y && my < posTable.y + 250) { dragObj = 'table'; offset = {x: mx - posTable.x, y: my - posTable.y}; }
-        else if(my > posCall.y - 180 && my < posCall.y + 150) { dragObj = 'call'; offset = {x: mx - posCall.x, y: my - posCall.y}; }
+        if(my > posTable.y && my < posTable.y + 400) { dragObj = 'table'; offset = {x: mx - posTable.x, y: my - posTable.y}; }
+        else if(my > posCall.y - 150 && my < posCall.y + 150) { dragObj = 'call'; offset = {x: mx - posCall.x, y: my - posCall.y}; }
     };
     window.onmousemove = (e) => {
         if(!dragObj) return;
         const r = canvas.getBoundingClientRect();
-        const mx = (e.clientX - r.left) * (canvas.width / r.width);
-        const my = (e.clientY - r.top) * (canvas.height / r.height);
+        const mx = (e.clientX - r.left) * (1800 / r.width), my = (e.clientY - r.top) * (1100 / r.height);
         if(dragObj === 'logo') { logos[activeLogoIdx].x = mx - offset.x; logos[activeLogoIdx].y = my - offset.y; }
-        if(dragObj === 'table') { posTable.x = mx - offset.x; posTable.y = my - offset.y; }
-        if(dragObj === 'call') { posCall.x = mx - offset.x; posCall.y = my - offset.y; }
+        else if(dragObj === 'table') { posTable.x = mx - offset.x; posTable.y = my - offset.y; }
+        else if(dragObj === 'call') { posCall.x = mx - offset.x; posCall.y = my - offset.y; }
         draw();
     };
     window.onmouseup = () => dragObj = null;
-    function downloadPreview() { saveAs(canvas.toDataURL("image/png", 1.0), `PREVIA_QSL.png`); }
-    window.onload = () => changeBG(document.querySelector('.gal-img'));
+    function downloadPreview() { saveAs(canvas.toDataURL("image/png", 1.0), `QSL_MASTER.png`); }
+    window.onload = () => { bgImg.src = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1800"; bgImg.onload = draw; };
 </script>
 </body>
 </html>
