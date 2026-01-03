@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL-CARIBEÑO V9.0 - Control Total</title>
+    <title>QSL-CARIBEÑO V9.1 - Fix</title>
     <style>
         :root {
             --navy-deep: #000c1d;
@@ -72,7 +72,7 @@
             transition: 0.3s;
         }
 
-        .gallery-item.active { border-color: var(--neon-green); }
+        .gallery-item.active { border-color: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
 
         .range-container {
             background: rgba(0,0,0,0.3);
@@ -82,9 +82,9 @@
         }
 
         label { display: block; margin-bottom: 5px; font-size: 0.75em; color: #8b949e; }
-        input[type="range"] { width: 100%; margin-bottom: 10px; }
+        input[type="range"] { width: 100%; margin-bottom: 10px; cursor: pointer; }
         
-        input[type="text"], input[type="date"], input[type="time"] {
+        input[type="text"], input[type="date"], input[type="time"], input[type="file"] {
             width: 100%;
             padding: 8px;
             background: #00254d;
@@ -106,7 +106,9 @@
             cursor: pointer;
             text-transform: uppercase;
             margin-top: 10px;
+            transition: 0.2s;
         }
+        .btn-download:hover { background: #2ecc71; transform: translateY(-2px); }
 
         .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; }
         canvas {
@@ -125,12 +127,12 @@
 </head>
 <body>
 
-    <header><h1>QSL-CARIBEÑO <span style="font-weight: 100;">V9.0 PRO</span></h1></header>
+    <header><h1>QSL-CARIBEÑO <span style="font-weight: 100;">V9.1</span></h1></header>
 
     <div class="main-container">
         <div class="controls-panel">
             
-            <span class="section-label">1. Fondos HD</span>
+            <span class="section-label">1. Fondos Predeterminados</span>
             <div class="gallery-grid">
                 <img class="gallery-item" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600" onclick="changeBG(this)">
                 <img class="gallery-item" src="https://images.unsplash.com/photo-1510511459019-5dee997ddfdf?w=600" onclick="changeBG(this)">
@@ -138,6 +140,11 @@
                 <img class="gallery-item" src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=600" onclick="changeBG(this)">
                 <img class="gallery-item" src="https://images.unsplash.com/photo-1520110120385-ad28c777837a?w=600" onclick="changeBG(this)">
                 <img class="gallery-item" src="https://images.unsplash.com/photo-1544274433-8994a382e78d?w=600" onclick="changeBG(this)">
+            </div>
+
+            <div class="input-group">
+                <label>O sube tu foto propia:</label>
+                <input type="file" id="bgInput" accept="image/*">
             </div>
 
             <span class="section-label">2. Ajuste del Cuadro QSO</span>
@@ -155,7 +162,7 @@
                 <div style="flex:1;"><label>Color Texto</label><input type="color" id="textColor" value="#ffffff" oninput="draw()"></div>
             </div>
 
-            <span class="section-label">3. Mis Datos</span>
+            <span class="section-label">3. Datos Remitente</span>
             <input type="text" id="myCall" value="HI8-QSL" oninput="draw()">
             <input type="text" id="myInfo" value="Santo Domingo, Rep. Dominicana" oninput="draw()">
 
@@ -177,7 +184,7 @@
 
         <div class="preview-panel">
             <canvas id="qslCanvas" width="900" height="550"></canvas>
-            <p style="font-size: 0.8rem; color: #5c7d9d; margin-top: 10px;">🖱️ Arrastra los elementos para moverlos libremente.</p>
+            <p style="font-size: 0.8rem; color: #5c7d9d; margin-top: 10px;">🖱️ Haz clic y arrastra el indicativo o la tabla para moverlos.</p>
         </div>
     </div>
 
@@ -187,18 +194,35 @@
         let bgImg = new Image();
         bgImg.crossOrigin = "anonymous";
 
+        // Posiciones iniciales
         let posMyCall = { x: 50, y: 80, w: 300 };
         let posDataBox = { x: 40, y: 320 };
         let dragTarget = null;
         let dragOffset = { x: 0, y: 0 };
 
+        // FUNCION PARA CAMBIAR EL FONDO (Correctamente definida)
         function changeBG(el) {
             document.querySelectorAll('.gallery-item').forEach(img => img.classList.remove('active'));
             el.classList.add('active');
             bgImg.src = el.src;
-            bgImg.onload = draw;
+            // No llamar a draw() aquí, se llama dentro de bgImg.onload
         }
 
+        // Cuando la imagen carga, dibujamos
+        bgImg.onload = function() {
+            draw();
+        };
+
+        // Manejo de archivo local
+        document.getElementById('bgInput').addEventListener('change', (e) => {
+            const r = new FileReader();
+            r.onload = (ev) => { 
+                bgImg.src = ev.target.result; 
+            }
+            if(e.target.files[0]) r.readAsDataURL(e.target.files[0]);
+        });
+
+        // Eventos de Mouse para Arrastrar
         canvas.addEventListener('mousedown', (e) => {
             const rect = canvas.getBoundingClientRect();
             const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
@@ -251,9 +275,16 @@
             const bh = parseInt(document.getElementById('boxH').value);
 
             ctx.clearRect(0,0,900,550);
-            if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
+            
+            // Dibujar imagen de fondo
+            if(bgImg.complete && bgImg.src) {
+                ctx.drawImage(bgImg, 0, 0, 900, 550);
+            } else {
+                ctx.fillStyle = "#001a33";
+                ctx.fillRect(0,0,900,550);
+            }
 
-            // Mi Indicativo
+            // Dibujar Mi Indicativo
             ctx.shadowColor = "black"; ctx.shadowBlur = 15; ctx.fillStyle = "white";
             ctx.font = "bold 75px sans-serif";
             const call = document.getElementById('myCall').value.toUpperCase();
@@ -263,13 +294,13 @@
             ctx.fillText(document.getElementById('myInfo').value, posMyCall.x, posMyCall.y + 35);
             ctx.shadowBlur = 0;
 
-            // Caja QSO
+            // Dibujar Caja QSO
             let r = parseInt(bColor.slice(1,3), 16), g = parseInt(bColor.slice(3,5), 16), b = parseInt(bColor.slice(5,7), 16);
             ctx.fillStyle = `rgba(${r},${g},${b},${bOp})`;
             ctx.fillRect(posDataBox.x, posDataBox.y, bw, bh);
             ctx.strokeStyle = tColor; ctx.lineWidth = 2; ctx.strokeRect(posDataBox.x, posDataBox.y, bw, bh);
 
-            // Contenido Proporcional
+            // Contenido Proporcional dentro de la caja
             const step = bh / 4;
             const startX = posDataBox.x + 20;
             const innerW = bw - 40;
@@ -277,13 +308,13 @@
             drawLine("Confirming QSO with", document.getElementById('toCall').value, startX, posDataBox.y + step, bw - 20, tColor);
             
             const sub = innerW / 5;
-            drawLine("Date", document.getElementById('qDate').value, startX, posDataBox.y + step*2, sub, tColor);
-            drawLine("Time", document.getElementById('qTime').value, startX + sub, posDataBox.y + step*2, sub, tColor);
-            drawLine("Band", document.getElementById('qBand').value, startX + sub*2, posDataBox.y + step*2, sub, tColor);
-            drawLine("Mode", document.getElementById('qMode').value, startX + sub*3, posDataBox.y + step*2, sub, tColor);
-            drawLine("RST",  document.getElementById('qRst').value,  startX + sub*4, posDataBox.y + step*2, sub, tColor);
+            drawLine("Date", document.getElementById('qDate').value, startX, posDataBox.y + step * 2, sub, tColor);
+            drawLine("Time", document.getElementById('qTime').value, startX + sub, posDataBox.y + step * 2, sub, tColor);
+            drawLine("Band", document.getElementById('qBand').value, startX + sub * 2, posDataBox.y + step * 2, sub, tColor);
+            drawLine("Mode", document.getElementById('qMode').value, startX + sub * 3, posDataBox.y + step * 2, sub, tColor);
+            drawLine("RST",  document.getElementById('qRst').value,  startX + sub * 4, posDataBox.y + step * 2, sub, tColor);
             
-            drawLine("Remarks / 73", document.getElementById('qMsg').value, startX, posDataBox.y + step*3.2, bw - 20, tColor);
+            drawLine("Remarks / 73", document.getElementById('qMsg').value, startX, posDataBox.y + step * 3.2, bw - 20, tColor);
         }
 
         function download() {
@@ -293,7 +324,10 @@
             link.click();
         }
 
-        window.onload = () => changeBG(document.querySelector('.gallery-item'));
+        // Carga inicial
+        window.onload = function() {
+            changeBG(document.querySelector('.gallery-item'));
+        };
     </script>
 </body>
 </html>
