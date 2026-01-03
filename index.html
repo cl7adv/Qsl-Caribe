@@ -87,7 +87,6 @@
       <canvas id="qslCanvas" width="1200" height="800"></canvas>
     </section>
   </main>
-
   <script>
     const form = document.getElementById('qsoForm');
     const canvas = document.getElementById('qslCanvas');
@@ -182,8 +181,7 @@
       ctx.fillText("Frecuencia: " + (d.frecuencia || "—"), pad+30, pad+230);
       ctx.fillText("Modo: " + (d.modo || "—"), pad+30, pad+270);
       ctx.fillText("RST: " + (d.rst || "—"), pad+30, pad+310);
-      ctx.fillText("QSL vía: " + (d.qsl || "—"), pad+30, pad+350);
-      ctx.fillText("Operador: " + (d.nombre || "—      ctx.fillText("Operador: " + (d.nombre || "—"), pad+30, pad+390);
+      ctx.fillText("QSL vía: " + (d.q      ctx.fillText("Operador: " + (d.nombre || "—"), pad+30, pad+390);
       ctx.fillText("QTH: " + (d.ubicacion || "—"), pad+30, pad+430);
       ctx.fillText("País: " + (d.pais || "—"), pad+30, pad+470);
 
@@ -193,3 +191,4 @@
   </script>
 </body>
 </html>
+
