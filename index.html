@@ -3,169 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL Neón Pro - CL7ADV</title>
+    <title>QSL ELITE v10.3 - Custom Colors</title>
     <style>
-        :root { --primary: #0ff; --secondary: #f0f; --glass: rgba(0, 0, 0, 0.85); }
+        :root {
+            --bg-dark: #0e2431; /* Color exacto solicitado */
+            --neon-green: #00ff99;
+            --neon-pink: #ff00ff;
+            --text-light: #e6faff;
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0;
-            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            font-family: 'Verdana', sans-serif;
+            background-color: #050a14; color: var(--text-light);
+            margin: 0; display: flex; flex-direction: column; align-items: center;
+            touch-action: manipulation;
         }
-        header { padding: 10px; }
-        header h1 { color: var(--primary); text-shadow: 0 0 10px var(--primary); margin: 5px; font-size: 1.5rem; }
-        .main-container { display: flex; flex-direction: row; gap: 15px; padding: 15px; width: 100%; max-width: 1300px; box-sizing: border-box; }
-        .controls {
-            flex: 0 0 320px; background: var(--glass); padding: 15px; border-radius: 12px;
-            border: 1px solid var(--primary); height: 88vh; overflow-y: auto;
+
+        header { 
+            padding: 15px; text-align: center; width: 100%; 
+            background: var(--bg-dark); border-bottom: 2px solid var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green);
         }
-        .section-label { color: var(--secondary); font-size: 0.75em; font-weight: bold; display: block; margin: 12px 0 5px; border-bottom: 1px solid #333; }
-        .bg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .bg-btn { padding: 8px; border-radius: 5px; border: 1px solid #444; cursor: pointer; background: #111; color: #fff; font-size: 0.7em; transition: 0.2s; }
-        .bg-btn:hover { border-color: var(--primary); }
+        header h1 { 
+            margin: 0; color: var(--neon-green); font-size: 1.6rem; 
+            text-transform: uppercase; text-shadow: 0 0 6px var(--neon-green); 
+        }
+
+        .main-container {
+            display: flex; flex-direction: row; gap: 20px;
+            padding: 20px; max-width: 1400px; width: 100%; box-sizing: border-box;
+        }
+
+        .controls-panel {
+            flex: 0 0 320px; background: var(--bg-dark);
+            padding: 20px; border-radius: 12px; border: 2px solid var(--neon-green);
+            height: 85vh; overflow-y: auto; box-shadow: 0 0 8px var(--neon-green);
+        }
+
+        .section-label {
+            color: var(--neon-green); font-size: 0.8em; margin-top: 15px;
+            margin-bottom: 8px; display: block; border-bottom: 1px solid #30363d;
+            text-transform: uppercase; font-weight: bold;
+        }
+
+        .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .gallery-item {
+            width: 100%; height: 60px; object-fit: cover; border-radius: 6px;
+            cursor: pointer; border: 2px solid transparent; transition: 0.3s;
+        }
+        .gallery-item.active { border-color: var(--neon-pink); box-shadow: 0 0 8px var(--neon-pink); }
+
+        .range-container { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        label { display: block; margin-bottom: 4px; font-size: 0.7em; color: #8b949e; }
+        input[type="range"] { width: 100%; cursor: pointer; accent-color: var(--neon-green); }
+        
         input[type="text"], input[type="date"], input[type="time"], input[type="file"] {
-            width: 100%; padding: 7px; background: #111; border: 1px solid #333; border-radius: 4px; color: #fff; margin-bottom: 6px; box-sizing: border-box; font-size: 0.85em;
+            width: 100%; padding: 8px; background: #050a14; border: 1px solid var(--neon-green);
+            border-radius: 6px; color: white; margin-bottom: 8px; font-size: 0.9em; box-sizing: border-box;
         }
-        .range-box { background: rgba(255,255,255,0.05); padding: 5px; border-radius: 5px; margin-bottom: 8px; }
-        label { font-size: 0.7em; color: var(--primary); }
-        .btn-dl { width: 100%; padding: 12px; background: transparent; color: var(--secondary); font-weight: bold; border: 2px solid var(--secondary); border-radius: 8px; cursor: pointer; margin-top: 10px; }
-        .btn-dl:hover { background: var(--secondary); color: #000; box-shadow: 0 0 15px var(--secondary); }
-        canvas { max-width: 100%; height: auto; border: 2px solid var(--primary); border-radius: 8px; background: #000; cursor: crosshair; }
-        @media (max-width: 900px) { .main-container { flex-direction: column; } .controls { width: 100%; height: auto; } }
+
+        .color-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 10px; }
+        .color-item label { font-size: 0.6em; text-align: center; }
+
+        .btn-download {
+            width: 100%; padding: 15px; background: var(--neon-green);
+            color: #000; font-weight: bold; border: none; border-radius: 6px;
+            cursor: pointer; text-transform: uppercase; margin-top: 10px;
+        }
+
+        #downloadModal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.9);
+            justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: var(--bg-dark); padding: 40px; border-radius: 12px;
+            border: 2px solid var(--neon-green); text-align: center;
+        }
+        .format-btn { padding: 12px 30px; margin: 10px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
+        .png-btn { background: var(--neon-pink); color: #fff; }
+        .jpg-btn { background: #fff; color: #000; }
+
+        .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        canvas { max-width: 95%; height: auto; border-radius: 8px; border: 1px solid var(--neon-green); box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+
+        @media (max-width: 900px) {
+            .main-container { flex-direction: column; }
+            .controls-panel { width: 100%; height: auto; order: 2; }
+            .preview-panel { order: 1; width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <header><h1>⚡ QSL NEÓN GENERATOR ⚡</h1></header>
+
+    <header><h1>QSL CARIBEÑO v10.3</h1></header>
+
     <div class="main-container">
-        <div class="controls">
-            <span class="section-label">1. FONDOS PREDETERMINADOS</span>
-            <div class="bg-grid">
-                <button class="bg-btn" onclick="setBG(0)">OCEAN BLUE</button>
-                <button class="bg-btn" onclick="setBG(1)">DEEP PURPLE</button>
-                <button class="bg-btn" onclick="setBG(2)">CYBER GRID</button>
-                <button class="bg-btn" onclick="setBG(3)">RADIAL PULSE</button>
+        <div class="controls-panel">
+            <span class="section-label">1. Fondo</span>
+            <div class="gallery-grid">
+                <img class="gallery-item" src="https://cdn.pixabay.com/photo/2017/01/20/00/30/maldives-1993704_960_720.jpg" onclick="changeBG(this)">
+                <img class="gallery-item" src="https://cdn.pixabay.com/photo/2017/01/28/02/24/ocean-2014647_960_720.jpg" onclick="changeBG(this)">
             </div>
-            <input type="file" id="bgI" accept="image/*">
-            <span class="section-label">2. LOGOTIPOS</span>
-            <div class="range-box"><label>Logo 1:</label><input type="file" id="l1I" accept="image/*"><input type="range" id="l1S" min="30" max="300" value="120" oninput="draw()"></div>
-            <div class="range-box"><label>Logo 2:</label><input type="file" id="l2I" accept="image/*"><input type="range" id="l2S" min="30" max="300" value="100" oninput="draw()"></div>
-            <span class="section-label">3. DATOS PROPIOS</span>
-            <div style="display:flex; gap:5px;"><input type="color" id="cCol" value="#00ffff" oninput="draw()"><input type="color" id="tCol" value="#ff00ff" oninput="draw()"></div>
-            <input type="text" id="myC" value="CL7ADV" oninput="draw()">
-            <input type="text" id="myL" value="EL98xx" oninput="draw()">
-            <span class="section-label">4. DATOS QSO</span>
-            <input type="text" id="toC" placeholder="Indicativo Destino" oninput="draw()">
-            <div style="display:flex; gap:2px;"><input type="date" id="qD" oninput="draw()"><input type="time" id="qT" oninput="draw()"></div>
-            <div style="display:flex; gap:2px;"><input type="text" id="qB" placeholder="Banda" oninput="draw()"><input type="text" id="qM" placeholder="Modo" oninput="draw()"><input type="text" id="qR" placeholder="RST" oninput="draw()"></div>
-            <input type="text" id="qG" value="73's Cordiales" oninput="draw()">
-            <button class="btn-dl" onclick="download()">DESCARGAR QSL PNG</button>
+            <input type="file" id="bgInput" accept="image/*" style="margin-top:10px;">
+
+            <span class="section-label">2. Colores y Estilo</span>
+            <div class="color-grid">
+                <div class="color-item"><label>Indicativo</label><input type="color" id="callColor" value="#ff00ff" oninput="draw()"></div>
+                <div class="color-item"><label>Tabla</label><input type="color" id="boxColor" value="#0e2431" oninput="draw()"></div>
+                <div class="color-item"><label>Texto Datos</label><input type="color" id="textColor" value="#00ff99" oninput="draw()"></div>
+            </div>
+
+            <div class="range-container">
+                <label>Ancho Tabla</label>
+                <input type="range" id="boxW" min="300" max="860" value="780" oninput="draw()">
+                <label>Opacidad Tabla</label>
+                <input type="range" id="boxOp" min="0" max="100" value="85" oninput="draw()">
+            </div>
+
+            <span class="section-label">3. Mis Datos</span>
+            <input type="text" id="myCall" value="CL7ADV" oninput="draw()">
+            <input type="text" id="myLocator" value="EL98xx" oninput="draw()">
+
+            <span class="section-label">4. Datos del QSO</span>
+            <input type="text" id="toCall" placeholder="Indicativo Destino" oninput="draw()">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                <input type="date" id="qDate" oninput="draw()">
+                <input type="time" id="qTime" oninput="draw()">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
+                <input type="text" id="qBand" placeholder="Band" oninput="draw()">
+                <input type="text" id="qMode" placeholder="Mode" oninput="draw()">
+                <input type="text" id="qRst" placeholder="RST" oninput="draw()">
+            </div>
+            <input type="text" id="qMsg" placeholder="73 / Radio, hermandad y comunidad" oninput="draw()">
+
+            <button class="btn-download" onclick="showDownloadMenu()">Descargar QSL</button>
         </div>
-        <div style="flex:1; text-align:center;"><canvas id="qC" width="900" height="550"></canvas></div>
+
+        <div class="preview-panel">
+            <canvas id="qslCanvas" width="900" height="550"></canvas>
+            <p style="font-size: 0.7rem; color: #8b949e; margin-top: 10px;">📱 Arrastra para mover el texto.</p>
+        </div>
     </div>
+
+    <div id="downloadModal">
+        <div class="modal-content">
+            <h2 style="color:var(--neon-green);">EXPORTAR QSL</h2>
+            <button class="format-btn png-btn" onclick="executeDownload('png')">PNG (HD)</button>
+            <button class="format-btn jpg-btn" onclick="executeDownload('jpeg')">JPG (Web)</button>
+            <button class="format-btn cancel-btn" onclick="hideDownloadMenu()" style="color:red; background:none; border:none; margin-top:20px; cursor:pointer;">CERRAR</button>
+        </div>
+    </div>
+
     <script>
-        const canvas = document.getElementById('qC'), ctx = canvas.getContext('2d');
-        let bgImg = new Image(), l1Img = new Image(), l2Img = new Image();
-        let pos = { l1:{x:730, y:50, w:120, h:120}, l2:{x:600, y:50, w:100, h:100}, call:{x:50, y:12const canvas = document.getElementById('qC'), ctx = canvas.getContext('2d');
-        let bgImg = new Image(), l1Img = new Image(), l2Img = new Image();
-        let pos = { 
-            l1:{x:730, y:50, w:120, h:120}, 
-            l2:{x:600, y:50, w:100, h:100}, 
-            call:{x:50, y:120, w:350}, 
-            box:{x:50, y:320, w:800, h:180} 
-        };
-        let drag = null, offset = {x:0, y:0};
+        const canvas = document.getElementById('qslCanvas');
+        const ctx = canvas.getContext('2d');
+        let bgImg = new Image();
+        bgImg.crossOrigin = "anonymous";
 
-        // Generador de fondos internos (Sin internet)
-        function setBG(type) {
-            const tC = document.createElement('canvas');
-            tC.width = 900; tC.height = 550;
-            const tCtx = tC.getContext('2d');
-            if(type===0) { 
-                let g=tCtx.createLinearGradient(0,0,0,550); g.addColorStop(0,'#001a33'); g.addColorStop(1,'#000'); 
-                tCtx.fillStyle=g; tCtx.fillRect(0,0,900,550);
-                tCtx.fillStyle="#ffffff11"; for(let i=0;i<50;i++) tCtx.fillRect(Math.random()*900, Math.random()*550, 2, 2);
-            }
-            else if(type===1) { tCtx.fillStyle='#1a001a'; tCtx.fillRect(0,0,900,550); }
-            else if(type===2) { 
-                tCtx.fillStyle='#050505'; tCtx.fillRect(0,0,900,550); 
-                tCtx.strokeStyle='#0ff1'; for(let i=0;i<900;i+=30) tCtx.strokeRect(i,0,1,550);
-            }
-            else { 
-                tCtx.fillStyle='#0a0a0a'; tCtx.fillRect(0,0,900,550); 
-                tCtx.strokeStyle='#f0f1'; for(let i=0;i<12;i++){tCtx.beginPath();tCtx.arc(450,275,i*40,0,7);tCtx.stroke();}
-            }
-            bgImg.src = tC.toDataURL();
+        let posMyCall = { x: 50, y: 110, w: 300 };
+        let posDataBox = { x: 60, y: 320 };
+        let dragTarget = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        function changeBG(el) {
+            document.querySelectorAll('.gallery-item').forEach(img => img.classList.remove('active'));
+            if(el) { el.classList.add('active'); bgImg.src = el.src; }
         }
-        setBG(0);
 
-        function setup(id, img) { 
-            document.getElementById(id).onchange = e => { 
-                const r=new FileReader(); 
-                r.onload=v=>{img.src=v.target.result;}; 
-                if(e.target.files[0]) r.readAsDataURL(e.target.files[0]); 
-            }; 
+        bgImg.onload = draw;
+
+        document.getElementById('bgInput').addEventListener('change', (e) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                bgImg.src = event.target.result;
+                document.querySelectorAll('.gallery-item').forEach(img => img.classList.remove('active'));
+            };
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+        });
+
+        function showDownloadMenu() { document.getElementById('downloadModal').style.display = 'flex'; }
+        function hideDownloadMenu() { document.getElementById('downloadModal').style.display = 'none'; }
+
+        function executeDownload(format) {
+            const link = document.createElement('a');
+            link.download = `QSL_CL7ADV.${format}`;
+            link.href = canvas.toDataURL(`image/${format}`, 0.95);
+            link.click();
+            hideDownloadMenu();
         }
-        setup('bgI', bgImg); setup('l1I', l1Img); setup('l2I', l2Img);
-        bgImg.onload = l1Img.onload = l2Img.onload = draw;
 
-        // Movimiento
-        canvas.onmousedown = canvas.ontouchstart = e => {
-            const r = canvas.getBoundingClientRect(), sX = 900/r.width, sY = 550/r.height;
-            const m = {x:((e.clientX||e.touches[0].clientX)-r.left)*sX, y:((e.clientY||e.touches[0].clientY)-r.top)*sY};
-            if(l1Img.src && m.x>pos.l1.x && m.x<pos.l1.x+pos.l1.w && m.y>pos.l1.y && m.y<pos.l1.y+pos.l1.h) drag='l1';
-            else if(l2Img.src && m.x>pos.l2.x && m.x<pos.l2.x+pos.l2.w && m.y>pos.l2.y && m.y<pos.l2.y+pos.l2.h) drag='l2';
-            else if(m.x>pos.call.x && m.x<pos.call.x+pos.call.w && m.y>pos.call.y-80 && m.y<pos.call.y) drag='call';
-            else if(m.x>pos.box.x && m.x<pos.box.x+pos.box.w && m.y>pos.box.y && m.y<pos.box.y+pos.box.h) drag='box';
-            if(drag) { offset.x=m.x-pos[drag].x; offset.y=m.y-pos[drag].y; }
-        };
-        window.onmousemove = window.ontouchmove = e => {
-            if(!drag) return;
-            const r = canvas.getBoundingClientRect(), sX = 900/r.width, sY = 550/r.height;
-            const m = {x:((e.clientX||e.touches[0].clientX)-r.left)*sX, y:((e.clientY||e.touches[0].clientY)-r.top)*sY};
-            pos[drag].x=m.x-offset.x; pos[drag].y=m.y-offset.y; draw();
-        };
-        window.onmouseup = window.ontouchend = () => drag=null;
+        function getCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
 
-        function drawF(l, v, x, y, w, c) {
-            ctx.shadowBlur=0; ctx.fillStyle=c; ctx.font="bold 14px sans-serif"; ctx.fillText(l+":", x, y);
-            ctx.shadowBlur=8; ctx.shadowColor=c; ctx.font="bold 18px monospace"; ctx.fillText(v||"", x+90, y);
-            ctx.strokeStyle=c; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(x+85,y+5); ctx.lineTo(x+w,y+5); ctx.stroke();
+        function startDrag(e) {
+            const coords = getCoords(e);
+            const bw = parseInt(document.getElementById('boxW').value);
+            const bh = 180; // Altura fija para simplificar arrastre
+
+            if (coords.x >= posDataBox.x && coords.x <= posDataBox.x + bw && coords.y >= posDataBox.y && coords.y <= posDataBox.y + bh) {
+                dragTarget = 'dataBox';
+                dragOffset.x = coords.x - posDataBox.x; dragOffset.y = coords.y - posDataBox.y;
+            } else if (coords.x >= posMyCall.x && coords.x <= posMyCall.x + posMyCall.w && coords.y >= posMyCall.y - 80 && coords.y <= posMyCall.y + 60) {
+                dragTarget = 'myCall';
+                dragOffset.x = coords.x - posMyCall.x; dragOffset.y = coords.y - posMyCall.y;
+            }
+            if(dragTarget) e.preventDefault();
+        }
+
+        function moveDrag(e) {
+            if (!dragTarget) return;
+            const coords = getCoords(e);
+            if (dragTarget === 'dataBox') {
+                posDataBox.x = coords.x - dragOffset.x; posDataBox.y = coords.y - dragOffset.y;
+            } else {
+                posMyCall.x = coords.x - dragOffset.x; posMyCall.y = coords.y - dragOffset.y;
+            }
+            draw();
+            e.preventDefault();
+        }
+
+        canvas.addEventListener('mousedown', startDrag);
+        canvas.addEventListener('touchstart', startDrag);
+        window.addEventListener('mousemove', moveDrag);
+        window.addEventListener('touchmove', moveDrag, {passive: false});
+        window.addEventListener('mouseup', () => dragTarget = null);
+        window.addEventListener('touchend', () => dragTarget = null);
+
+        function drawFullLine(label, value, x, y, width, bh, color) {
+            const labelText = label.toUpperCase() + ": ";
+            const valText = value || "";
+            let fontSize = Math.min(bh / 7, width / 11, 28); 
+            ctx.fillStyle = color;
+            ctx.font = `bold ${fontSize * 0.6}px Verdana`;
+            ctx.fillText(labelText, x, y);
+            const lw = ctx.measureText(labelText).width;
+            ctx.font = `bold ${fontSize}px 'Courier New', monospace`;
+            ctx.fillText(valText, x + lw, y);
+            ctx.strokeStyle = color; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(x + lw, y + 5); ctx.lineTo(x + width - 10, y + 5); ctx.stroke();
         }
 
         function draw() {
-            ctx.clearRect(0,0,900,550);
-            if(bgImg.src) ctx.drawImage(bgImg,0,0,900,550);
-            
-            // Marca de agua
-            ctx.font="bold 20px Arial"; ctx.fillStyle="#ff0044"; ctx.shadowBlur=10; ctx.shadowColor="red";
-            ctx.fillText("ZMR-CUBA", 770, 30); ctx.shadowBlur=0;
+            const bColor = document.getElementById('boxColor').value;
+            const tColor = document.getElementById('textColor').value;
+            const cColor = document.getElementById('callColor').value;
+            const bOp = document.getElementById('boxOp').value / 100;
+            const bw = parseInt(document.getElementById('boxW').value);
+            const bh = 180;
 
-            pos.l1.w = pos.l1.h = parseInt(document.getElementById('l1S').value);
-            pos.l2.w = pos.l2.h = parseInt(document.getElementById('l2S').value);
-            if(l1Img.src && l1Img.complete) ctx.drawImage(l1Img, pos.l1.x, pos.l1.y, pos.l1.w, pos.l1.h);
-            if(l2Img.src && l2Img.complete) ctx.drawImage(l2Img, pos.l2.x, pos.l2.y, pos.l2.w, pos.l2.h);
+            ctx.clearRect(0,0,900,550);
+            if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
+
+            // Marca de agua
+            const watermark = "ZMR-CUBA";
+            ctx.font = "bold 24px Verdana"; ctx.textAlign = "right";
+            ctx.strokeStyle = "black"; ctx.lineWidth = 4; ctx.strokeText(watermark, 880, 40);
+            ctx.fillStyle = "#ff0000"; ctx.fillText(watermark, 880, 40); ctx.textAlign = "left";
+
+            // Mi Indicativo (COLOR PERSONALIZADO)
+            ctx.shadowColor = "rgba(0,0,0,0.9)"; ctx.shadowBlur = 15;
+            ctx.fillStyle = cColor; ctx.font = "bold 95px Verdana";
+            const call = document.getElementById('myCall').value.toUpperCase();
+            ctx.fillText(call, posMyCall.x, posMyCall.y);
             
-            const cC = document.getElementById('cCol').value;
-            ctx.shadowBlur=20; ctx.shadowColor=cC; ctx.fillStyle=cC; ctx.font="bold 85px sans-serif";
-            ctx.fillText(document.getElementById('myC').value.toUpperCase(), pos.call.x, pos.call.y);
-            ctx.shadowBlur=5; ctx.fillStyle="#fff"; ctx.font="25px monospace";
-            ctx.fillText("LOC: "+document.getElementById('myL').value, pos.call.x, pos.call.y+40);
-            
-            const tC = document.getElementById('tCol').value;
-            ctx.shadowBlur=0; ctx.fillStyle="rgba(0,0,0,0.8)"; ctx.fillRect(pos.box.x, pos.box.y, pos.box.w, pos.box.h);
-            ctx.strokeStyle=tC; ctx.lineWidth=2; ctx.strokeRect(pos.box.x, pos.box.y, pos.box.w, pos.box.h);
-            
-            drawF("TO RADIO", document.getElementById('toC').value, pos.box.x+20, pos.box.y+45, pos.box.w-40, tC);
-            drawF("DATA", document.getElementById('qD').value+" "+document.getElementById('qT').value, pos.box.x+20, pos.box.y+95, 300, tC);
-            drawF("BAND", document.getElementById('qB').value, pos.box.x+340, pos.box.y+95, 120, tC);
-            drawF("MODE", document.getElementById('qM').value, pos.box.x+480, pos.box.y+95, 120, tC);
-            drawF("RST", document.getElementById('qR').value, pos.box.x+620, pos.box.y+95, 120, tC);
-            drawF("MSG", document.getElementById('qG').value, pos.box.x+20, pos.box.y+145, pos.box.w-40, tC);
+            ctx.fillStyle = "#00ff99"; ctx.font = "bold 35px Verdana";
+            ctx.fillText("Locator: " + document.getElementById('myLocator').value.toUpperCase(), posMyCall.x + 5, posMyCall.y + 45);
+            posMyCall.w = Math.max(ctx.measureText(call).width, ctx.measureText("Locator: " + document.getElementById('myLocator').value).width) + 30;
+            ctx.shadowBlur = 0;
+
+            // Caja QSO
+            let r = parseInt(bColor.slice(1,3), 16), g = parseInt(bColor.slice(3,5), 16), b = parseInt(bColor.slice(5,7), 16);
+            ctx.fillStyle = `rgba(${r},${g},${b},${bOp})`;
+            ctx.fillRect(posDataBox.x, posDataBox.y, bw, bh);
+            ctx.strokeStyle = tColor; ctx.lineWidth = 3; ctx.strokeRect(posDataBox.x, posDataBox.y, bw, bh);
+
+            const step = bh / 4;
+            const startX = posDataBox.x + 20;
+            const innerW = bw - 40;
+            drawFullLine("Confirming QSO with", document.getElementById('toCall').value, startX, posDataBox.y + step, innerW, bh, tColor);
+            const sub = innerW / 5;
+            drawFullLine("Date", document.getElementById('qDate').value, startX, posDataBox.y + step * 2.1, sub, bh, tColor);
+            drawFullLine("Time", document.getElementById('qTime').value, startX + sub, posDataBox.y + step * 2.1, sub, bh, tColor);
+            drawFullLine("Band", document.getElementById('qBand').value, startX + sub * 2, posDataBox.y + step * 2.1, sub, bh, tColor);
+            drawFullLine("Mode", document.getElementById('qMode').value, startX + sub * 3, posDataBox.y + step * 2.1, sub, bh, tColor);
+            drawFullLine("RST",  document.getElementById('qRst').value,  startX + sub * 4, posDataBox.y + step * 2.1, sub, bh, tColor);
+            drawFullLine("Remarks / 73", document.getElementById('qMsg').value, startX, posDataBox.y + step * 3.3, innerW, bh, tColor);
         }
-        function download() { 
-            const a=document.createElement('a'); 
-            a.download="QSL_"+document.getElementById('myC').value+".png"; 
-            a.href=canvas.toDataURL("image/png", 1.0); 
-            a.click(); 
-        }
+
+        window.onload = () => changeBG(document.querySelector('.gallery-item'));
     </script>
 </body>
 </html>
