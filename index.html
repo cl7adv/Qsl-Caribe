@@ -10,24 +10,18 @@
             --primary-dark: #009688;
             --accent: #ff9800;
             --gold: #ffe082;
-            --glass: rgba(0, 0, 0, 0.5);
-            --bg-gradient: linear-gradient(to bottom, #00bcd4, #009688);
+            --glass: rgba(14, 36, 49, 0.85); /* Color 0e2431 con transparencia */
         }
 
         body {
             font-family: "Trebuchet MS", Arial, sans-serif;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            color: #fff;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+            background-attachment: fixed; color: #fff; margin: 0;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
 
-        header { padding: 20px; text-align: center; width: 100%; }
-        header h1 { margin: 0; font-size: 2.2rem; text-shadow: 0 0 10px var(--gold); color: #fff; }
+        header { padding: 20px; text-align: center; }
+        header h1 { margin: 0; font-size: 2rem; text-shadow: 0 0 10px var(--gold); }
 
         .main-container {
             display: flex; flex-direction: row; gap: 20px;
@@ -36,47 +30,36 @@
 
         .controls-panel {
             flex: 0 0 350px; background: var(--glass); backdrop-filter: blur(10px);
-            padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
-            height: 85vh; overflow-y: auto; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            padding: 20px; border-radius: 20px; border: 1px solid var(--primary);
+            height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
 
         .section-label {
-            color: var(--gold); font-size: 0.85em; margin-top: 20px; margin-bottom: 10px;
+            color: var(--gold); font-size: 0.8em; margin: 15px 0 8px;
             display: block; border-bottom: 1px solid rgba(255,224,130,0.3);
-            text-transform: uppercase; font-weight: bold; letter-spacing: 1px;
+            text-transform: uppercase; font-weight: bold;
         }
 
-        input[type="text"], input[type="date"], input[type="time"] {
+        input[type="text"], input[type="date"], input[type="time"], input[type="file"] {
             width: 100%; padding: 10px; background: #fff; border: none;
-            border-radius: 10px; color: #333; margin-bottom: 8px; font-size: 0.9em; box-sizing: border-box;
+            border-radius: 8px; color: #333; margin-bottom: 8px; font-size: 0.85em; box-sizing: border-box;
         }
 
-        .logo-upload-box {
-            background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; margin-bottom: 10px;
-        }
-
-        .range-container { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; margin-bottom: 10px; }
-        label { display: block; margin-bottom: 3px; font-size: 0.7em; color: var(--gold); }
-        input[type="range"] { width: 100%; cursor: pointer; accent-color: var(--accent); }
+        .color-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .color-row input { width: 100%; height: 35px; border-radius: 5px; border: none; cursor: pointer; }
 
         .btn-download {
             width: 100%; padding: 15px; background: var(--accent);
             color: #fff; font-weight: bold; border: none; border-radius: 12px;
-            cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 15px;
+            cursor: pointer; text-transform: uppercase; margin-top: 10px;
         }
 
         .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         canvas {
             max-width: 95%; height: auto; border-radius: 15px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 3px solid rgba(255,255,255,0.2);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); border: 2px solid #fff;
+            cursor: move;
         }
-
-        .modal {
-            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.85);
-            justify-content: center; align-items: center;
-        }
-        .modal-content { background: #fff; color: #333; padding: 30px; border-radius: 20px; text-align: center; }
 
         @media (max-width: 900px) {
             .main-container { flex-direction: column; }
@@ -86,196 +69,177 @@
 </head>
 <body>
 
-    <header><h1>🌴 QSL Caribeño Generador 🌊</h1></header>
+    <header><h1>🌴 Generador QSL Caribeño 🌊</h1></header>
 
     <div class="main-container">
         <div class="controls-panel">
-            <span class="section-label">1. Mis Logotipos</span>
-            <div class="logo-upload-box">
-                <label>Logo 1 (Transparente recomendado):</label>
-                <input type="file" id="logo1Input" accept="image/*" style="font-size: 0.7em;">
-                <label>Tamaño Logo 1:</label>
-                <input type="range" id="logo1Size" min="30" max="250" value="80" oninput="draw()">
-            </div>
-            <div class="logo-upload-box">
-                <label>Logo 2:</label>
-                <input type="file" id="logo2Input" accept="image/*" style="font-size: 0.7em;">
-                <label>Tamaño Logo 2:</label>
-                <input type="range" id="logo2Size" min="30" max="250" value="80" oninput="draw()">
-            </div>
+            <span class="section-label">1. Logotipos (Sube y arrastra)</span>
+            <input type="file" id="logo1Input" accept="image/*">
+            <input type="range" id="logo1Size" min="30" max="300" value="100" oninput="draw()">
+            <input type="file" id="logo2Input" accept="image/*">
+            <input type="range" id="logo2Size" min="30" max="300" value="100" oninput="draw()">
 
             <span class="section-label">2. Imagen de Fondo</span>
             <input type="file" id="bgInput" accept="image/*">
 
             <span class="section-label">3. Colores</span>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div><label>Indicativo</label><input type="color" id="callColor" value="#ffe082" oninput="draw()" style="width:100%"></div>
-                <div><label>Texto Tabla</label><input type="color" id="textColor" value="#00ff99" oninput="draw()" style="width:100%"></div>
+            <div class="color-row">
+                <div><label style="font-size:0.7em">Indicativo</label><input type="color" id="callColor" value="#ffe082" oninput="draw()"></div>
+                <div><label style="font-size:0.7em">Texto Datos</label><input type="color" id="textColor" value="#00ff99" oninput="draw()"></div>
             </div>
 
-            <span class="section-label">4. Tus Datos</span>
+            <span class="section-label">4. Mis Datos</span>
             <input type="text" id="myCall" value="CL7ADV" oninput="draw()">
-            <input type="text" id="myLocator" value="EL98xx" oninput="draw()">
+            <input type="text" id="myLoc" value="EL98xx" oninput="draw()">
 
             <span class="section-label">5. Datos del QSO</span>
             <input type="text" id="toCall" placeholder="Indicativo Destino" oninput="draw()">
-            <div style="display: flex; gap: 5px;">
+            <div style="display:flex; gap:5px;">
                 <input type="date" id="qDate" oninput="draw()">
                 <input type="time" id="qTime" oninput="draw()">
             </div>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="qBand" placeholder="Banda" oninput="draw()">
+                <input type="text" id="qMode" placeholder="Modo" oninput="draw()">
+                <input type="text" id="qRst" placeholder="RST" oninput="draw()">
+            </div>
             <input type="text" id="qMsg" value="Radio, hermandad y comunidad" oninput="draw()">
 
-            <button class="btn-download" onclick="showDownloadMenu()">DESCARGAR QSL</button>
+            <button class="btn-download" onclick="downloadQSL()">DESCARGAR QSL</button>
         </div>
 
         <div class="preview-panel">
             <canvas id="qslCanvas" width="900" height="550"></canvas>
-            <p style="font-size: 0.8rem; margin-top: 15px; opacity: 0.8;">🖱️ Arrastra tu INDICATIVO, la TABLA o tus LOGOS para ubicarlos.</p>
-        </div>
-    </div>
-
-    <div id="downloadModal" class="modal">
-        <div class="modal-content">
-            <h3>💾 Guardar QSL</h3>
-            <button onclick="executeDownload('png')" style="padding:10px 20px; background:var(--primary); color:#fff; border:none; border-radius:8px; cursor:pointer;">PNG (HD)</button>
-            <button onclick="executeDownload('jpeg')" style="padding:10px 20px; background:var(--accent); color:#fff; border:none; border-radius:8px; cursor:pointer; margin-left:10px;">JPG</button>
-            <p onclick="hideDownloadMenu()" style="color:red; cursor:pointer; margin-top:15px;">Cerrar</p>
+            <p style="font-size: 0.8rem; margin-top: 10px;">🖱️ Puedes mover: Logos, Indicativo y la Tabla de Datos.</p>
         </div>
     </div>
 
     <script>
         const canvas = document.getElementById('qslCanvas');
         const ctx = canvas.getContext('2d');
-        let bgImg = new Image();
-        let logo1 = new Image();
-        let logo2 = new Image();
         
-        // Posiciones iniciales
-        let posMyCall = { x: 50, y: 110, w: 300, h: 80 };
-        let posDataBox = { x: 60, y: 320, w: 780, h: 180 };
-        let posLogo1 = { x: 750, y: 50, w: 80, h: 80 };
-        let posLogo2 = { x: 750, y: 150, w: 80, h: 80 };
+        let bgImg = new Image();
+        let l1Img = new Image();
+        let l2Img = new Image();
+        
+        // Estado de posiciones
+        let pos = {
+            call: { x: 50, y: 120, w: 350, h: 100 },
+            box:  { x: 50, y: 320, w: 800, h: 180 },
+            logo1: { x: 750, y: 30, w: 100, h: 100 },
+            logo2: { x: 620, y: 30, w: 100, h: 100 }
+        };
 
-        let dragTarget = null;
-        let dragOffset = { x: 0, y: 0 };
+        let dragging = null;
+        let offset = { x: 0, y: 0 };
 
         bgImg.crossOrigin = "anonymous";
         bgImg.src = "https://cdn.pixabay.com/photo/2017/01/20/00/30/maldives-1993704_960_720.jpg";
 
-        function handleImage(input, imgObj) {
-            input.addEventListener('change', (e) => {
-                const reader = new FileReader();
-                reader.onload = (event) => { imgObj.src = event.target.result; };
-                if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+        // Carga de imágenes
+        function setupFile(input, img) {
+            document.getElementById(input).addEventListener('change', e => {
+                const r = new FileReader();
+                r.onload = ev => { img.src = ev.target.result; };
+                r.readAsDataURL(e.target.files[0]);
             });
         }
+        setupFile('bgInput', bgImg);
+        setupFile('logo1Input', l1Img);
+        setupFile('logo2Input', l2Img);
 
-        handleImage(document.getElementById('bgInput'), bgImg);
-        handleImage(document.getElementById('logo1Input'), logo1);
-        handleImage(document.getElementById('logo2Input'), logo2);
+        [bgImg, l1Img, l2Img].forEach(img => img.onload = draw);
 
-        [bgImg, logo1, logo2].forEach(img => img.onload = draw);
-
-        function showDownloadMenu() { document.getElementById('downloadModal').style.display = 'flex'; }
-        function hideDownloadMenu() { document.getElementById('downloadModal').style.display = 'none'; }
-
-        function executeDownload(format) {
-            const link = document.createElement('a');
-            link.download = `QSL_${document.getElementById('myCall').value}.${format}`;
-            link.href = canvas.toDataURL(`image/${format}`, 0.9);
-            link.click();
-            hideDownloadMenu();
-        }
-
-        function getCoords(e) {
+        // Lógica de arrastre
+        canvas.onmousedown = e => {
             const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {
-                x: (clientX - rect.left) * (canvas.width / rect.width),
-                y: (clientY - rect.top) * (canvas.height / rect.height)
-            };
-        }
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
 
-        canvas.addEventListener('mousedown', e => {
-            const c = getCoords(e);
-            if (c.x >= posLogo1.x && c.x <= posLogo1.x + posLogo1.w && c.y >= posLogo1.y && c.y <= posLogo1.y + posLogo1.h) dragTarget = 'logo1';
-            else if (c.x >= posLogo2.x && c.x <= posLogo2.x + posLogo2.w && c.y >= posLogo2.y && c.y <= posLogo2.y + posLogo2.h) dragTarget = 'logo2';
-            else if (c.x >= posDataBox.x && c.x <= posDataBox.x + posDataBox.w && c.y >= posDataBox.y && c.y <= posDataBox.y + posDataBox.h) dragTarget = 'dataBox';
-            else if (c.x >= posMyCall.x && c.x <= posMyCall.x + posMyCall.w && c.y >= posMyCall.y - 70 && c.y <= posMyCall.y) dragTarget = 'myCall';
-            
-            if(dragTarget) {
-                let target = getTargetObj();
-                dragOffset.x = c.x - target.x;
-                dragOffset.y = c.y - target.y;
+            if (x > pos.logo1.x && x < pos.logo1.x + pos.logo1.w && y > pos.logo1.y && y < pos.logo1.y + pos.logo1.h) dragging = "logo1";
+            else if (x > pos.logo2.x && x < pos.logo2.x + pos.logo2.w && y > pos.logo2.y && y < pos.logo2.y + pos.logo2.h) dragging = "logo2";
+            else if (x > pos.box.x && x < pos.box.x + pos.box.w && y > pos.box.y && y < pos.box.y + pos.box.h) dragging = "box";
+            else if (x > pos.call.x && x < pos.call.x + pos.call.w && y > pos.call.y - 80 && y < pos.call.y + 20) dragging = "call";
+
+            if (dragging) {
+                offset.x = x - pos[dragging].x;
+                offset.y = y - pos[dragging].y;
             }
-        });
+        };
 
-        function getTargetObj() {
-            if(dragTarget === 'logo1') return posLogo1;
-            if(dragTarget === 'logo2') return posLogo2;
-            if(dragTarget === 'dataBox') return posDataBox;
-            if(dragTarget === 'myCall') return posMyCall;
-            return null;
-        }
-
-        window.addEventListener('mousemove', e => {
-            if (!dragTarget) return;
-            const c = getCoords(e);
-            let target = getTargetObj();
-            target.x = c.x - dragOffset.x;
-            target.y = c.y - dragOffset.y;
+        window.onmousemove = e => {
+            if (!dragging) return;
+            const rect = canvas.getBoundingClientRect();
+            pos[dragging].x = ((e.clientX - rect.left) * (canvas.width / rect.width)) - offset.x;
+            pos[dragging].y = ((e.clientY - rect.top) * (canvas.height / rect.height)) - offset.y;
             draw();
-        });
+        };
 
-        window.addEventListener('mouseup', () => dragTarget = null);
+        window.onmouseup = () => dragging = null;
 
-        function drawFullLine(label, value, x, y, width, color) {
+        function drawField(label, val, x, y, w, color) {
             ctx.fillStyle = color;
-            ctx.font = "bold 14px Verdana";
+            ctx.font = "bold 15px Verdana";
             ctx.fillText(label.toUpperCase() + ":", x, y);
+            const lw = ctx.measureText(label.toUpperCase() + ":").width;
             ctx.font = "bold 22px 'Courier New'";
-            ctx.fillText(value || "", x + ctx.measureText(label + ": ").width + 5, y);
+            ctx.fillText(val || "", x + lw + 10, y);
             ctx.strokeStyle = color; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(x, y + 5); ctx.lineTo(x + width, y + 5); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x + lw + 5, y + 5); ctx.lineTo(x + w, y + 5); ctx.stroke();
         }
 
         function draw() {
-            const tColor = document.getElementById('textColor').value;
-            const cColor = document.getElementById('callColor').value;
-            
             ctx.clearRect(0,0,900,550);
-            if(bgImg.complete) ctx.drawImage(bgImg, 0, 0, 900, 550);
+            if (bgImg.complete) ctx.drawImage(bgImg, 0, 0, 900, 550);
 
             // Marca de agua fija
-            ctx.font = "bold 20px Verdana"; ctx.textAlign = "right";
-            ctx.strokeStyle = "black"; ctx.lineWidth = 3; ctx.strokeText("ZMR-CUBA", 880, 30);
-            ctx.fillStyle = "red"; ctx.fillText("ZMR-CUBA", 880, 30); ctx.textAlign = "left";
+            ctx.font = "bold 22px Verdana"; ctx.textAlign = "right";
+            ctx.strokeStyle = "black"; ctx.lineWidth = 4; ctx.strokeText("ZMR-CUBA", 880, 35);
+            ctx.fillStyle = "red"; ctx.fillText("ZMR-CUBA", 880, 35); ctx.textAlign = "left";
 
-            // Dibujar Logos
-            posLogo1.w = posLogo1.h = document.getElementById('logo1Size').value;
-            posLogo2.w = posLogo2.h = document.getElementById('logo2Size').value;
-            if(logo1.src) ctx.drawImage(logo1, posLogo1.x, posLogo1.y, posLogo1.w, posLogo1.h);
-            if(logo2.src) ctx.drawImage(logo2, posLogo2.x, posLogo2.y, posLogo2.w, posLogo2.h);
+            // Logos
+            pos.logo1.w = pos.logo1.h = document.getElementById('logo1Size').value;
+            pos.logo2.w = pos.logo2.h = document.getElementById('logo2Size').value;
+            if (l1Img.src) ctx.drawImage(l1Img, pos.logo1.x, pos.logo1.y, pos.logo1.w, pos.logo1.h);
+            if (l2Img.src) ctx.drawImage(l2Img, pos.logo2.x, pos.logo2.y, pos.logo2.w, pos.logo2.h);
 
             // Indicativo
+            const cColor = document.getElementById('callColor').value;
             ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 10;
-            ctx.fillStyle = cColor; ctx.font = "bold 90px 'Trebuchet MS'";
-            ctx.fillText(document.getElementById('myCall').value.toUpperCase(), posMyCall.x, posMyCall.y);
-            ctx.fillStyle = "#fff"; ctx.font = "bold 30px Verdana";
-            ctx.fillText("Locator: " + document.getElementById('myLocator').value.toUpperCase(), posMyCall.x, posMyCall.y + 40);
+            ctx.fillStyle = cColor; ctx.font = "bold 95px 'Trebuchet MS'";
+            ctx.fillText(document.getElementById('myCall').value.toUpperCase(), pos.call.x, pos.call.y);
+            ctx.fillStyle = "#fff"; ctx.font = "bold 35px Verdana";
+            ctx.fillText("LOCATOR: " + document.getElementById('myLoc').value.toUpperCase(), pos.call.x, pos.call.y + 45);
             ctx.shadowBlur = 0;
 
-            // Tabla QSO
-            ctx.fillStyle = "rgba(0,0,0,0.7)";
-            ctx.fillRect(posDataBox.x, posDataBox.y, posDataBox.w, posDataBox.h);
+            // Tabla de Datos
+            const tColor = document.getElementById('textColor').value;
+            ctx.fillStyle = "rgba(14, 36, 49, 0.8)"; // Fondo 0e2431
+            ctx.fillRect(pos.box.x, pos.box.y, pos.box.w, pos.box.h);
             ctx.strokeStyle = tColor; ctx.lineWidth = 2;
-            ctx.strokeRect(posDataBox.x, posDataBox.y, posDataBox.w, posDataBox.h);
+            ctx.strokeRect(pos.box.x, pos.box.y, pos.box.w, pos.box.h);
 
-            let row = posDataBox.y + 45;
-            drawFullLine("To Radio", document.getElementById('toCall').value, posDataBox.x + 20, row, posDataBox.w - 40, tColor);
-            drawFullLine("Date/Time", `${document.getElementById('qDate').value} ${document.getElementById('qTime').value}`, posDataBox.x + 20, row + 50, posDataBox.w - 40, tColor);
-            drawFullLine("Message", document.getElementById('qMsg').value, posDataBox.x + 20, row + 100, posDataBox.w - 40, tColor);
+            // Campos de la tabla
+            const startX = pos.box.x + 20;
+            const fullW = pos.box.w - 40;
+            drawField("To Radio", document.getElementById('toCall').value, startX, pos.box.y + 45, fullW, tColor);
+            
+            // Fila de Fecha, Banda, Modo, RST
+            const subW = fullW / 4;
+            const dateStr = document.getElementById('qDate').value + " " + document.getElementById('qTime').value;
+            drawField("Date", dateStr, startX, pos.box.y + 95, subW * 1.5, tColor);
+            drawField("Band", document.getElementById('qBand').value, startX + (subW * 1.6), pos.box.y + 95, subW * 0.7, tColor);
+            drawField("Mode", document.getElementById('qMode').value, startX + (subW * 2.4), pos.box.y + 95, subW * 0.7, tColor);
+            drawField("RST",  document.getElementById('qRst').value,  startX + (subW * 3.2), pos.box.y + 95, subW * 0.7, tColor);
+            
+            drawField("Remarks", document.getElementById('qMsg').value, startX, pos.box.y + 145, fullW, tColor);
+        }
+
+        function downloadQSL() {
+            const link = document.createElement('a');
+            link.download = 'Mi_QSL_Caribeno.png';
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
         }
     </script>
 </body>
