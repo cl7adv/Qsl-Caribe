@@ -268,7 +268,28 @@
     let logos = Array.from({length: 4}, () => ({ img: new Image(), x: 1400, y: 100, active: false }));
     let callPos = { x: 120, y: 250 }, tablePos = { x: 100, y: 820 }, dragTarget = null, dragOffset = { x: 0, y: 0 }, activeLogoIdx = -1;
 
-    const PREFIX_DB = { "CA":"CHILE","CE":"CHILE","LU":"ARGENTINA","EA":"SPAIN","W":"USA","K":"USA","XE":"MEXICO","HK":"COLOMBIA" };
+    const PREFIX_DB = { // CHILE
+        "CA":"CHILE","CB":"CHILE","CC":"CHILE","CD":"CHILE","CE":"CHILE","XQ":"CHILE","XR":"CHILE","3G":"CHILE",
+        // ARGENTINA
+        "LU":"ARGENTINA","LW":"ARGENTINA","AY":"ARGENTINA","AZ":"ARGENTINA","LO":"ARGENTINA","LT":"ARGENTINA",
+        "L1":"ARGENTINA","L2":"ARGENTINA","L3":"ARGENTINA","L4":"ARGENTINA","L5":"ARGENTINA","L6":"ARGENTINA",
+        // ESPAÑA
+        "EA":"SPAIN","EB":"SPAIN","EC":"SPAIN","ED":"SPAIN","EE":"SPAIN","EF":"SPAIN","EG":"SPAIN","EH":"SPAIN",
+        "AM":"SPAIN","AN":"SPAIN","AO":"SPAIN",
+        // USA
+        "W":"USA","K":"USA","N":"USA","AA":"USA","AB":"USA","AC":"USA","AD":"USA","K1":"USA","K2":"USA","K3":"USA",
+        "K4":"USA","K5":"USA","K6":"USA","K7":"USA","K8":"USA","K9":"USA","K0":"USA",
+        // MEXICO
+        "XE":"MEXICO","XF":"MEXICO","XG":"MEXICO","4A":"MEXICO","4B":"MEXICO",
+        // COLOMBIA
+        "HK":"COLOMBIA","HJ":"COLOMBIA","5K":"COLOMBIA",
+        // VENEZUELA
+        "YV":"VENEZUELA","YW":"VENEZUELA","4M":"VENEZUELA",
+        // OTROS
+        "OA":"PERU","OB":"PERU","ZP":"PARAGUAY","CP":"BOLIVIA","CX":"URUGUAY","CV":"URUGUAY",
+        "HC":"ECUADOR","HD":"ECUADOR","TI":"COSTA RICA","TG":"GUATEMALA","HR":"HONDURAS",
+        "YS":"EL SALVADOR","YN":"NICARAGUA","HP":"PANAMA","HI":"DOMINICAN REP.","CO":"CUBA","CM":"CUBA",
+        "KP":"PUERTO RICO","WP":"PUERTO RICO","3C":"EQUAT. GUINEA" };
 
     // Generador de controles de logos
     const logoContainer = document.getElementById('logoControls');
