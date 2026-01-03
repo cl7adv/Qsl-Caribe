@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL ELITE HYPER-STUDIO v25.0</title>
+    <title>QSL ELITE HYPER-STUDIO v25.2 - FINAL FIXED</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
@@ -19,7 +19,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg-deep);
             color: var(--text-main);
             margin: 0;
@@ -37,7 +37,6 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 100;
         }
 
         header h1 {
@@ -46,7 +45,6 @@
             text-transform: uppercase;
             letter-spacing: 4px;
             color: var(--neon-cyan);
-            text-shadow: 0 0 10px rgba(0,242,255,0.4);
         }
 
         .app-container {
@@ -61,11 +59,7 @@
             border-right: 1px solid var(--border-color);
             padding: 20px;
             overflow-y: auto;
-            scrollbar-width: thin;
         }
-
-        .sidebar::-webkit-scrollbar { width: 6px; }
-        .sidebar::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 10px; }
 
         .control-section {
             background: rgba(255, 255, 255, 0.02);
@@ -81,21 +75,15 @@
             color: var(--neon-pink);
             text-transform: uppercase;
             margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
             border-bottom: 1px solid #333;
-            padding-bottom: 5px;
         }
 
-        .input-group { margin-bottom: 12px; }
         label {
             display: block;
             font-size: 0.65rem;
             color: #8b949e;
             text-transform: uppercase;
             margin-bottom: 5px;
-            font-weight: bold;
         }
 
         input[type="text"], input[type="file"], select {
@@ -107,14 +95,11 @@
             color: white;
             font-size: 0.85rem;
             box-sizing: border-box;
+            margin-bottom: 10px;
         }
 
         input[type="range"] {
             width: 100%;
-            height: 6px;
-            background: #30363d;
-            border-radius: 5px;
-            outline: none;
             accent-color: var(--neon-cyan);
             margin: 10px 0;
         }
@@ -128,40 +113,26 @@
             cursor: pointer;
             text-transform: uppercase;
             font-size: 0.8rem;
-            transition: all 0.2s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
+            margin-top: 5px;
         }
 
         .btn-primary { background: var(--neon-cyan); color: #000; }
         .btn-secondary { background: var(--neon-pink); color: #fff; }
         .btn-dark { background: #21262d; color: #fff; border: 1px solid var(--border-color); }
 
-        .nav-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
         .preview-area {
             flex: 1;
             background: var(--bg-deep);
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             position: relative;
-            padding: 30px;
         }
 
         canvas {
-            max-width: 100%;
-            max-height: 85vh;
+            max-width: 95%;
+            max-height: 90vh;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.8);
             background: #000;
         }
@@ -174,7 +145,6 @@
             color: white;
             padding: 6px 15px;
             border-radius: 30px;
-            font-size: 0.9rem;
             font-weight: bold;
         }
     </style>
@@ -182,59 +152,46 @@
 <body>
 
 <header>
-    <h1>QSL ELITE <span style="color:var(--neon-pink)">AUTO-STATION v25.0</span></h1>
-    <div style="font-size: 0.8rem; color: #8b949e;">Auto-Call | Auto-DV | Letras Chiquitas</div>
+    <h1>QSL ELITE <span style="color:var(--neon-pink)">HYPER-STUDIO v25.2</span></h1>
+    <div style="font-size: 0.8rem; color: #8b949e;">Auto-STATION | Letras Chiquitas</div>
 </header>
 
 <div class="app-container">
     <div class="sidebar">
-        
         <div class="control-section">
             <div class="section-header">🖼️ Fondo y ADIF</div>
-            <input type="file" id="bgLoader" accept="image/*" style="margin-bottom:10px;">
+            <input type="file" id="bgLoader" accept="image/*">
             <input type="file" id="adifLoader" accept=".adi,.adif">
-            <div class="nav-controls">
-                <button class="btn btn-dark" onclick="changeQSO(-1)">ANTERIOR</button>
-                <button class="btn btn-dark" onclick="changeQSO(1)">SIGUIENTE</button>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button class="btn btn-dark" onclick="changeQSO(-1)">ANT.</button>
+                <button class="btn btn-dark" onclick="changeQSO(1)">SIG.</button>
             </div>
-            <button class="btn btn-secondary" id="btnZip" style="margin-top:10px; display:none;" onclick="processFullZip()">GENERAR PACK ZIP</button>
-        </div>
-
-        <div class="control-section">
-            <div class="section-header">📐 Estilo de Bloque</div>
-            <label>Diseño de Cuadro</label>
-            <select id="blockMode" onchange="renderQSL()">
-                <option value="classic">Clásico con Líneas</option>
-                <option value="modern">Moderno Compacto</option>
-                <option value="glass">Estilo Cristal (Sin Bordes)</option>
-            </select>
+            <button class="btn btn-secondary" id="btnZip" style="display:none;" onclick="processFullZip()">GENERAR PACK ZIP</button>
         </div>
 
         <div class="control-section">
             <div class="section-header">👤 Mi Estación</div>
-            <label>Mi Indicativo (Detectado Auto)</label>
-            <input type="text" id="myCall" placeholder="ESPERANDO ADIF..." oninput="autoPrefix()">
-            <label>Mi País</label>
+            <label>Mi Indicativo</label>
+            <input type="text" id="myCall" placeholder="CARGUE ADIF..." oninput="autoPrefix()">
+            <label>País</label>
             <input type="text" id="myCountry" oninput="renderQSL()">
         </div>
 
         <div class="control-section">
-            <div class="section-header">🛠️ Logos Movibles</div>
+            <div class="section-header">🛠️ Logos</div>
             <div id="logoControls"></div>
         </div>
 
         <div class="control-section">
-            <div class="section-header">📐 Geometría</div>
+            <div class="section-header">📐 Geometría Cuadro</div>
             <label>Ancho</label><input type="range" id="bWidth" min="800" max="1750" value="1620" oninput="renderQSL()">
-            <label>Alto</label><input type="range" id="bHeight" min="120" max="500" value="180" oninput="renderQSL()">
             <label>Opacidad</label><input type="range" id="bOpacity" min="0" max="100" value="85" oninput="renderQSL()">
-            <label>Borde</label><input type="range" id="bStroke" min="1" max="15" value="4" oninput="renderQSL()">
         </div>
 
         <div class="control-section">
             <div class="section-header">📝 Datos del QSO</div>
             <input type="text" id="toCall" placeholder="CORRESPONSAL" oninput="renderQSL()">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:5px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <input type="text" id="qDate" placeholder="FECHA" oninput="renderQSL()">
                 <input type="text" id="qTime" placeholder="HORA" oninput="renderQSL()">
             </div>
@@ -245,7 +202,7 @@
             </div>
         </div>
 
-        <button class="btn btn-primary" onclick="downloadSingle()">GUARDAR QSL (PNG)</button>
+        <button class="btn btn-primary" onclick="downloadSingle()">GUARDAR PNG</button>
     </div>
 
     <div class="preview-area">
@@ -261,53 +218,16 @@
     let callPos = { x: 120, y: 250 }, tablePos = { x: 100, y: 820 }, dragTarget = null, dragOffset = { x: 0, y: 0 }, activeLogoIdx = -1;
 
     const PREFIX_DB = { 
-        "CA":"CHILE","CB":"CHILE","CC":"CHILE","CD":"CHILE","CE":"CHILE","XQ":"CHILE","XR":"CHILE","3G":"CHILE",
-
-        // ARGENTINA
-
-        "LU":"ARGENTINA","LW":"ARGENTINA","AY":"ARGENTINA","AZ":"ARGENTINA","LO":"ARGENTINA","LT":"ARGENTINA",
-
-        "L1":"ARGENTINA","L2":"ARGENTINA","L3":"ARGENTINA","L4":"ARGENTINA","L5":"ARGENTINA","L6":"ARGENTINA",
-
-        // ESPAÑA
-
-        "EA":"SPAIN","EB":"SPAIN","EC":"SPAIN","ED":"SPAIN","EE":"SPAIN","EF":"SPAIN","EG":"SPAIN","EH":"SPAIN",
-
-        "AM":"SPAIN","AN":"SPAIN","AO":"SPAIN",
-
-        // USA
-
-        "W":"USA","K":"USA","N":"USA","AA":"USA","AB":"USA","AC":"USA","AD":"USA","K1":"USA","K2":"USA","K3":"USA",
-
-        "K4":"USA","K5":"USA","K6":"USA","K7":"USA","K8":"USA","K9":"USA","K0":"USA",
-
-        // MEXICO
-
-        "XE":"MEXICO","XF":"MEXICO","XG":"MEXICO","4A":"MEXICO","4B":"MEXICO",
-
-        // COLOMBIA
-
-        "HK":"COLOMBIA","HJ":"COLOMBIA","5K":"COLOMBIA",
-
-        // VENEZUELA
-
-        "YV":"VENEZUELA","YW":"VENEZUELA","4M":"VENEZUELA",
-
-        // OTROS
-
-        "OA":"PERU","OB":"PERU","ZP":"PARAGUAY","CP":"BOLIVIA","CX":"URUGUAY","CV":"URUGUAY",
-
-        "HC":"ECUADOR","HD":"ECUADOR","TI":"COSTA RICA","TG":"GUATEMALA","HR":"HONDURAS",
-
-        "YS":"EL SALVADOR","YN":"NICARAGUA","HP":"PANAMA","HI":"DOMINICAN REP.","CL":"CUBA","CO":"CUBA","CM":"CUBA",
-
-        "KP":"PUERTO RICO","WP":"PUERTO RICO","3C":"EQUAT. GUINEA"};
+        "CA":"CHILE","CB":"CHILE","CC":"CHILE","CD":"CHILE","CE":"CHILE","XQ":"CHILE","XR":"CHILE",
+        "LU":"ARGENTINA","LW":"ARGENTINA","EA":"SPAIN","EB":"SPAIN","EC":"SPAIN","ED":"SPAIN",
+        "W":"USA","K":"USA","N":"USA","AA":"USA","XE":"MEXICO","HK":"COLOMBIA","YV":"VENEZUELA",
+        "OA":"PERU","ZP":"PARAGUAY","CX":"URUGUAY","HI":"DOMINICAN REP.","CL":"CUBA","CO":"CUBA","CM":"CUBA",
+        "KP":"PUERTO RICO","WP":"PUERTO RICO","3C":"EQUAT. GUINEA"
     };
 
     const logoContainer = document.getElementById('logoControls');
     for(let i=0; i<4; i++) {
         const div = document.createElement('div');
-        div.className = 'input-group'; div.style.borderBottom = "1px solid #222";
         div.innerHTML = `<label>Logo ${i+1}</label><input type="file" onchange="loadLogo(${i}, event)"><input type="range" id="sc${i}" min="40" max="600" value="180" oninput="renderQSL()">`;
         logoContainer.appendChild(div);
     }
@@ -331,12 +251,8 @@
     };
 
     function parseADIF(text) {
-        // RECONOCER OPERADOR (STATION_CALLSIGN)
         const myCallMatch = text.match(/<STATION_CALLSIGN:\d+>([^<]*)/i) || text.match(/<OPERATOR:\d+>([^<]*)/i);
-        if(myCallMatch) {
-            document.getElementById('myCall').value = myCallMatch[1].trim();
-            autoPrefix();
-        }
+        if(myCallMatch) { document.getElementById('myCall').value = myCallMatch[1].trim(); autoPrefix(); }
 
         qsoRecords = text.split(/<eor>/i).filter(r => r.length > 20).map(r => {
             const data = {};
@@ -345,10 +261,9 @@
                 const m = r.match(new RegExp(`<${k}:\\d+>([^<]*)`, "i"));
                 if(m) {
                     let v = m[1].trim();
-                    // CONVERSIÓN DIGITAL A DV
                     if(k === 'MODE') {
-                        const digiModes = ['FT8','FT4','JS8','JT65','RTTY','PSK','VARA','ARDOP','SIM31','ROS'];
-                        if(digiModes.some(dm => v.toUpperCase().includes(dm))) v = "DV";
+                        const digis = ['FT8','FT4','JS8','JT65','RTTY','PSK','VARA'];
+                        if(digis.some(dm => v.toUpperCase().includes(dm))) v = "DV";
                     }
                     data[tags[k]] = v;
                 }
@@ -387,21 +302,17 @@
         ctx.save();
         ctx.shadowBlur = 20; ctx.shadowColor = "black";
         ctx.fillStyle = "#ff007b"; ctx.font = "900 210px 'Segoe UI'";
-        ctx.fillText(document.getElementById('myCall').value.toUpperCase() || "MI CALL", callPos.x, callPos.y);
+        ctx.fillText(document.getElementById('myCall').value.toUpperCase() || "CALLSIGN", callPos.x, callPos.y);
         ctx.fillStyle = "#00f2ff"; ctx.font = "bold 90px 'Segoe UI'";
-        ctx.fillText(document.getElementById('myCountry').value.toUpperCase() || "MI PAIS", callPos.x + 10, callPos.y + 110);
+        ctx.fillText(document.getElementById('myCountry').value.toUpperCase() || "COUNTRY", callPos.x + 10, callPos.y + 110);
         ctx.restore();
 
-        const w = parseInt(document.getElementById('bWidth').value), h = parseInt(document.getElementById('bHeight').value);
-        const op = parseInt(document.getElementById('bOpacity').value) / 100, st = parseInt(document.getElementById('bStroke').value);
-        const mode = document.getElementById('blockMode').value;
+        const w = parseInt(document.getElementById('bWidth').value), h = 180;
+        const op = parseInt(document.getElementById('bOpacity').value) / 100;
 
         ctx.save();
-        if(mode !== 'glass') {
-            ctx.fillStyle = `rgba(10, 20, 30, ${op})`; ctx.beginPath(); ctx.roundRect(tablePos.x, tablePos.y, w, h, 15); ctx.fill();
-            ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = st; ctx.stroke();
-            if(mode === 'classic') { ctx.beginPath(); ctx.moveTo(tablePos.x, tablePos.y + 65); ctx.lineTo(tablePos.x + w, tablePos.y + 65); ctx.stroke(); }
-        } else { ctx.fillStyle = `rgba(0,0,0,${op})`; ctx.beginPath(); ctx.roundRect(tablePos.x, tablePos.y, w, h, 20); ctx.fill(); }
+        ctx.fillStyle = `rgba(10, 20, 30, ${op})`; ctx.beginPath(); ctx.roundRect(tablePos.x, tablePos.y, w, h, 15); ctx.fill();
+        ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 4; ctx.stroke();
 
         const headers = ["CORRESPONSAL", "FECHA", "HORA (UTC)", "BANDA", "MODO", "RST"];
         const vals = [document.getElementById('toCall').value, document.getElementById('qDate').value, document.getElementById('qTime').value, document.getElementById('qBand').value, document.getElementById('qMode').value, document.getElementById('qRst').value];
@@ -411,7 +322,7 @@
             ctx.fillStyle = "#00f2ff"; ctx.font = "800 22px Arial";
             ctx.fillText(h, tablePos.x + 25 + (i * step), tablePos.y + 42);
             ctx.fillStyle = "#fff"; 
-            ctx.font = "bold 38px 'Courier New'"; // LETRAS CHIQUITAS ACTIVAS
+            ctx.font = "bold 38px 'Courier New'"; // LETRAS CHIQUITAS
             ctx.fillText(vals[i] || "---", tablePos.x + 25 + (i * step), tablePos.y + 130);
         });
         ctx.restore();
@@ -421,9 +332,10 @@
         const rect = canvas.getBoundingClientRect();
         const mx = (e.clientX - rect.left) * (1800 / rect.width), my = (e.clientY - rect.top) * (1100 / rect.height);
         for(let i=0; i<4; i++) { if(logos[i].active) { let s = parseInt(document.getElementById(`sc${i}`).value); if(mx > logos[i].x && mx < logos[i].x + s && my > logos[i].y && my < logos[i].y + s) { dragTarget = 'logo'; activeLogoIdx = i; dragOffset = { x: mx - logos[i].x, y: my - logos[i].y }; return; } } }
-        if(mx > tablePos.x && mx < tablePos.x + parseInt(document.getElementById('bWidth').value) && my > tablePos.y && my < tablePos.y + 500) { dragTarget = 'table'; dragOffset = { x: mx - tablePos.x, y: my - tablePos.y }; }
+        if(mx > tablePos.x && mx < tablePos.x + parseInt(document.getElementById('bWidth').value) && my > tablePos.y && my < tablePos.y + 200) { dragTarget = 'table'; dragOffset = { x: mx - tablePos.x, y: my - tablePos.y }; }
         else if(mx > callPos.x && mx < callPos.x + 800 && my > callPos.y - 180 && my < callPos.y + 50) { dragTarget = 'call'; dragOffset = { x: mx - callPos.x, y: my - callPos.y }; }
     };
+
     window.onmousemove = (e) => {
         if(!dragTarget) return; const rect = canvas.getBoundingClientRect();
         const mx = (e.clientX - rect.left) * (1800 / rect.width), my = (e.clientY - rect.top) * (1100 / rect.height);
