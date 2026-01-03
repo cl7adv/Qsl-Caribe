@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v10.4 - Table Styles</title>
+    <title>QSL CARIBEÑO v10.4 - Table Styles</title>
     <style>
         :root {
             --bg-dark: #0e2431;
@@ -104,8 +104,8 @@
         <div class="controls-panel">
             <span class="section-label">1. Fondo</span>
             <div class="gallery-grid">
-                <img class="gallery-item" src="https://cdn.pixabay.com/photo/2017/01/20/00/30/maldives-1993704_960_720.jpg" onclick="changeBG(this)">
-                <img class="gallery-item" src="https://cdn.pixabay.com/photo/2017/01/28/02/24/ocean-2014647_960_720.jpg" onclick="changeBG(this)">
+                <img class="gallery-item" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=900" onclick="changeBG(this)">
+                <img class="gallery-item" src="https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=900" onclick="changeBG(this)">
             </div>
             <input type="file" id="bgInput" accept="image/*" style="margin-top:10px;">
 
@@ -218,6 +218,15 @@
 
         bgImg.onload = draw;
 
+        document.getElementById('bgInput').addEventListener('change', (e) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                bgImg.src = event.target.result;
+                document.querySelectorAll('.gallery-item').forEach(img => img.classList.remove('active'));
+            };
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+        });
+
         function showDownloadMenu() { document.getElementById('downloadModal').style.display = 'flex'; }
         function hideDownloadMenu() { document.getElementById('downloadModal').style.display = 'none'; }
 
@@ -296,7 +305,7 @@
             const cColor = document.getElementById('callColor').value;
             const bOp = document.getElementById('boxOp').value / 100;
             const bw = parseInt(document.getElementById('boxW').value);
-            const bh = 140;
+            const bh = 130;
 
             ctx.clearRect(0,0,900,550);
             if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
@@ -322,26 +331,24 @@
             ctx.fillText("Locator: " + document.getElementById('myLocator').value.toUpperCase(), posMyCall.x + 5, posMyCall.y + 40);
             ctx.restore();
 
-            // Dibujo de Tabla según modo
+            // Dibujo de Tabla
             const startX = posDataBox.x;
             const startY = posDataBox.y;
 
             if (style === 'normal') {
-                ctx.fillStyle = hexToRgbA(bColor, bOp);
-                ctx.fillRect(startX, startY, bw, bh);
-                ctx.strokeStyle = tColor; ctx.lineWidth = 2;
-                ctx.strokeRect(startX, startY, bw, bh);
+                ctx.fillStyle = hexToRgbA(bColor, bOp); ctx.fillRect(startX, startY, bw, bh);
+                ctx.strokeStyle = tColor; ctx.lineWidth = 2; ctx.strokeRect(startX, startY, bw, bh);
             } else if (style === 'modern') {
-                // Estilo basado en tu imagen: Cabeceras con fondo, datos con otro
-                ctx.fillStyle = "#333"; ctx.fillRect(startX, startY, bw, 30); // Cabecera
-                ctx.fillStyle = "white"; ctx.fillRect(startX, startY + 30, bw, 40); // Fila datos
-                ctx.fillStyle = hexToRgbA(bColor, 0.5); ctx.fillRect(startX, startY + 75, bw, 30); // Comentario
-                ctx.strokeStyle = "white"; ctx.lineWidth = 1; ctx.strokeRect(startX, startY, bw, 105);
+                // Cabecera oscura
+                ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fillRect(startX, startY, bw, 30);
+                // Cuerpo blanco
+                ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.fillRect(startX, startY + 30, bw, 45);
+                // Comentario inferior
+                ctx.fillStyle = hexToRgbA(bColor, 0.8); ctx.fillRect(startX, startY + 75, bw, 35);
+                ctx.strokeStyle = "white"; ctx.lineWidth = 1; ctx.strokeRect(startX, startY, bw, 110);
             }
 
-            // Datos del QSO (ajuste dinámico de posición según el estilo)
-            ctx.fillStyle = (style === 'modern') ? "white" : tColor;
-            ctx.font = "bold 14px Verdana";
+            // Textos QSO
             const colW = bw / 6;
             const labels = ["DATE", "TIME", "BAND", "MODE", "RST", "QSO WITH"];
             const values = [
@@ -354,18 +361,19 @@
             ];
 
             labels.forEach((l, i) => {
+                ctx.font = "bold 12px Verdana";
                 ctx.fillStyle = (style === 'modern') ? "white" : tColor;
                 ctx.fillText(l, startX + 10 + (colW * i), startY + 20);
-                ctx.fillStyle = (style === 'modern') ? "black" : tColor;
+                
                 ctx.font = "bold 16px Courier New";
-                ctx.fillText(values[i], startX + 10 + (colW * i), startY + 55);
-                ctx.font = "bold 14px Verdana";
+                ctx.fillStyle = (style === 'modern') ? "black" : tColor;
+                ctx.fillText(values[i], startX + 10 + (colW * i), startY + 58);
             });
 
+            ctx.font = "bold 13px Verdana";
             ctx.fillStyle = (style === 'modern') ? "white" : tColor;
-            ctx.fillText(document.getElementById('qMsg').value || "73's", startX + 10, startY + 95);
+            ctx.fillText(document.getElementById('qMsg').value || "73's", startX + 10, startY + 98);
             
-            // Línea inferior decorativa si es transparente
             if (style === 'transparent') {
                 ctx.strokeStyle = tColor; ctx.beginPath();
                 ctx.moveTo(startX, startY + 110); ctx.lineTo(startX + bw, startY + 110); ctx.stroke();
