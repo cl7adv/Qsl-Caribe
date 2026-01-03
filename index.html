@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qsl-Caribeño Pro - Editor Libre</title>
+    <title>Qsl-Caribeño - Galería Pro</title>
     <style>
         :root {
             --navy-deep: #000c1d;
@@ -36,14 +36,34 @@
         }
 
         .controls-panel {
-            flex: 0 0 320px;
+            flex: 0 0 340px;
             background: var(--panel-bg);
             padding: 20px;
             border-radius: 12px;
             border: 1px solid var(--neon-blue);
-            height: 85vh;
+            height: 90vh;
             overflow-y: auto;
         }
+
+        /* Galería Estilizada */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .gallery-item {
+            width: 100%;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .gallery-item:hover { border-color: var(--neon-blue); transform: scale(1.05); }
 
         .section-label {
             color: var(--neon-green);
@@ -81,16 +101,16 @@
             text-transform: uppercase;
         }
 
-        .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; }
         canvas {
             max-width: 100%;
             border-radius: 4px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             border: 1px solid var(--neon-blue);
-            cursor: move; /* Indica que se puede mover */
+            cursor: crosshair;
         }
 
-        .hint { color: #5c7d9d; font-size: 0.8rem; margin-top: 10px; }
+        .hint { color: var(--neon-blue); font-size: 0.8rem; margin-top: 10px; }
 
         @media (max-width: 1000px) {
             .main-container { flex-direction: column; }
@@ -100,35 +120,41 @@
 </head>
 <body>
 
-    <header><h1>QSL-CARIBEÑO <span style="font-weight: 100;">V4.0</span></h1></header>
+    <header><h1>QSL-CARIBEÑO <span style="font-weight: 100;">V6.0</span></h1></header>
 
     <div class="main-container">
         <div class="controls-panel">
+            <span class="section-label">1. Imagen de Fondo</span>
             <div class="input-group">
-                <label>Fondo de Tarjeta</label>
                 <input type="file" id="bgInput" accept="image/*">
             </div>
 
-            <div class="input-group">
-                <label>Ancho de la Caja de Datos</label>
-                <input type="range" id="boxWidthRange" min="400" max="850" value="800" oninput="draw()">
+            <label>O elige una predeterminada:</label>
+            <div class="gallery-grid">
+                <img class="gallery-item" src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=400" onclick="setGalleryImage(this.src)" title="Playa Caribe">
+                <img class="gallery-item" src="https://images.unsplash.com/photo-1544274433-8994a382e78d?w=400" onclick="setGalleryImage(this.src)" title="Atardecer Tropical">
+                <img class="gallery-item" src="https://images.unsplash.com/photo-1516216628859-9bccecad13fc?w=400" onclick="setGalleryImage(this.src)" title="Antenas de Radio">
+                <img class="gallery-item" src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=400" onclick="setGalleryImage(this.src)" title="Circuito Tech">
+                <img class="gallery-item" src="https://images.unsplash.com/photo-1595013054018-97999335da9b?w=400" onclick="setGalleryImage(this.src)" title="Isla Palmeras">
+                <img class="gallery-item" src="https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=400" onclick="setGalleryImage(this.src)" title="Mar Azul">
             </div>
 
+            <span class="section-label">2. Ajustes de Diseño</span>
+            <div class="input-group">
+                <label>Ancho de Caja de Datos</label>
+                <input type="range" id="boxWidthRange" min="400" max="850" value="800" oninput="draw()">
+            </div>
             <div style="display: flex; gap:10px;">
                 <div style="flex:1;"><label>Color Caja</label><input type="color" id="boxColor" value="#000000" oninput="draw()"></div>
                 <div style="flex:1;"><label>Color Texto</label><input type="color" id="textColor" value="#ffffff" oninput="draw()"></div>
             </div>
 
-            <span class="section-label">De: (Tu Estación)</span>
-            <div class="input-group">
-                <input type="text" id="myCall" placeholder="TU INDICATIVO" value="HI8-QSL" oninput="draw()">
-            </div>
-            <div class="input-group">
-                <input type="text" id="myInfo" placeholder="Tu Nombre / QTH" oninput="draw()">
-            </div>
+            <span class="section-label">3. Tus Datos (DE)</span>
+            <div class="input-group"><input type="text" id="myCall" value="HI8-QSL" oninput="draw()"></div>
+            <div class="input-group"><input type="text" id="myInfo" placeholder="Nombre / QTH" oninput="draw()"></div>
 
-            <span class="section-label">Para: (Detalles QSO)</span>
-            <div class="input-group"><label>Confirmando con:</label><input type="text" id="toCall" oninput="draw()"></div>
+            <span class="section-label">4. Datos del QSO</span>
+            <div class="input-group"><input type="text" id="toCall" placeholder="Confirmando con:" oninput="draw()"></div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <input type="date" id="qDate" oninput="draw()">
                 <input type="time" id="qTime" oninput="draw()">
@@ -138,14 +164,14 @@
                 <input type="text" id="qMode" placeholder="Mode" oninput="draw()">
                 <input type="text" id="qRst" placeholder="RST" oninput="draw()">
             </div>
-            <div class="input-group"><label>Comentarios:</label><input type="text" id="qMsg" oninput="draw()"></div>
+            <div class="input-group"><input type="text" id="qMsg" placeholder="Comentarios / 73" oninput="draw()"></div>
 
             <button class="btn-download" onclick="download()">Descargar QSL</button>
         </div>
 
         <div class="preview-panel">
             <canvas id="qslCanvas" width="900" height="550"></canvas>
-            <p class="hint">🖱️ Haz clic y arrastra el recuadro negro para moverlo por la tarjeta.</p>
+            <p class="hint">🖱️ Arrastra los elementos en la tarjeta para acomodarlos.</p>
         </div>
     </div>
 
@@ -153,12 +179,18 @@
         const canvas = document.getElementById('qslCanvas');
         const ctx = canvas.getContext('2d');
         let bgImg = new Image();
+        bgImg.crossOrigin = "anonymous"; // Importante para permitir descargar imágenes externas
 
-        // Variables de posicionamiento de la caja
-        let boxX = 50;
-        let boxY = 320;
-        let isDragging = false;
-        let dragOffsetX, dragOffsetY;
+        let posMyCall = { x: 50, y: 80, w: 300 };
+        let posDataBox = { x: 50, y: 320, h: 180 };
+        let dragTarget = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        // Función para la Galería
+        function setGalleryImage(url) {
+            bgImg.src = url;
+            bgImg.onload = draw;
+        }
 
         document.getElementById('bgInput').addEventListener('change', (e) => {
             const r = new FileReader();
@@ -166,32 +198,43 @@
             r.readAsDataURL(e.target.files[0]);
         });
 
-        // Eventos para arrastrar (Mouse)
         canvas.addEventListener('mousedown', (e) => {
             const rect = canvas.getBoundingClientRect();
             const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
             const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
             const currentBoxW = parseInt(document.getElementById('boxWidthRange').value);
 
-            if (mouseX >= boxX && mouseX <= boxX + currentBoxW && mouseY >= boxY && mouseY <= boxY + 180) {
-                isDragging = true;
-                dragOffsetX = mouseX - boxX;
-                dragOffsetY = mouseY - boxY;
+            if (mouseX >= posDataBox.x && mouseX <= posDataBox.x + currentBoxW && 
+                mouseY >= posDataBox.y && mouseY <= posDataBox.y + posDataBox.h) {
+                dragTarget = 'dataBox';
+                dragOffset.x = mouseX - posDataBox.x;
+                dragOffset.y = mouseY - posDataBox.y;
+            } 
+            else if (mouseX >= posMyCall.x && mouseX <= posMyCall.x + posMyCall.w && 
+                     mouseY >= posMyCall.y - 60 && mouseY <= posMyCall.y + 20) {
+                dragTarget = 'myCall';
+                dragOffset.x = mouseX - posMyCall.x;
+                dragOffset.y = mouseY - posMyCall.y;
             }
         });
 
         window.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                const rect = canvas.getBoundingClientRect();
-                const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
-                boxX = mouseX - dragOffsetX;
-                boxY = mouseY - dragOffsetY;
-                draw();
+            if (!dragTarget) return;
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            if (dragTarget === 'dataBox') {
+                posDataBox.x = mouseX - dragOffset.x;
+                posDataBox.y = mouseY - dragOffset.y;
+            } else if (dragTarget === 'myCall') {
+                posMyCall.x = mouseX - dragOffset.x;
+                posMyCall.y = mouseY - dragOffset.y;
             }
+            draw();
         });
 
-        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mouseup', () => dragTarget = null);
 
         function drawLine(label, value, x, y, width, textColor) {
             ctx.fillStyle = textColor;
@@ -212,56 +255,55 @@
             const boxColor = document.getElementById('boxColor').value;
             const textColor = document.getElementById('textColor').value;
             const currentBoxW = parseInt(document.getElementById('boxWidthRange').value);
-            const boxH = 180;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            if(bgImg.src) {
-                ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
-            } else {
-                ctx.fillStyle = "#001a33"; ctx.fillRect(0,0, canvas.width, canvas.height);
+            if(bgImg.src) { 
+                ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height); 
+            } else { 
+                ctx.fillStyle = "#001a33"; ctx.fillRect(0,0, canvas.width, canvas.height); 
             }
 
-            // TU INDICATIVO (ARRIBA)
+            // Indicativo
             ctx.shadowColor = "black"; ctx.shadowBlur = 10; ctx.fillStyle = "white";
             ctx.font = "bold 65px sans-serif";
-            ctx.fillText(document.getElementById('myCall').value.toUpperCase(), 50, 80);
+            const myCallText = document.getElementById('myCall').value.toUpperCase();
+            ctx.fillText(myCallText, posMyCall.x, posMyCall.y);
+            posMyCall.w = ctx.measureText(myCallText).width + 20;
             ctx.font = "bold 22px sans-serif"; ctx.fillStyle = "#00f2ff";
-            ctx.fillText(document.getElementById('myInfo').value, 50, 110);
+            ctx.fillText(document.getElementById('myInfo').value, posMyCall.x, posMyCall.y + 35);
             ctx.shadowBlur = 0;
 
-            // CAJA DE DATOS (MOVIBLE)
+            // Caja Datos
             ctx.fillStyle = boxColor + "D9";
-            ctx.fillRect(boxX, boxY, currentBoxW, boxH);
+            ctx.fillRect(posDataBox.x, posDataBox.y, currentBoxW, posDataBox.h);
             ctx.strokeStyle = textColor;
             ctx.lineWidth = 2;
-            ctx.strokeRect(boxX, boxY, currentBoxW, boxH);
+            ctx.strokeRect(posDataBox.x, posDataBox.y, currentBoxW, posDataBox.h);
 
-            const startX = boxX + 20;
+            const startX = posDataBox.x + 20;
             const contentW = currentBoxW - 40;
-
-            // Fila 1
-            drawLine("Confirming QSO with", document.getElementById('toCall').value, startX, boxY + 45, currentBoxW - 20, textColor);
-            // Fila 2
+            drawLine("Confirming QSO with", document.getElementById('toCall').value, startX, posDataBox.y + 45, currentBoxW - 20, textColor);
             const subCol = contentW / 5;
-            const r2 = boxY + 100;
+            const r2 = posDataBox.y + 100;
             drawLine("Date", document.getElementById('qDate').value, startX, r2, subCol, textColor);
             drawLine("Time", document.getElementById('qTime').value, startX + subCol, r2, subCol, textColor);
             drawLine("Band", document.getElementById('qBand').value, startX + (subCol*2), r2, subCol, textColor);
             drawLine("Mode", document.getElementById('qMode').value, startX + (subCol*3), r2, subCol, textColor);
             drawLine("RST",  document.getElementById('qRst').value,  startX + (subCol*4), r2, subCol, textColor);
-            // Fila 3
-            drawLine("Remarks", document.getElementById('qMsg').value, startX, boxY + 155, currentBoxW - 20, textColor);
+            drawLine("Remarks", document.getElementById('qMsg').value, startX, posDataBox.y + 155, currentBoxW - 20, textColor);
         }
 
         function download() {
             const link = document.createElement('a');
             link.download = `Qsl_Caribeno.png`;
-            link.href = canvas.toDataURL();
+            link.href = canvas.toDataURL("image/png");
             link.click();
         }
 
-        window.onload = draw;
+        // Cargar una imagen por defecto al abrir
+        window.onload = () => {
+            setGalleryImage("https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=900");
+        };
     </script>
 </body>
 </html>
