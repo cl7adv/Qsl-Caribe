@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v11.0 - ADIF Automation</title>
+    <title>QSL ELITE v12.0 - ADIF ZIP Export</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <style>
         :root {
             --bg-dark: #0e2431;
@@ -36,75 +39,99 @@
 
         .section-label {
             color: var(--neon-green); font-size: 0.8em; margin-top: 15px;
-            margin-bottom: 8px; display: block; border-bottom: 1px solid #333;
+            margin-bottom: 8px; display: block; border-bottom: 1px solid #30363d;
             text-transform: uppercase; font-weight: bold;
         }
 
-        input[type="text"], input[type="date"], input[type="time"], input[type="file"], select {
+        input[type="text"], input[type="date"], input[type="file"], select {
             width: 100%; padding: 8px; background: #050a14; border: 1px solid var(--neon-green);
-            border-radius: 6px; color: white; margin-bottom: 8px; font-size: 0.85em; box-sizing: border-box;
+            border-radius: 6px; color: white; margin-bottom: 8px; font-size: 0.9em; box-sizing: border-box;
         }
 
         .btn-action {
-            width: 100%; padding: 12px; font-weight: bold; border: none; border-radius: 6px;
-            cursor: pointer; text-transform: uppercase; margin-bottom: 10px;
+            width: 100%; padding: 15px; font-weight: bold; border: none; border-radius: 6px;
+            cursor: pointer; text-transform: uppercase; margin-top: 10px;
         }
         .btn-download { background: var(--neon-green); color: #000; }
-        .btn-adif { background: var(--neon-pink); color: #fff; }
+        .btn-zip { background: var(--neon-pink); color: #fff; display: none; }
 
         .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; }
         canvas { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--neon-green); }
 
-        /* Estilos galería */
-        .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .gallery-item { width: 100%; height: 50px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent; }
-        .gallery-item.active { border-color: var(--neon-pink); }
+        /* Galería de resultados */
+        #batchGallery {
+            width: 100%; max-width: 1200px; margin-top: 30px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px; padding: 20px; background: var(--bg-dark); border-radius: 12px;
+            display: none;
+        }
+        .batch-item { text-align: center; font-size: 0.7em; }
+        .batch-item img { width: 100%; border-radius: 4px; border: 1px solid #444; }
 
-        .adif-status { font-size: 0.75em; color: var(--neon-green); margin-bottom: 10px; background: rgba(0,0,0,0.4); padding: 5px; border-radius: 4px; display: none;}
+        .logo-box { border: 1px solid #333; padding: 10px; border-radius: 8px; margin-bottom: 10px; background: #0c1a25; }
+        .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .gallery-item { width: 100%; height: 50px; object-fit: cover; cursor: pointer; border-radius: 4px; border: 2px solid transparent; }
+        .gallery-item.active { border-color: var(--neon-pink); }
     </style>
 </head>
 <body>
 
-    <header><h1 style="margin:0; color:var(--neon-green); font-size: 1.4rem;">QSL CARIBEÑO v11.0 📡 BATCH</h1></header>
+    <header><h1>QSL ELITE v12.0 - ZIP AUTO-EXPORT</h1></header>
 
     <div class="main-container">
         <div class="controls-panel">
-            <span class="section-label">1. Automatización ADIF</span>
+            <span class="section-label">📂 Automatización ADIF</span>
             <input type="file" id="adifInput" accept=".adi,.adif" onchange="handleADIF(event)">
-            <div id="adifStatus" class="adif-status"></div>
-            <button class="btn-action btn-adif" id="btnBatch" style="display:none;" onclick="processBatch()">Generar Todas las QSLs</button>
+            <button class="btn-action btn-zip" id="btnZip" onclick="generateAndZip()">Descargar Todo en .ZIP</button>
 
-            <span class="section-label">2. Diseño y Fondo</span>
+            <span class="section-label">🎨 Estilo y Fondo</span>
             <div class="gallery-grid">
-                <img class="gallery-item" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=400" onclick="changeBG(this)">
-                <img class="gallery-item" src="https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=400" onclick="changeBG(this)">
+                <img class="gallery-item" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600" onclick="changeBG(this)">
+                <img class="gallery-item" src="https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=600" onclick="changeBG(this)">
             </div>
-            <input type="file" id="bgInput" accept="image/*">
-
+            
             <select id="tableStyle" onchange="draw()">
-                <option value="modern">Modo Moderno</option>
-                <option value="normal" selected>Modo Normal</option>
-                <option value="transparent">Modo Transparente</option>
+                <option value="modern">Moderno (Segmentado)</option>
+                <option value="normal" selected>Normal (Caja)</option>
+                <option value="transparent">Transparente</option>
             </select>
 
-            <span class="section-label">3. Mis Datos</span>
-            <input type="text" id="myCall" value="CL7ADV" placeholder="Mi Indicativo" oninput="draw()">
-            <input type="text" id="myLocator" value="EL98xx" placeholder="Mi Locator" oninput="draw()">
+            <span class="section-label">👤 Mis Datos</span>
+            <input type="text" id="myCall" value="CL7ADV" oninput="draw()">
+            <input type="text" id="myLocator" value="EL98xx" oninput="draw()">
 
-            <span class="section-label">4. Datos QSO (Manual)</span>
+            <span class="section-label">📡 Datos QSO</span>
             <input type="text" id="toCall" placeholder="Indicativo Destino" oninput="draw()">
             <input type="date" id="qDate" oninput="draw()">
-            <input type="text" id="qBand" placeholder="Banda (ej. 40m)" oninput="draw()">
-            <input type="text" id="qMode" placeholder="Modo (ej. FT8)" oninput="draw()">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                <input type="text" id="qBand" placeholder="Banda" oninput="draw()">
+                <input type="text" id="qMode" placeholder="Modo" oninput="draw()">
+            </div>
 
-            <button class="btn-action btn-download" onclick="downloadSingle()">Descargar Actual</button>
+            <span class="section-label">🖼️ Logos (4)</span>
+            <div id="logoControls">
+                <script>
+                    for(let i=0; i<4; i++) {
+                        document.write(`
+                            <div class="logo-box">
+                                <input type="file" accept="image/*" onchange="loadLogo(${i}, event)">
+                                <input type="range" id="logoSize${i}" min="20" max="200" value="80" oninput="draw()">
+                            </div>
+                        `);
+                    }
+                </script>
+            </div>
+
+            <button class="btn-action btn-download" onclick="downloadSingle()">Descargar Previa</button>
         </div>
 
         <div class="preview-panel">
             <canvas id="qslCanvas" width="900" height="550"></canvas>
-            <p style="font-size: 0.7rem; color: #8b949e; margin-top: 10px;">💡 Arrastra elementos en el canvas para reubicar.</p>
+            <p id="status" style="margin-top:10px; color:var(--neon-green); font-weight:bold;"></p>
         </div>
     </div>
+
+    <div id="batchGallery"></div>
 
     <script>
         const canvas = document.getElementById('qslCanvas');
@@ -112,26 +139,25 @@
         let bgImg = new Image();
         bgImg.crossOrigin = "anonymous";
         let adifRecords = [];
+        let logos = Array.from({length: 4}, () => ({ img: new Image(), x: 750, y: 30, active: false }));
 
-        // Configuración inicial de posiciones
         let posMyCall = { x: 50, y: 110 };
         let posDataBox = { x: 60, y: 380 };
         let dragTarget = null;
-        let offset = { x: 0, y: 0 };
+        let dragOffset = { x: 0, y: 0 };
+        let activeLogoIdx = -1;
 
-        // --- LÓGICA ADIF ---
+        // --- LÓGICA ADIF & ZIP ---
         function handleADIF(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 const text = e.target.result;
                 adifRecords = parseADIF(text);
-                const status = document.getElementById('adifStatus');
-                status.style.display = 'block';
-                status.innerText = `Cargados: ${adifRecords.length} contactos.`;
                 if(adifRecords.length > 0) {
-                    document.getElementById('btnBatch').style.display = 'block';
-                    fillFormWithRecord(adifRecords[0]); // Carga el primero para vista previa
+                    document.getElementById('btnZip').style.display = 'block';
+                    document.getElementById('status').innerText = `✅ ${adifRecords.length} Contactos Listos`;
+                    fillRecord(adifRecords[0]);
                 }
             };
             reader.readAsText(file);
@@ -142,132 +168,155 @@
             const parts = text.split(/<eor>|<EOR>/i);
             parts.forEach(part => {
                 if (!part.trim()) return;
-                const record = {};
-                const fields = ["CALL", "QSO_DATE", "TIME_ON", "BAND", "MODE", "RST_SENT"];
-                fields.forEach(f => {
-                    const regex = new RegExp(`<${f}:(\\d+)>([^<]*)`, "i");
-                    const match = part.match(regex);
-                    if (match) record[f] = match[2].trim();
-                });
-                if (record.CALL) records.push(record);
+                const rec = {};
+                const tags = { CALL: "toCall", BAND: "qBand", MODE: "qMode", QSO_DATE: "qDate" };
+                for (let tag in tags) {
+                    const reg = new RegExp(`<${tag}:(\\d+)>([^<]*)`, "i");
+                    const match = part.match(reg);
+                    if (match) rec[tags[tag]] = match[2].trim();
+                }
+                if (rec.toCall) records.push(rec);
             });
             return records;
         }
 
-        function fillFormWithRecord(rec) {
-            document.getElementById('toCall').value = rec.CALL || "";
-            document.getElementById('qBand').value = rec.BAND || "";
-            document.getElementById('qMode').value = rec.MODE || "";
-            if (rec.QSO_DATE) {
-                const d = rec.QSO_DATE;
+        function fillRecord(rec) {
+            document.getElementById('toCall').value = rec.toCall || "";
+            document.getElementById('qBand').value = rec.qBand || "";
+            document.getElementById('qMode').value = rec.qMode || "";
+            if(rec.qDate) {
+                let d = rec.qDate;
                 document.getElementById('qDate').value = `${d.substring(0,4)}-${d.substring(4,6)}-${d.substring(6,8)}`;
             }
             draw();
         }
 
-        async function processBatch() {
-            if(!confirm(`Se van a generar y descargar ${adifRecords.length} imágenes. ¿Continuar?`)) return;
-            for(let i=0; i < adifRecords.length; i++) {
-                fillFormWithRecord(adifRecords[i]);
-                await new Promise(r => setTimeout(r, 100)); // Pequeña pausa para render
-                downloadSingle(`QSL_${adifRecords[i].CALL}.png`);
-            }
-        }
+        async function generateAndZip() {
+            const zip = new JSZip();
+            const gallery = document.getElementById('batchGallery');
+            gallery.innerHTML = "<h2>Procesando...</h2>";
+            gallery.style.display = "grid";
+            
+            document.getElementById('status').innerText = "⏳ Generando archivos...";
 
-        // --- LÓGICA RENDER ---
-        function changeBG(el) {
-            document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-            bgImg.src = el.src;
-        }
+            for(let i=0; i<adifRecords.length; i++) {
+                fillRecord(adifRecords[i]);
+                await new Promise(r => setTimeout(r, 50)); // Render time
+                
+                const dataUrl = canvas.toDataURL("image/png");
+                const base64Data = dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
+                zip.file(`QSL_${adifRecords[i].toCall}_${i}.png`, base64Data, {base64: true});
 
-        bgImg.onload = draw;
-        
-        function draw() {
-            ctx.clearRect(0,0,900,550);
-            if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
-
-            // Marca de agua sutil
-            ctx.globalAlpha = 0.2; ctx.fillStyle = "white"; ctx.font = "10px Arial";
-            ctx.fillText("ZMR-ADIF BATCH SYSTEM", 800, 20); ctx.globalAlpha = 1.0;
-
-            // Mi Indicativo
-            ctx.fillStyle = document.getElementById('myCall').value ? "#00ff99" : "#555";
-            ctx.font = "bold 80px Verdana";
-            ctx.shadowColor = "black"; ctx.shadowBlur = 10;
-            ctx.fillText(document.getElementById('myCall').value.toUpperCase() || "MYCALL", posMyCall.x, posMyCall.y);
-            ctx.font = "25px Verdana";
-            ctx.fillText("LOC: " + document.getElementById('myLocator').value.toUpperCase(), posMyCall.x, posMyCall.y + 40);
-            ctx.shadowBlur = 0;
-
-            // Tabla
-            const style = document.getElementById('tableStyle').value;
-            const bw = 780; const bh = 110;
-            drawTable(posDataBox.x, posDataBox.y, bw, bh, style);
-        }
-
-        function drawTable(x, y, w, h, style) {
-            if(style === 'normal') {
-                ctx.fillStyle = "rgba(14, 36, 49, 0.85)"; ctx.fillRect(x, y, w, h);
-                ctx.strokeStyle = "#00ff99"; ctx.lineWidth = 2; ctx.strokeRect(x, y, w, h);
-            } else if(style === 'modern') {
-                ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fillRect(x, y, w, 30);
-                ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.fillRect(x, y+30, w, 50);
-                ctx.strokeStyle = "white"; ctx.strokeRect(x, y, w, 100);
+                // Añadir a la ventana visual de abajo
+                const item = document.createElement('div');
+                item.className = 'batch-item';
+                item.innerHTML = `<img src="${dataUrl}"><p>${adifRecords[i].toCall}</p>`;
+                gallery.appendChild(item);
             }
 
-            // Datos
-            ctx.fillStyle = (style === 'modern') ? "white" : "#00ff99";
-            ctx.font = "bold 12px Arial";
-            const headers = ["CONTACTO", "FECHA", "BANDA", "MODO"];
-            const vals = [
-                document.getElementById('toCall').value || "---",
-                document.getElementById('qDate').value || "---",
-                document.getElementById('qBand').value || "---",
-                document.getElementById('qMode').value || "---"
-            ];
-
-            headers.forEach((txt, i) => {
-                ctx.fillStyle = (style === 'modern') ? "white" : "#00ff99";
-                ctx.fillText(txt, x + 20 + (i*180), y + 20);
-                ctx.fillStyle = (style === 'modern') ? "black" : "white";
-                ctx.font = "bold 18px Courier";
-                ctx.fillText(vals[i], x + 20 + (i*180), y + 55);
-                ctx.font = "bold 12px Arial";
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                saveAs(content, "QSL_PACK_CARIBE.zip");
+                document.getElementById('status').innerText = "✅ ¡Descarga Completa!";
             });
         }
 
-        function downloadSingle(name) {
-            const link = document.createElement('a');
-            link.download = name || `QSL_Manual.png`;
-            link.href = canvas.toDataURL();
-            link.click();
+        // --- LÓGICA GRÁFICA ---
+        function changeBG(el) {
+            document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active'); bgImg.src = el.src;
         }
 
-        // Interacción Drag & Drop básica
+        function loadLogo(idx, e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => { 
+                    logos[idx].img.src = ev.target.result; 
+                    logos[idx].active = true; 
+                    logos[idx].y = 30 + (idx * 100);
+                    logos[idx].img.onload = draw;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        bgImg.onload = draw;
+
+        // Drag & Drop
         canvas.onmousedown = (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
-            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+            const r = canvas.getBoundingClientRect();
+            const x = (e.clientX - r.left) * (canvas.width / r.width);
+            const y = (e.clientY - r.top) * (canvas.height / r.height);
             
-            if(mouseX > posDataBox.x && mouseX < posDataBox.x + 500) dragTarget = 'box';
-            else if(mouseX > posMyCall.x && mouseX < posMyCall.x + 300) dragTarget = 'call';
+            for(let i=0; i<4; i++) {
+                if(logos[i].active) {
+                    let s = parseInt(document.getElementById(`logoSize${i}`).value);
+                    if(x > logos[i].x && x < logos[i].x + s && y > logos[i].y && y < logos[i].y + s) {
+                        dragTarget = 'logo'; activeLogoIdx = i;
+                        dragOffset = { x: x - logos[i].x, y: y - logos[i].y }; return;
+                    }
+                }
+            }
+            if(y > posDataBox.y && y < posDataBox.y + 150) { dragTarget = 'box'; dragOffset = { x: x - posDataBox.x, y: y - posDataBox.y }; }
+            else if(y > posMyCall.y - 80 && y < posMyCall.y + 20) { dragTarget = 'call'; dragOffset = { x: x - posMyCall.x, y: y - posMyCall.y }; }
         };
 
         window.onmousemove = (e) => {
             if(!dragTarget) return;
-            const rect = canvas.getBoundingClientRect();
-            if(dragTarget === 'box') {
-                posDataBox.x = (e.clientX - rect.left) * (canvas.width / rect.width) - 50;
-                posDataBox.y = (e.clientY - rect.top) * (canvas.height / rect.height) - 20;
-            } else {
-                posMyCall.x = (e.clientX - rect.left) * (canvas.width / rect.width) - 50;
-                posMyCall.y = (e.clientY - rect.top) * (canvas.height / rect.height) - 10;
-            }
+            const r = canvas.getBoundingClientRect();
+            const x = (e.clientX - r.left) * (canvas.width / r.width);
+            const y = (e.clientY - r.top) * (canvas.height / r.height);
+            if(dragTarget === 'logo') { logos[activeLogoIdx].x = x - dragOffset.x; logos[activeLogoIdx].y = y - dragOffset.y; }
+            if(dragTarget === 'box') { posDataBox.x = x - dragOffset.x; posDataBox.y = y - dragOffset.y; }
+            if(dragTarget === 'call') { posMyCall.x = x - dragOffset.x; posMyCall.y = y - dragOffset.y; }
             draw();
         };
-
         window.onmouseup = () => dragTarget = null;
+
+        function draw() {
+            ctx.clearRect(0,0,900,550);
+            if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
+            
+            // Marca de agua
+            ctx.globalAlpha = 0.2; ctx.fillStyle = "white"; ctx.font = "12px Verdana";
+            ctx.fillText("ZMR-BATCH-ELITE", 780, 20); ctx.globalAlpha = 1.0;
+
+            // Logos
+            logos.forEach((l, i) => { if(l.active) { let s = document.getElementById(`logoSize${i}`).value; ctx.drawImage(l.img, l.x, l.y, s, s); } });
+
+            // Mi Indicativo
+            ctx.save(); ctx.shadowBlur = 10; ctx.shadowColor = "black";
+            ctx.fillStyle = "#ff00ff"; ctx.font = "bold 90px Verdana";
+            ctx.fillText(document.getElementById('myCall').value.toUpperCase(), posMyCall.x, posMyCall.y);
+            ctx.fillStyle = "#00ff99"; ctx.font = "bold 30px Verdana";
+            ctx.fillText("LOC: " + document.getElementById('myLocator').value.toUpperCase(), posMyCall.x, posMyCall.y + 40);
+            ctx.restore();
+
+            // Tabla
+            const style = document.getElementById('tableStyle').value;
+            const x = posDataBox.x, y = posDataBox.y;
+            if(style === 'normal') {
+                ctx.fillStyle = "rgba(14, 36, 49, 0.85)"; ctx.fillRect(x, y, 780, 110);
+                ctx.strokeStyle = "#00ff99"; ctx.strokeRect(x, y, 780, 110);
+            } else if(style === 'modern') {
+                ctx.fillStyle = "black"; ctx.fillRect(x, y, 780, 30);
+                ctx.fillStyle = "white"; ctx.fillRect(x, y+30, 780, 50);
+                ctx.strokeStyle = "white"; ctx.strokeRect(x, y, 780, 100);
+            }
+
+            const labels = ["DESTINO", "FECHA", "BANDA", "MODO"];
+            const vals = [document.getElementById('toCall').value, document.getElementById('qDate').value, document.getElementById('qBand').value, document.getElementById('qMode').value];
+            labels.forEach((l, i) => {
+                ctx.font = "bold 11px Verdana"; ctx.fillStyle = (style === 'modern') ? "white" : "#00ff99";
+                ctx.fillText(l, x + 20 + (i*190), y + 20);
+                ctx.font = "bold 18px Courier"; ctx.fillStyle = (style === 'modern') ? "black" : "white";
+                ctx.fillText(vals[i] || "---", x + 20 + (i*190), y + 55);
+            });
+        }
+
+        function downloadSingle() {
+            saveAs(canvas.toDataURL(), `QSL_PREVIA.png`);
+        }
 
         window.onload = () => changeBG(document.querySelector('.gallery-item'));
     </script>
