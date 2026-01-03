@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL CARIBE PRO - RADIO CLUB</title>
+    <title>QSL CARIBE PRO - RADIO CLUB SANTA CRUZ</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
     
     <style>
@@ -13,22 +13,23 @@
             --neon-blue: #00d2ff;
             --neon-green: #00ff99;
             --neon-pink: #ff00ff;
+            --gold: #ffcc00;
         }
 
-        body { font-family: 'Roboto Mono', monospace; background-color: var(--bg-dark); color: #fff; margin: 0; }
+        body { font-family: 'Roboto Mono', monospace; background-color: var(--bg-dark); color: #fff; margin: 0; overflow-x: hidden; }
 
+        /* NAVEGACIÓN */
         nav {
             background: linear-gradient(90deg, #1e3a47, #0e2431);
             padding: 15px 25px; display: flex; justify-content: space-between; align-items: center;
             border-bottom: 3px solid var(--neon-green); box-shadow: 0 4px 20px rgba(0,0,0,0.8);
             position: sticky; top: 0; z-index: 999;
         }
-
-        .nav-title { font-family: 'Orbitron', sans-serif; font-weight: bold; color: var(--neon-green); font-size: 1.1rem; }
+        .nav-title { font-family: 'Orbitron', sans-serif; font-weight: bold; color: var(--neon-green); font-size: 1.1rem; letter-spacing: 1px; }
         .nav-btn {
             background: rgba(0,0,0,0.5); border: 1px solid var(--neon-blue);
-            color: var(--neon-blue); padding: 8px 15px; border-radius: 5px;
-            cursor: pointer; font-family: 'Orbitron'; transition: 0.3s;
+            color: var(--neon-blue); padding: 8px 18px; border-radius: 5px;
+            cursor: pointer; font-family: 'Orbitron'; transition: 0.3s; font-size: 0.8rem;
         }
         .nav-btn.active { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
 
@@ -37,30 +38,34 @@
 
         /* BUSCADOR */
         .search-container {
-            max-width: 600px; margin: 40px auto; background: var(--panel-dark);
+            max-width: 650px; margin: 40px auto; background: var(--panel-dark);
             padding: 30px; border-radius: 20px; border: 1px solid var(--neon-green); text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .search-box { display: flex; margin-top: 20px; border: 2px solid var(--neon-green); border-radius: 8px; overflow: hidden; }
-        .search-box input { flex: 1; padding: 15px; border: none; background: #000; color: #fff; font-size: 1.1rem; outline: none; }
-        .search-box button { padding: 0 20px; background: var(--neon-green); border: none; font-weight: bold; cursor: pointer; color: #000; }
+        .search-box { display: flex; margin-top: 20px; border: 2px solid var(--neon-green); border-radius: 8px; overflow: hidden; background: #000; }
+        .search-box input { flex: 1; padding: 15px; border: none; background: transparent; color: #fff; font-size: 1.2rem; outline: none; font-family: 'Orbitron'; }
+        .search-box button { padding: 0 25px; background: var(--neon-green); border: none; font-weight: bold; cursor: pointer; color: #000; font-family: 'Orbitron'; }
         
         #result-display { 
-            margin-top: 25px; min-height: 250px; display: flex; flex-direction: column; 
+            margin-top: 25px; min-height: 300px; display: flex; flex-direction: column; 
             align-items: center; justify-content: center; border: 2px dashed #1e3a47; 
-            border-radius: 10px; padding: 15px; background: rgba(0,0,0,0.2);
+            border-radius: 12px; padding: 20px; background: rgba(0,0,0,0.3);
         }
-        #result-display img { max-width: 100%; border-radius: 8px; border: 1px solid var(--neon-blue); }
+        #result-display img { max-width: 100%; border-radius: 8px; border: 2px solid var(--neon-blue); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
 
-        /* CREADOR */
-        .creator-grid { display: grid; grid-template-columns: 360px 1fr; gap: 20px; max-width: 1400px; margin: 0 auto; }
-        .side-panel { background: var(--panel-dark); padding: 15px; border-radius: 15px; border: 1px solid var(--neon-blue); height: 85vh; overflow-y: auto; }
-        .control-group { margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border-left: 3px solid var(--neon-pink); }
-        .control-group label { color: var(--neon-green); font-size: 11px; display: block; margin-bottom: 5px; font-weight: bold; }
+        /* CREADOR GRID */
+        .creator-grid { display: grid; grid-template-columns: 380px 1fr; gap: 25px; max-width: 1500px; margin: 0 auto; }
+        .side-panel { background: var(--panel-dark); padding: 20px; border-radius: 15px; border: 1px solid var(--neon-blue); height: 82vh; overflow-y: auto; }
+        .control-group { margin-bottom: 15px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border-left: 4px solid var(--neon-pink); }
+        .control-group label { color: var(--neon-green); font-size: 11px; display: block; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
         
-        input[type="text"], input[type="date"], input[type="time"] { width: 100%; padding: 10px; box-sizing: border-box; background: #000; color: #fff; border: 1px solid #444; border-radius: 5px; }
-        canvas { max-width: 100%; height: auto; border-radius: 10px; border: 2px solid #1e3a47; cursor: move; background: #000; }
+        input[type="text"], input[type="date"], input[type="time"] { width: 100%; padding: 10px; box-sizing: border-box; background: #000; color: #fff; border: 1px solid #444; border-radius: 5px; font-family: 'Roboto Mono'; }
+        canvas { max-width: 100%; height: auto; border-radius: 12px; border: 3px solid #1e3a47; cursor: move; background: #000; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
         
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .btn-main { width: 100%; padding: 15px; background: var(--neon-pink); color: white; border: none; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; text-transform: uppercase; }
+        .btn-main:hover { background: #ff00cc; transform: scale(1.02); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -68,23 +73,23 @@
 <nav>
     <div class="nav-title">RADIO CLUB - QSL CARIBE</div>
     <div class="nav-btns">
-        <button id="btn-search" class="nav-btn active" onclick="openTab('tab-search', this)">🔍 BUSCAR</button>
-        <button id="btn-creator" class="nav-btn" onclick="openTab('tab-creator', this)">🎨 CREAR</button>
+        <button id="btn-search" class="nav-btn active" onclick="openTab('tab-search', this)">🔍 EXPLORAR IMG/</button>
+        <button id="btn-creator" class="nav-btn" onclick="openTab('tab-creator', this)">🎨 DISEÑAR QSL</button>
     </div>
 </nav>
 
 <div id="tab-search" class="section active">
     <div class="search-container">
-        <h2 style="font-family: 'Orbitron'; color: var(--neon-green); margin-bottom: 5px;">EXPLORADOR DE QSL</h2>
-        <p style="font-size: 11px; opacity: 0.6;">Busca por indicativo en la carpeta local /img/</p>
+        <h2 style="font-family: 'Orbitron'; color: var(--neon-green); margin: 0;">BUSCADOR ELITE</h2>
+        <p style="font-size: 11px; opacity: 0.6; margin-bottom: 20px;">Directorio activo: <b>/IMG/</b></p>
         
         <div class="search-box">
-            <input type="text" id="qslSearchInput" placeholder="EJ: CO7ADV" onkeyup="if(event.key==='Enter') searchInFolder()">
+            <input type="text" id="qslSearchInput" placeholder="INDICATIVO (EJ: CO7ADV)" onkeyup="if(event.key==='Enter') searchInFolder()">
             <button onclick="searchInFolder()">BUSCAR</button>
         </div>
         
         <div id="result-display">
-            <p id="search-status" style="color: #555;">La QSL aparecerá aquí...</p>
+            <p id="search-status" style="color: #555;">Ingrese indicativo para procesar...</p>
         </div>
     </div>
 </div>
@@ -93,56 +98,60 @@
     <div class="creator-grid">
         <div class="side-panel">
             <div class="control-group">
-                <label>FONDOS Y LOGOS</label>
-                <input type="file" onchange="handleImage(this, 'bg')" style="font-size: 10px; margin-bottom: 8px;">
-                <input type="file" onchange="handleImage(this, 'logo')" style="font-size: 10px;">
+                <label>1. Capas de Imagen</label>
+                <span style="font-size: 9px; color: #888;">Fondo (900x550):</span>
+                <input type="file" onchange="handleImage(this, 'bg')" style="font-size: 10px; margin-bottom: 10px; width: 100%;">
+                <span style="font-size: 9px; color: #888;">Logo Personalizado:</span>
+                <input type="file" onchange="handleImage(this, 'logo')" style="font-size: 10px; width: 100%;">
             </div>
 
             <div class="control-group">
-                <label>INDICATIVO Y COLOR</label>
+                <label>2. Identificación</label>
                 <input type="text" id="callsign" value="CL7ADV" oninput="draw()">
-                <input type="color" id="callColor" value="#00ff99" oninput="draw()" style="width:100%; height:30px; margin-top:8px; border:none; cursor:pointer;">
+                <input type="color" id="callColor" value="#00ff99" oninput="draw()" style="width:100%; height:30px; margin-top:8px; border:none; cursor:pointer; background:none;">
             </div>
 
             <div class="control-group">
-                <label>TIEMPO UTC</label>
+                <label>3. Estampa de Tiempo UTC</label>
                 <div style="display: flex; gap: 5px; margin-bottom: 8px;">
                     <input type="date" id="qDate" oninput="draw()">
                     <input type="time" id="qTime" oninput="draw()">
                 </div>
-                <button onclick="setCurrentTime()" style="width:100%; background: var(--neon-blue); border:none; padding:8px; font-size:10px; font-weight:bold; cursor:pointer; border-radius:4px;">AUTO-HORA</button>
+                <button onclick="setCurrentTime()" style="width:100%; background: var(--neon-blue); border:none; padding:8px; font-size:10px; font-weight:bold; cursor:pointer; border-radius:4px; font-family: 'Orbitron';">SINCRONIZAR HORA</button>
             </div>
 
             <div class="control-group">
-                <label>REPORTE QSO</label>
-                <input type="text" id="toCall" placeholder="Confirming with..." oninput="draw()" style="margin-bottom:8px;">
+                <label>4. Datos del Contacto</label>
+                <input type="text" id="toCall" placeholder="CORRESPONSAL (EJ: CO2KK)" oninput="draw()" style="margin-bottom:8px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
-                    <input type="text" id="qBand" value="40m" oninput="draw()">
-                    <input type="text" id="qMode" value="FT8" oninput="draw()">
-                    <input type="text" id="qRst" value="599" oninput="draw()">
+                    <input type="text" id="qBand" value="40m" oninput="draw()" placeholder="Banda">
+                    <input type="text" id="qMode" value="FT8" oninput="draw()" placeholder="Modo">
+                    <input type="text" id="qRst" value="599" oninput="draw()" placeholder="RST">
                 </div>
             </div>
 
             <div class="control-group">
-                <label>TABLA: ANCHO Y OPACIDAD</label>
+                <label>5. Estilo de Tabla</label>
+                <span style="font-size: 9px;">Ancho:</span>
                 <input type="range" id="boxW" min="300" max="850" value="780" oninput="draw()">
+                <span style="font-size: 9px;">Opacidad:</span>
                 <input type="range" id="boxOp" min="10" max="100" value="85" oninput="draw()">
             </div>
 
-            <button onclick="download()" style="width:100%; padding:15px; background:var(--neon-pink); color:white; border:none; border-radius:8px; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">GUARDAR QSL HD</button>
+            <button onclick="download()" class="btn-main">💾 GENERAR ARCHIVO HD</button>
         </div>
 
         <div style="text-align: center;">
             <canvas id="mainCanvas" width="900" height="550"></canvas>
-            <div style="margin-top:10px; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; font-size:11px; color:var(--neon-blue);">
-                💡 PUEDES MOVER EL NOMBRE, EL LOGO Y LA TABLA ARRASTRÁNDOLOS CON EL RATÓN.
+            <div style="margin-top:15px; background:rgba(255,255,255,0.05); padding:12px; border-radius:10px; font-size:11px; color:var(--neon-blue); border: 1px solid rgba(0,210,255,0.2);">
+                🛠️ <b>MODO DRAG & DROP:</b> Haz clic y arrastra el Indicativo, el Logo o la Tabla para moverlos libremente.
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- SOLUCIÓN AL ERROR DE BÚSQUEDA ---
+    /* --- LÓGICA DE BÚSQUEDA EN DIRECTORIO /IMG/ --- */
     function searchInFolder() {
         const input = document.getElementById('qslSearchInput').value.trim().toUpperCase();
         const display = document.getElementById('result-display');
@@ -150,27 +159,33 @@
 
         if (!input) return;
 
-        // Limpiar y poner estado de carga
-        if (status) status.innerText = `Buscando ${input}...`;
-        display.innerHTML = `<p style="color: var(--neon-blue);">Consultando /img/${input}...</p>`;
+        if (status) status.innerText = `Procesando: ${input}`;
+        display.innerHTML = `<p style="color: var(--neon-blue);">🔍 Consultando base de datos en IMG/${input}...</p>`;
 
-        const extensions = ['jpg', 'png', 'jpeg'];
+        // Probamos extensiones comunes incluyendo variantes de mayúsculas
+        const extensions = ['jpg', 'png', 'jpeg', 'JPG', 'PNG'];
         let found = false;
 
         const tryLoad = (index) => {
             if (index >= extensions.length) {
-                display.innerHTML = `<p style="color: #ff4444;">❌ No se encontró ${input} en /img/ (JPG o PNG)</p>`;
+                display.innerHTML = `
+                    <div style="color: #ff4444; padding: 20px;">
+                        <span style="font-size: 40px;">⚠️</span>
+                        <p><b>${input} NO ENCONTRADA</b></p>
+                        <p style="font-size: 10px; color: #888;">Verifique que el archivo esté en la carpeta <b>IMG/</b> con nombre en mayúsculas.</p>
+                    </div>`;
                 return;
             }
 
-            const imgPath = `img/${input}.${extensions[index]}`;
+            // RUTA SOLICITADA: IMG/ en mayúsculas
+            const imgPath = `IMG/${input}.${extensions[index]}`;
             const img = new Image();
             
             img.onload = function() {
                 display.innerHTML = `
-                    <p style="color: var(--neon-green); font-weight:bold; margin-bottom:10px;">✅ QSL ENCONTRADA</p>
+                    <p style="color: var(--neon-green); font-weight:bold; margin-bottom:15px;">✅ QSL LOCALIZADA EXITOSAMENTE</p>
                     <img src="${imgPath}" alt="QSL ${input}">
-                    <a href="${imgPath}" download style="display:block; margin-top:15px; color: var(--neon-pink); text-decoration:none; font-size:12px;">[ ⬇️ DESCARGAR ARCHIVO ]</a>
+                    <a href="${imgPath}" download="${input}_QSL.png" style="display:inline-block; margin-top:20px; background: var(--neon-pink); color: white; padding: 12px 30px; text-decoration:none; border-radius: 6px; font-weight: bold; font-family: 'Orbitron'; font-size: 13px; box-shadow: 0 5px 15px rgba(255,0,255,0.3);">DESCARGAR QSL</a>
                 `;
                 found = true;
             };
@@ -185,13 +200,14 @@
         tryLoad(0);
     }
 
-    // --- CREADOR QSL ---
+    /* --- LÓGICA DEL CREADOR (CANVAS) --- */
     const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d');
     let imgBG = new Image(); 
     let imgLogo = new Image();
     imgBG.crossOrigin = imgLogo.crossOrigin = "anonymous";
 
+    // Objetos con sus coordenadas iniciales
     let oCall = { x: 50, y: 120, w: 300, h: 80 };
     let oBox = { x: 60, y: 330, w: 780, h: 180 };
     let oLogo = { x: 730, y: 30, w: 120, h: 120 };
@@ -203,7 +219,7 @@
         reader.onload = (e) => { 
             if(type === 'bg') imgBG.src = e.target.result; 
             else imgLogo.src = e.target.result; 
-            setTimeout(draw, 100);
+            setTimeout(draw, 150);
         };
         if(input.files[0]) reader.readAsDataURL(input.files[0]);
     }
@@ -217,66 +233,90 @@
 
     function draw() {
         ctx.clearRect(0,0,900,550);
-        if(imgBG.src) ctx.drawImage(imgBG, 0, 0, 900, 550);
-        else { ctx.fillStyle = "#111"; ctx.fillRect(0,0,900,550); }
+        
+        // 1. Dibujar Fondo
+        if(imgBG.src) {
+            ctx.drawImage(imgBG, 0, 0, 900, 550);
+        } else {
+            ctx.fillStyle = "#111";
+            ctx.fillRect(0,0,900,550);
+            ctx.fillStyle = "#333";
+            ctx.font = "20px Arial";
+            ctx.fillText("Suba una imagen de fondo para comenzar...", 250, 270);
+        }
 
+        // 2. Dibujar Logo
         if(imgLogo.src) ctx.drawImage(imgLogo, oLogo.x, oLogo.y, oLogo.w, oLogo.h);
 
-        // Indicativo
-        ctx.shadowBlur = 10; ctx.shadowColor = "black";
+        // 3. Dibujar Indicativo (Callsign)
+        ctx.shadowBlur = 15; ctx.shadowColor = "rgba(0,0,0,0.8)";
         ctx.fillStyle = document.getElementById('callColor').value;
-        ctx.font = "bold 100px 'Bebas Neue'";
+        ctx.font = "bold 110px 'Bebas Neue'";
         const call = document.getElementById('callsign').value.toUpperCase();
         ctx.fillText(call, oCall.x, oCall.y);
         oCall.w = ctx.measureText(call).width;
         ctx.shadowBlur = 0;
 
-        // Tabla
+        // 4. Dibujar Tabla de Datos
         const boxW = parseInt(document.getElementById('boxW').value);
         const boxOp = document.getElementById('boxOp').value / 100;
         oBox.w = boxW;
         ctx.fillStyle = `rgba(14, 36, 49, ${boxOp})`;
-        ctx.beginPath(); ctx.roundRect(oBox.x, oBox.y, oBox.w, oBox.h, 12); ctx.fill();
+        ctx.beginPath(); 
+        ctx.roundRect(oBox.x, oBox.y, oBox.w, oBox.h, 15); 
+        ctx.fill();
         ctx.strokeStyle = "#00ff99"; ctx.lineWidth = 2; ctx.stroke();
 
-        // Datos
-        ctx.fillStyle = "white"; ctx.font = "bold 22px 'Roboto Mono'";
-        ctx.fillText("QSO WITH: " + document.getElementById('toCall').value.toUpperCase(), oBox.x + 30, oBox.y + 50);
+        // 5. Textos de la Tabla
+        ctx.fillStyle = "white"; 
+        ctx.font = "bold 24px 'Roboto Mono'";
+        ctx.fillText("QSO WITH: " + document.getElementById('toCall').value.toUpperCase(), oBox.x + 30, oBox.y + 55);
         
-        ctx.font = "18px 'Roboto Mono'"; ctx.fillStyle = "#00d2ff";
-        const d = document.getElementById('qDate').value || "--/--/--";
+        ctx.font = "20px 'Roboto Mono'"; ctx.fillStyle = "#00d2ff";
+        const d = document.getElementById('qDate').value || "----/--/--";
         const t = document.getElementById('qTime').value || "--:--";
-        ctx.fillText(`DATE: ${d} | TIME: ${t} UTC`, oBox.x + 30, oBox.y + 100);
+        ctx.fillText(`DATE: ${d} | TIME: ${t} UTC`, oBox.x + 30, oBox.y + 105);
         
         ctx.fillStyle = "white";
         const b = document.getElementById('qBand').value;
         const m = document.getElementById('qMode').value;
         const r = document.getElementById('qRst').value;
-        ctx.fillText(`BAND: ${b} | MODE: ${m} | RST: ${r}`, oBox.x + 30, oBox.y + 140);
+        ctx.fillText(`BAND: ${b} | MODE: ${m} | RST: ${r}`, oBox.x + 30, oBox.y + 150);
     }
 
-    // INTERACCIÓN
+    /* --- SISTEMA DE ARRASTRE (DRAG & DROP) --- */
     function getMouse(e) {
         const r = canvas.getBoundingClientRect();
         const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
         const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
         return { x: x * (900/r.width), y: y * (550/r.height) };
     }
+
     canvas.onmousedown = canvas.ontouchstart = (e) => {
         const m = getMouse(e);
+        // Verificar qué objeto se está tocando
         if(m.x > oLogo.x && m.x < oLogo.x + oLogo.w && m.y > oLogo.y && m.y < oLogo.y + oLogo.h) dragging = oLogo;
-        else if(m.x > oCall.x && m.x < oCall.x + oCall.w && m.y > oCall.y - 80 && m.y < oCall.y) dragging = oCall;
+        else if(m.x > oCall.x && m.x < oCall.x + oCall.w && m.y > oCall.y - 100 && m.y < oCall.y) dragging = oCall;
         else if(m.x > oBox.x && m.x < oBox.x + oBox.w && m.y > oBox.y && m.y < oBox.y + oBox.h) dragging = oBox;
-        if(dragging) { offset.x = m.x - dragging.x; offset.y = m.y - dragging.y; e.preventDefault(); }
+        
+        if(dragging) { 
+            offset.x = m.x - dragging.x; 
+            offset.y = m.y - dragging.y; 
+            if(e.cancelable) e.preventDefault(); 
+        }
     };
+
     window.onmousemove = window.ontouchmove = (e) => {
         if(!dragging) return;
         const m = getMouse(e);
-        dragging.x = m.x - offset.x; dragging.y = m.y - offset.y;
+        dragging.x = m.x - offset.x; 
+        dragging.y = m.y - offset.y;
         draw();
     };
-    window.onmouseup = window.ontouchend = () => dragging = null;
 
+    window.onmouseup = window.ontouchend = () => { dragging = null; };
+
+    /* --- UTILIDADES --- */
     function openTab(id, btn) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -287,12 +327,17 @@
 
     function download() {
         const link = document.createElement('a');
-        link.download = 'QSL_ELITE.png';
+        link.download = 'QSL_CARIBE_HD.png';
         link.href = canvas.toDataURL('image/png', 1.0);
         link.click();
     }
 
-    window.onload = () => { setCurrentTime(); imgBG.src = "https://cdn.pixabay.com/photo/2017/01/20/00/30/maldives-1993704_960_720.jpg"; };
+    // Inicialización al cargar la página
+    window.onload = () => { 
+        setCurrentTime();
+        // Imagen de cortesía inicial
+        imgBG.src = "https://cdn.pixabay.com/photo/2017/01/20/00/30/maldives-1993704_960_720.jpg";
+    };
 </script>
 </body>
 </html>
