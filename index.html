@@ -316,14 +316,21 @@
 
         const headers = ["CORRESPONSAL", "FECHA", "HORA (UTC)", "BANDA", "MODO", "RST"];
         const vals = [document.getElementById('toCall').value, document.getElementById('qDate').value, document.getElementById('qTime').value, document.getElementById('qBand').value, document.getElementById('qMode').value, document.getElementById('qRst').value];
+        
+        // Ajuste de separación (step un poco más amplio entre las columnas de modo y rst)
         const step = w / 6;
 
         headers.forEach((h, i) => {
+            let xOffset = tablePos.x + 25 + (i * step);
+            
+            // Empujar RST un poco a la derecha para separarlo del MODO
+            if (i === 5) xOffset += 15; 
+
             ctx.fillStyle = "#00f2ff"; ctx.font = "800 22px Arial";
-            ctx.fillText(h, tablePos.x + 25 + (i * step), tablePos.y + 42);
+            ctx.fillText(h, xOffset, tablePos.y + 42);
             ctx.fillStyle = "#fff"; 
             ctx.font = "bold 38px 'Courier New'"; // LETRAS CHIQUITAS
-            ctx.fillText(vals[i] || "---", tablePos.x + 25 + (i * step), tablePos.y + 130);
+            ctx.fillText(vals[i] || "---", xOffset, tablePos.y + 130);
         });
         ctx.restore();
     }
