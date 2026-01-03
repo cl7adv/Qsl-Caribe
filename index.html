@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL ELITE HYPER-STUDIO v24.0</title>
+    <title>QSL ELITE HYPER-STUDIO v25.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
@@ -29,7 +29,6 @@
             overflow: hidden;
         }
 
-        /* --- Header Profesional --- */
         header {
             background: #161b22;
             border-bottom: 3px solid var(--neon-cyan);
@@ -50,14 +49,12 @@
             text-shadow: 0 0 10px rgba(0,242,255,0.4);
         }
 
-        /* --- Layout de la Aplicación --- */
         .app-container {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
 
-        /* --- Sidebar de Controles (420px de precisión) --- */
         .sidebar {
             width: 420px;
             background: var(--panel-bg);
@@ -65,7 +62,6 @@
             padding: 20px;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: var(--neon-cyan) var(--panel-bg);
         }
 
         .sidebar::-webkit-scrollbar { width: 6px; }
@@ -92,7 +88,6 @@
             padding-bottom: 5px;
         }
 
-        /* --- Estilizado de Inputs --- */
         .input-group { margin-bottom: 12px; }
         label {
             display: block;
@@ -112,7 +107,6 @@
             color: white;
             font-size: 0.85rem;
             box-sizing: border-box;
-            transition: border 0.3s ease;
         }
 
         input[type="range"] {
@@ -125,7 +119,6 @@
             margin: 10px 0;
         }
 
-        /* --- Botones --- */
         .btn {
             width: 100%;
             padding: 12px;
@@ -153,7 +146,6 @@
             margin-top: 10px;
         }
 
-        /* --- Área del Canvas --- */
         .preview-area {
             flex: 1;
             background: var(--bg-deep);
@@ -190,8 +182,8 @@
 <body>
 
 <header>
-    <h1>QSL ELITE <span style="color:var(--neon-pink)">HYPER-STUDIO v24.0</span></h1>
-    <div style="font-size: 0.8rem; color: #8b949e;">Auto-DV | Letras Chiquitas Activo</div>
+    <h1>QSL ELITE <span style="color:var(--neon-pink)">AUTO-STATION v25.0</span></h1>
+    <div style="font-size: 0.8rem; color: #8b949e;">Auto-Call | Auto-DV | Letras Chiquitas</div>
 </header>
 
 <div class="app-container">
@@ -220,9 +212,9 @@
 
         <div class="control-section">
             <div class="section-header">👤 Mi Estación</div>
-            <label>Indicativo</label>
-            <input type="text" id="myCall" placeholder="EA1ABC" oninput="autoPrefix()">
-            <label>País</label>
+            <label>Mi Indicativo (Detectado Auto)</label>
+            <input type="text" id="myCall" placeholder="ESPERANDO ADIF..." oninput="autoPrefix()">
+            <label>Mi País</label>
             <input type="text" id="myCountry" oninput="renderQSL()">
         </div>
 
@@ -268,30 +260,50 @@
     let logos = Array.from({length: 4}, () => ({ img: new Image(), x: 1400, y: 100, active: false }));
     let callPos = { x: 120, y: 250 }, tablePos = { x: 100, y: 820 }, dragTarget = null, dragOffset = { x: 0, y: 0 }, activeLogoIdx = -1;
 
-    const PREFIX_DB = { // CHILE
+    const PREFIX_DB = { 
         "CA":"CHILE","CB":"CHILE","CC":"CHILE","CD":"CHILE","CE":"CHILE","XQ":"CHILE","XR":"CHILE","3G":"CHILE",
-        // ARGENTINA
-        "LU":"ARGENTINA","LW":"ARGENTINA","AY":"ARGENTINA","AZ":"ARGENTINA","LO":"ARGENTINA","LT":"ARGENTINA",
-        "L1":"ARGENTINA","L2":"ARGENTINA","L3":"ARGENTINA","L4":"ARGENTINA","L5":"ARGENTINA","L6":"ARGENTINA",
-        // ESPAÑA
-        "EA":"SPAIN","EB":"SPAIN","EC":"SPAIN","ED":"SPAIN","EE":"SPAIN","EF":"SPAIN","EG":"SPAIN","EH":"SPAIN",
-        "AM":"SPAIN","AN":"SPAIN","AO":"SPAIN",
-        // USA
-        "W":"USA","K":"USA","N":"USA","AA":"USA","AB":"USA","AC":"USA","AD":"USA","K1":"USA","K2":"USA","K3":"USA",
-        "K4":"USA","K5":"USA","K6":"USA","K7":"USA","K8":"USA","K9":"USA","K0":"USA",
-        // MEXICO
-        "XE":"MEXICO","XF":"MEXICO","XG":"MEXICO","4A":"MEXICO","4B":"MEXICO",
-        // COLOMBIA
-        "HK":"COLOMBIA","HJ":"COLOMBIA","5K":"COLOMBIA",
-        // VENEZUELA
-        "YV":"VENEZUELA","YW":"VENEZUELA","4M":"VENEZUELA",
-        // OTROS
-        "OA":"PERU","OB":"PERU","ZP":"PARAGUAY","CP":"BOLIVIA","CX":"URUGUAY","CV":"URUGUAY",
-        "HC":"ECUADOR","HD":"ECUADOR","TI":"COSTA RICA","TG":"GUATEMALA","HR":"HONDURAS",
-        "YS":"EL SALVADOR","YN":"NICARAGUA","HP":"PANAMA","HI":"DOMINICAN REP.","CL":"CUBA,"CO":"CUBA","CM":"CUBA",
-        "KP":"PUERTO RICO","WP":"PUERTO RICO","3C":"EQUAT. GUINEA"};
 
-    // Generador de controles de logos
+        // ARGENTINA
+
+        "LU":"ARGENTINA","LW":"ARGENTINA","AY":"ARGENTINA","AZ":"ARGENTINA","LO":"ARGENTINA","LT":"ARGENTINA",
+
+        "L1":"ARGENTINA","L2":"ARGENTINA","L3":"ARGENTINA","L4":"ARGENTINA","L5":"ARGENTINA","L6":"ARGENTINA",
+
+        // ESPAÑA
+
+        "EA":"SPAIN","EB":"SPAIN","EC":"SPAIN","ED":"SPAIN","EE":"SPAIN","EF":"SPAIN","EG":"SPAIN","EH":"SPAIN",
+
+        "AM":"SPAIN","AN":"SPAIN","AO":"SPAIN",
+
+        // USA
+
+        "W":"USA","K":"USA","N":"USA","AA":"USA","AB":"USA","AC":"USA","AD":"USA","K1":"USA","K2":"USA","K3":"USA",
+
+        "K4":"USA","K5":"USA","K6":"USA","K7":"USA","K8":"USA","K9":"USA","K0":"USA",
+
+        // MEXICO
+
+        "XE":"MEXICO","XF":"MEXICO","XG":"MEXICO","4A":"MEXICO","4B":"MEXICO",
+
+        // COLOMBIA
+
+        "HK":"COLOMBIA","HJ":"COLOMBIA","5K":"COLOMBIA",
+
+        // VENEZUELA
+
+        "YV":"VENEZUELA","YW":"VENEZUELA","4M":"VENEZUELA",
+
+        // OTROS
+
+        "OA":"PERU","OB":"PERU","ZP":"PARAGUAY","CP":"BOLIVIA","CX":"URUGUAY","CV":"URUGUAY",
+
+        "HC":"ECUADOR","HD":"ECUADOR","TI":"COSTA RICA","TG":"GUATEMALA","HR":"HONDURAS",
+
+        "YS":"EL SALVADOR","YN":"NICARAGUA","HP":"PANAMA","HI":"DOMINICAN REP.","CL":"CUBA,"CO":"CUBA","CM":"CUBA",
+
+        "KP":"PUERTO RICO","WP":"PUERTO RICO","3C":"EQUAT. GUINEA"};
+    };
+
     const logoContainer = document.getElementById('logoControls');
     for(let i=0; i<4; i++) {
         const div = document.createElement('div');
@@ -319,6 +331,13 @@
     };
 
     function parseADIF(text) {
+        // RECONOCER OPERADOR (STATION_CALLSIGN)
+        const myCallMatch = text.match(/<STATION_CALLSIGN:\d+>([^<]*)/i) || text.match(/<OPERATOR:\d+>([^<]*)/i);
+        if(myCallMatch) {
+            document.getElementById('myCall').value = myCallMatch[1].trim();
+            autoPrefix();
+        }
+
         qsoRecords = text.split(/<eor>/i).filter(r => r.length > 20).map(r => {
             const data = {};
             const tags = { CALL:'c', QSO_DATE:'d', TIME_ON:'t', BAND:'b', MODE:'m', RST_SENT:'r' };
@@ -326,7 +345,11 @@
                 const m = r.match(new RegExp(`<${k}:\\d+>([^<]*)`, "i"));
                 if(m) {
                     let v = m[1].trim();
-                    if(k === 'MODE' && ['FT8','FT4','JS8','JT65','RTTY','PSK','VARA'].some(digi => v.toUpperCase().includes(digi))) v = "DV";
+                    // CONVERSIÓN DIGITAL A DV
+                    if(k === 'MODE') {
+                        const digiModes = ['FT8','FT4','JS8','JT65','RTTY','PSK','VARA','ARDOP','SIM31','ROS'];
+                        if(digiModes.some(dm => v.toUpperCase().includes(dm))) v = "DV";
+                    }
                     data[tags[k]] = v;
                 }
             }
@@ -361,16 +384,14 @@
         if(backgroundImage.src) ctx.drawImage(backgroundImage, 0, 0, 1800, 1100);
         logos.forEach((l, i) => { if(l.active) ctx.drawImage(l.img, l.x, l.y, document.getElementById(`sc${i}`).value, document.getElementById(`sc${i}`).value); });
 
-        // MI INDICATIVO (GRANDE)
         ctx.save();
         ctx.shadowBlur = 20; ctx.shadowColor = "black";
         ctx.fillStyle = "#ff007b"; ctx.font = "900 210px 'Segoe UI'";
-        ctx.fillText(document.getElementById('myCall').value.toUpperCase() || "CALLSIGN", callPos.x, callPos.y);
+        ctx.fillText(document.getElementById('myCall').value.toUpperCase() || "MI CALL", callPos.x, callPos.y);
         ctx.fillStyle = "#00f2ff"; ctx.font = "bold 90px 'Segoe UI'";
-        ctx.fillText(document.getElementById('myCountry').value.toUpperCase() || "PAÍS", callPos.x + 10, callPos.y + 110);
+        ctx.fillText(document.getElementById('myCountry').value.toUpperCase() || "MI PAIS", callPos.x + 10, callPos.y + 110);
         ctx.restore();
 
-        // CUADRO DE DATOS (LETRAS CHIQUITAS SEGÚN TU SOLICITUD)
         const w = parseInt(document.getElementById('bWidth').value), h = parseInt(document.getElementById('bHeight').value);
         const op = parseInt(document.getElementById('bOpacity').value) / 100, st = parseInt(document.getElementById('bStroke').value);
         const mode = document.getElementById('blockMode').value;
@@ -387,18 +408,15 @@
         const step = w / 6;
 
         headers.forEach((h, i) => {
-            ctx.fillStyle = "#00f2ff"; ctx.font = "800 22px Arial"; // Header chiquito
+            ctx.fillStyle = "#00f2ff"; ctx.font = "800 22px Arial";
             ctx.fillText(h, tablePos.x + 25 + (i * step), tablePos.y + 42);
-            
-            // --- AQUÍ EL CAMBIO: LETRAS CHIQUITAS ---
             ctx.fillStyle = "#fff"; 
-            ctx.font = "bold 38px 'Courier New'"; // Reducido de 52px a 38px para que sea "chiquito" y quepa bien
+            ctx.font = "bold 38px 'Courier New'"; // LETRAS CHIQUITAS ACTIVAS
             ctx.fillText(vals[i] || "---", tablePos.x + 25 + (i * step), tablePos.y + 130);
         });
         ctx.restore();
     }
 
-    // Interacción de Arrastre
     canvas.onmousedown = (e) => {
         const rect = canvas.getBoundingClientRect();
         const mx = (e.clientX - rect.left) * (1800 / rect.width), my = (e.clientY - rect.top) * (1100 / rect.height);
@@ -419,7 +437,7 @@
     async function processFullZip() {
         const zip = new JSZip();
         for(let i=0; i<qsoRecords.length; i++) { currentIndex = i; updateQSOFields(); await new Promise(r => setTimeout(r, 80)); const b = await new Promise(res => canvas.toBlob(res, 'image/png', 0.95)); zip.file(`QSL_${qsoRecords[i].c}.png`, b); }
-        zip.generateAsync({type:"blob"}).then(c => saveAs(c, "PACK_QSL_v24.zip"));
+        zip.generateAsync({type:"blob"}).then(c => saveAs(c, "PACK_QSL_v25.zip"));
     }
     function downloadSingle() { const l = document.createElement('a'); l.download = `QSL_${document.getElementById('toCall').value}.png`; l.href = canvas.toDataURL("image/png", 1.0); l.click(); }
     window.onload = () => { backgroundImage.crossOrigin = "anonymous"; backgroundImage.src = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=1800"; backgroundImage.onload = renderQSL; };
