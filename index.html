@@ -1,4 +1,69 @@
-const canvas = document.getElementById('qC'), ctx = canvas.getContext('2d');
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QSL Neón Pro - CL7ADV</title>
+    <style>
+        :root { --primary: #0ff; --secondary: #f0f; --glass: rgba(0, 0, 0, 0.85); }
+        body {
+            font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+        header { padding: 10px; }
+        header h1 { color: var(--primary); text-shadow: 0 0 10px var(--primary); margin: 5px; font-size: 1.5rem; }
+        .main-container { display: flex; flex-direction: row; gap: 15px; padding: 15px; width: 100%; max-width: 1300px; box-sizing: border-box; }
+        .controls {
+            flex: 0 0 320px; background: var(--glass); padding: 15px; border-radius: 12px;
+            border: 1px solid var(--primary); height: 88vh; overflow-y: auto;
+        }
+        .section-label { color: var(--secondary); font-size: 0.75em; font-weight: bold; display: block; margin: 12px 0 5px; border-bottom: 1px solid #333; }
+        .bg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .bg-btn { padding: 8px; border-radius: 5px; border: 1px solid #444; cursor: pointer; background: #111; color: #fff; font-size: 0.7em; transition: 0.2s; }
+        .bg-btn:hover { border-color: var(--primary); }
+        input[type="text"], input[type="date"], input[type="time"], input[type="file"] {
+            width: 100%; padding: 7px; background: #111; border: 1px solid #333; border-radius: 4px; color: #fff; margin-bottom: 6px; box-sizing: border-box; font-size: 0.85em;
+        }
+        .range-box { background: rgba(255,255,255,0.05); padding: 5px; border-radius: 5px; margin-bottom: 8px; }
+        label { font-size: 0.7em; color: var(--primary); }
+        .btn-dl { width: 100%; padding: 12px; background: transparent; color: var(--secondary); font-weight: bold; border: 2px solid var(--secondary); border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        .btn-dl:hover { background: var(--secondary); color: #000; box-shadow: 0 0 15px var(--secondary); }
+        canvas { max-width: 100%; height: auto; border: 2px solid var(--primary); border-radius: 8px; background: #000; cursor: crosshair; }
+        @media (max-width: 900px) { .main-container { flex-direction: column; } .controls { width: 100%; height: auto; } }
+    </style>
+</head>
+<body>
+    <header><h1>⚡ QSL NEÓN GENERATOR ⚡</h1></header>
+    <div class="main-container">
+        <div class="controls">
+            <span class="section-label">1. FONDOS PREDETERMINADOS</span>
+            <div class="bg-grid">
+                <button class="bg-btn" onclick="setBG(0)">OCEAN BLUE</button>
+                <button class="bg-btn" onclick="setBG(1)">DEEP PURPLE</button>
+                <button class="bg-btn" onclick="setBG(2)">CYBER GRID</button>
+                <button class="bg-btn" onclick="setBG(3)">RADIAL PULSE</button>
+            </div>
+            <input type="file" id="bgI" accept="image/*">
+            <span class="section-label">2. LOGOTIPOS</span>
+            <div class="range-box"><label>Logo 1:</label><input type="file" id="l1I" accept="image/*"><input type="range" id="l1S" min="30" max="300" value="120" oninput="draw()"></div>
+            <div class="range-box"><label>Logo 2:</label><input type="file" id="l2I" accept="image/*"><input type="range" id="l2S" min="30" max="300" value="100" oninput="draw()"></div>
+            <span class="section-label">3. DATOS PROPIOS</span>
+            <div style="display:flex; gap:5px;"><input type="color" id="cCol" value="#00ffff" oninput="draw()"><input type="color" id="tCol" value="#ff00ff" oninput="draw()"></div>
+            <input type="text" id="myC" value="CL7ADV" oninput="draw()">
+            <input type="text" id="myL" value="EL98xx" oninput="draw()">
+            <span class="section-label">4. DATOS QSO</span>
+            <input type="text" id="toC" placeholder="Indicativo Destino" oninput="draw()">
+            <div style="display:flex; gap:2px;"><input type="date" id="qD" oninput="draw()"><input type="time" id="qT" oninput="draw()"></div>
+            <div style="display:flex; gap:2px;"><input type="text" id="qB" placeholder="Banda" oninput="draw()"><input type="text" id="qM" placeholder="Modo" oninput="draw()"><input type="text" id="qR" placeholder="RST" oninput="draw()"></div>
+            <input type="text" id="qG" value="73's Cordiales" oninput="draw()">
+            <button class="btn-dl" onclick="download()">DESCARGAR QSL PNG</button>
+        </div>
+        <div style="flex:1; text-align:center;"><canvas id="qC" width="900" height="550"></canvas></div>
+    </div>
+    <script>
+        const canvas = document.getElementById('qC'), ctx = canvas.getContext('2d');
+        let bgImg = new Image(), l1Img = new Image(), l2Img = new Image();
+        let pos = { l1:{x:730, y:50, w:120, h:120}, l2:{x:600, y:50, w:100, h:100}, call:{x:50, y:12const canvas = document.getElementById('qC'), ctx = canvas.getContext('2d');
         let bgImg = new Image(), l1Img = new Image(), l2Img = new Image();
         let pos = { 
             l1:{x:730, y:50, w:120, h:120}, 
