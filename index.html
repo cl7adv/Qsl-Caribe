@@ -3,154 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL ELITE PRO v13.6 - FULL SCRIPT</title>
+    <title>QSL ELITE PRO v14.1 - DV MODE & COUNTRY</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <style>
-        :root { 
-            --bg-dark: #0e2431; 
-            --neon: #00ff99; 
-            --pink: #ff00ff; 
-            --light: #e6faff; 
-        }
-
-        body { 
-            font-family: 'Segoe UI', Verdana, sans-serif; 
-            background: #050a14; color: var(--light); 
-            margin: 0; display: flex; flex-direction: column; align-items: center; 
-        }
-
-        header { 
-            padding: 20px; text-align: center; width: 100%; 
-            background: var(--bg-dark); border-bottom: 3px solid var(--neon); 
-            box-shadow: 0 4px 15px rgba(0,255,153,0.3); 
-        }
-
-        .main-wrapper { 
-            display: flex; flex-direction: row; gap: 20px; padding: 20px; 
-            width: 100%; max-width: 1600px; box-sizing: border-box; 
-        }
-
-        .side-bar { 
-            flex: 0 0 350px; background: var(--bg-dark); padding: 20px; 
-            border-radius: 15px; border: 2px solid var(--neon); 
-            height: 88vh; overflow-y: auto; 
-        }
-
-        .section-title { 
-            color: var(--neon); font-size: 0.85em; margin: 20px 0 10px; 
-            display: block; border-bottom: 1px solid #333; 
-            text-transform: uppercase; letter-spacing: 1px; font-weight: bold;
-        }
-
-        input, select { 
-            width: 100%; padding: 10px; background: #050a14; 
-            border: 1px solid var(--neon); border-radius: 8px; 
-            color: white; margin-bottom: 10px; font-size: 0.9em; 
-        }
-
-        .btn { 
-            width: 100%; padding: 15px; font-weight: bold; border: none; 
-            border-radius: 8px; cursor: pointer; text-transform: uppercase; 
-            transition: 0.3s; margin: 5px 0; 
-        }
-
+        :root { --bg-dark: #0e2431; --neon: #00ff99; --pink: #ff00ff; --light: #e6faff; }
+        body { font-family: 'Segoe UI', Verdana, sans-serif; background: #050a14; color: var(--light); margin: 0; display: flex; flex-direction: column; align-items: center; }
+        header { padding: 20px; text-align: center; width: 100%; background: var(--bg-dark); border-bottom: 3px solid var(--neon); box-shadow: 0 4px 15px rgba(0,255,153,0.3); }
+        .main-wrapper { display: flex; flex-direction: row; gap: 20px; padding: 20px; width: 100%; max-width: 1600px; box-sizing: border-box; }
+        .side-bar { flex: 0 0 350px; background: var(--bg-dark); padding: 20px; border-radius: 15px; border: 2px solid var(--neon); height: 88vh; overflow-y: auto; }
+        .section-title { color: var(--neon); font-size: 0.85em; margin: 20px 0 10px; display: block; border-bottom: 1px solid #333; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; background: #050a14; border: 1px solid var(--neon); border-radius: 8px; color: white; margin-bottom: 10px; font-size: 0.9em; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin: 5px 0; }
         .btn-zip { background: var(--pink); color: white; display: none; box-shadow: 0 0 15px var(--pink); }
         .btn-previa { background: var(--neon); color: #000; }
-
-        .canvas-area { 
-            flex: 1; display: flex; flex-direction: column; align-items: center; 
-        }
-
-        canvas { 
-            width: 100%; max-width: 1000px; height: auto; 
-            border-radius: 12px; border: 2px solid var(--neon); 
-            background: #000; cursor: move; 
-        }
-
-        /* Galería de Previsualización */
-        #previewContainer { 
-            width: 95%; max-width: 1500px; display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 20px; padding: 30px; display: none; 
-            background: rgba(0,0,0,0.5); margin: 20px 0; border-radius: 20px; 
-        }
-
-        .qsl-mini { 
-            background: #111; padding: 10px; border-radius: 10px; 
-            border: 1px solid #444; text-align: center; 
-        }
+        .canvas-area { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        canvas { width: 100%; max-width: 1000px; height: auto; border-radius: 12px; border: 2px solid var(--neon); background: #000; cursor: move; }
+        #previewContainer { width: 95%; max-width: 1500px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 30px; display: none; background: rgba(0,0,0,0.5); margin: 20px 0; border-radius: 20px; }
+        .qsl-mini { background: #111; padding: 10px; border-radius: 10px; border: 1px solid #444; text-align: center; }
         .qsl-mini img { width: 100%; border-radius: 5px; margin-bottom: 8px; }
-
-        .logo-ctrl { 
-            background: rgba(255,255,255,0.05); padding: 10px; 
-            border-radius: 8px; margin-bottom: 10px; 
-        }
-
+        .logo-ctrl { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 10px; }
         .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .gal-img { width: 100%; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; }
         .gal-img.active { border-color: var(--pink); }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<header><h1>QSL ELITE PRO v13.6 - AUTOMATION SYSTEM</h1></header>
+<header><h1>QSL ELITE PRO v14.1 - DV MODE UPDATE</h1></header>
 
 <div class="main-wrapper">
     <div class="side-bar">
-        <span class="section-title">📂 Paso 1: Cargar Log ADIF</span>
+        <span class="section-title">📂 Paso 1: Log ADIF</span>
         <input type="file" id="adifInput" accept=".adi,.adif" onchange="handleADIF(event)">
-        <button class="btn btn-zip" id="btnZip" onclick="generateAndZip()">Descargar .ZIP con todas</button>
+        <button class="btn btn-zip" id="btnZip" onclick="generateAndZip()">Descargar .ZIP (Todo)</button>
 
-        <span class="section-title">🎨 Paso 2: Diseño y Fondo</span>
+        <span class="section-title">🎨 Estilo</span>
         <div class="gallery">
             <img class="gal-img" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800" onclick="changeBG(this)">
             <img class="gal-img" src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800" onclick="changeBG(this)">
         </div>
-        <input type="file" id="customBG" accept="image/*" onchange="loadCustomBG(event)">
-        
         <select id="tableStyle" onchange="draw()">
-            <option value="modern">Diseño Moderno (Segmentado)</option>
-            <option value="normal" selected>Diseño Clásico (Caja Sólida)</option>
-            <option value="transparent">Diseño Minimalista (Solo líneas)</option>
+            <option value="modern">Moderno</option>
+            <option value="normal" selected>Clásico</option>
+            <option value="transparent">Minimalista</option>
         </select>
 
-        <span class="section-title">👤 Mis Datos (Auto-Detector)</span>
+        <span class="section-title">👤 Mis Datos (Auto)</span>
         <input type="text" id="myCall" placeholder="Mi Indicativo" oninput="draw()">
         <input type="text" id="myLocator" placeholder="Mi Locator" oninput="draw()">
+        <input type="text" id="myCountry" placeholder="Mi País" value="CUBA" oninput="draw()">
 
-        <span class="section-title">📡 Datos del QSO (Vista Previa)</span>
-        <input type="text" id="toCall" placeholder="Indicativo Destino" oninput="draw()">
+        <span class="section-title">📡 Datos QSO</span>
+        <input type="text" id="toCall" placeholder="Destino" oninput="draw()">
         <div style="display:flex; gap:5px;">
             <input type="text" id="qBand" placeholder="Band" oninput="draw()">
             <input type="text" id="qMode" placeholder="Mode" oninput="draw()">
             <input type="text" id="qRst" placeholder="RST" oninput="draw()">
         </div>
 
-        <span class="section-title">🖼️ Gestión de Logos (4)</span>
+        <span class="section-title">🖼️ Logos (4)</span>
         <div id="logosContainer">
             <script>
                 for(let i=0; i<4; i++) {
-                    document.write(`
-                    <div class="logo-ctrl">
-                        <label style="font-size:0.7em; color:var(--neon)">Logo ${i+1}</label>
+                    document.write(`<div class="logo-ctrl">
                         <input type="file" accept="image/*" onchange="loadLogo(${i}, event)">
                         <input type="range" id="size${i}" min="40" max="500" value="150" oninput="draw()">
                     </div>`);
                 }
             </script>
         </div>
-        <button class="btn btn-previa" onclick="downloadPreview()">Descargar Previa HD</button>
+        <button class="btn btn-previa" onclick="downloadPreview()">Previa HD</button>
     </div>
 
     <div class="canvas-area">
         <canvas id="qslCanvas" width="1800" height="1100"></canvas>
         <p id="msg" style="color:var(--neon); margin-top:15px; font-weight:bold;"></p>
-        <p style="font-size:0.8em; color:#888;">💡 Puedes arrastrar con el ratón: el Indicativo, la Tabla y los Logos.</p>
     </div>
 </div>
 
@@ -163,19 +92,16 @@
     let adifRecords = [];
     let logos = Array.from({length: 4}, () => ({ img: new Image(), x: 1500, y: 100, active: false }));
     
-    // BASE DE DATOS DE LOCATORS (Añade los que necesites aquí)
     const locatorDB = {
-        "CL7ADV": "EL98xx",
-        "CO7AAA": "EL98ab",
-        "CM7BBB": "EL97jk",
-        "CO2RRR": "EL83hh"
+        "CL7ADV": { loc: "EL98xx", country: "CUBA" },
+        "CO7SCS": { loc: "EL90as", country: "CUBA" },
+        "CM7ABC": { loc: "EL90ar", country: "CUBA" }
     };
 
     let posCall = { x: 100, y: 220 };
     let posTable = { x: 100, y: 800 };
     let dragObj = null; let offset = { x:0, y:0 }; let activeLogoIdx = -1;
 
-    // --- PROCESAMIENTO ADIF ---
     function handleADIF(event) {
         const file = event.target.files[0];
         const reader = new FileReader();
@@ -183,13 +109,13 @@
             const text = e.target.result;
             adifRecords = parseADIF(text);
             
-            // Auto-Detección de Locator según el operador del ADIF
             const matchOp = text.match(/<STATION_CALLSIGN:\d+>([^<]*)/i) || text.match(/<OPERATOR:\d+>([^<]*)/i);
             if(matchOp) {
                 const op = matchOp[1].trim().toUpperCase();
                 if(locatorDB[op]) {
                     document.getElementById('myCall').value = op;
-                    document.getElementById('myLocator').value = locatorDB[op];
+                    document.getElementById('myLocator').value = locatorDB[op].loc;
+                    document.getElementById('myCountry').value = locatorDB[op].country;
                 } else {
                     document.getElementById('myCall').value = op;
                 }
@@ -197,7 +123,7 @@
 
             if(adifRecords.length > 0) {
                 document.getElementById('btnZip').style.display = 'block';
-                document.getElementById('msg').innerText = `✅ LOG CARGADO: ${adifRecords.length} QSO's detectados.`;
+                document.getElementById('msg').innerText = `✅ ${adifRecords.length} QSO's LISTOS`;
                 await updateGallery();
             }
         };
@@ -214,7 +140,14 @@
             for(let t in tags) {
                 const reg = new RegExp(`<${t}:(\\d+)>([^<]*)`, "i");
                 const m = e.match(reg);
-                if(m) item[tags[t]] = m[2].trim();
+                if(m) {
+                    let value = m[2].trim();
+                    // Abreviar DIGITAL VOICE a DV
+                    if(t === 'MODE' && (value.toUpperCase() === 'DIGITALVOICE' || value.toUpperCase() === 'DIGITAL VOICE')) {
+                        value = 'DV';
+                    }
+                    item[tags[t]] = value;
+                }
             }
             if(item.toCall) results.push(item);
         });
@@ -223,17 +156,14 @@
 
     async function updateGallery() {
         const container = document.getElementById('previewContainer');
-        container.innerHTML = "<h2 style='grid-column: 1/-1; color:white;'>Vista Previa de Tarjetas</h2>"; 
+        container.innerHTML = "<h2 style='grid-column: 1/-1; color:white;'>Vista Previa</h2>"; 
         container.style.display = "grid";
-        
-        // Mostramos las primeras 12 para dar una idea visual rápida
-        const limit = Math.min(adifRecords.length, 12);
-        for(let i=0; i < limit; i++) {
+        for(let i=0; i < Math.min(adifRecords.length, 8); i++) {
             fillData(adifRecords[i]);
             await new Promise(r => setTimeout(r, 60));
             const div = document.createElement('div');
             div.className = 'qsl-mini';
-            div.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.4)}"><p style="color:var(--neon)">${adifRecords[i].toCall}</p>`;
+            div.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.4)}"><p>${adifRecords[i].toCall}</p>`;
             container.appendChild(div);
         }
     }
@@ -243,9 +173,7 @@
         document.getElementById('qBand').value = rec.qBand || "";
         document.getElementById('qMode').value = rec.qMode || "";
         document.getElementById('qRst').value = rec.qRst || "59";
-        
-        let d = rec.qDate || "";
-        let t = rec.qTime || "";
+        let d = rec.qDate || ""; let t = rec.qTime || "";
         window.currentQsoData = { 
             date: d ? `${d.substr(6,2)}/${d.substr(4,2)}/${d.substr(0,4)}` : "--/--/--",
             time: t ? `${t.substr(0,2)}:${t.substr(2,2)} UTC` : "00:00 UTC"
@@ -255,47 +183,26 @@
 
     async function generateAndZip() {
         const zip = new JSZip();
-        const myCall = document.getElementById('myCall').value || "ESTACION";
-        document.getElementById('msg').innerText = "🚀 Generando paquete comprimido... Espere.";
-        
+        document.getElementById('msg').innerText = "🚀 Generando ZIP...";
         for(let i=0; i<adifRecords.length; i++) {
             fillData(adifRecords[i]);
             await new Promise(r => setTimeout(r, 40));
-            // Usamos Blob para no saturar la memoria con Strings base64 muy largos
             const blob = await new Promise(res => canvas.toBlob(res, 'image/png', 0.9));
-            zip.file(`QSL_${adifRecords[i].toCall}_${i+1}.png`, blob);
+            zip.file(`QSL_${adifRecords[i].toCall}.png`, blob);
         }
-        
         zip.generateAsync({type:"blob"}).then(blob => {
-            saveAs(blob, `PACK_QSL_${myCall}.zip`);
-            document.getElementById('msg').innerText = "✅ ¡Paquete ZIP descargado!";
+            saveAs(blob, `PACK_QSL_${document.getElementById('myCall').value}.zip`);
+            document.getElementById('msg').innerText = "✅ DESCARGADO";
         });
     }
 
-    // --- MOTOR GRÁFICO ---
-    function changeBG(el) {
-        document.querySelectorAll('.gal-img').forEach(i => i.classList.remove('active'));
-        el.classList.add('active'); bgImg.src = el.src;
-    }
-
-    function loadCustomBG(e) {
-        const f = e.target.files[0];
-        if(f) {
-            const r = new FileReader();
-            r.onload = (ev) => { bgImg.src = ev.target.result; };
-            r.readAsDataURL(f);
-        }
-    }
+    function changeBG(el) { document.querySelectorAll('.gal-img').forEach(i => i.classList.remove('active')); el.classList.add('active'); bgImg.src = el.src; }
 
     function loadLogo(idx, e) {
         const f = e.target.files[0];
         if(f) {
             const r = new FileReader();
-            r.onload = (ev) => { 
-                logos[idx].img.src = ev.target.result; 
-                logos[idx].active = true; 
-                logos[idx].img.onload = draw; 
-            };
+            r.onload = (ev) => { logos[idx].img.src = ev.target.result; logos[idx].active = true; logos[idx].img.onload = draw; };
             r.readAsDataURL(f);
         }
     }
@@ -306,28 +213,19 @@
         ctx.clearRect(0,0,1800,1100);
         if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 1800, 1100);
         
-        // Marca de agua sutil
-        ctx.globalAlpha = 0.15; ctx.fillStyle = "white"; ctx.font = "24px Verdana";
-        ctx.fillText("QSL ELITE PRO v13.6", 1500, 40); ctx.globalAlpha = 1.0;
+        logos.forEach((l, i) => { if(l.active) { let s = document.getElementById(`size${i}`).value; ctx.drawImage(l.img, l.x, l.y, s, s); } });
 
-        // Dibujar Logos
-        logos.forEach((l, i) => { 
-            if(l.active) { 
-                let s = document.getElementById(`size${i}`).value; 
-                ctx.drawImage(l.img, l.x, l.y, s, s); 
-            } 
-        });
-
-        // Dibujar Mi Info Principal
-        ctx.save(); 
-        ctx.shadowBlur = 20; ctx.shadowColor = "black";
+        ctx.save(); ctx.shadowBlur = 20; ctx.shadowColor = "black";
         ctx.fillStyle = "#ff00ff"; ctx.font = "bold 180px Verdana";
         ctx.fillText((document.getElementById('myCall').value || "MYCALL").toUpperCase(), posCall.x, posCall.y);
+        
         ctx.fillStyle = "#00ff99"; ctx.font = "bold 60px Verdana";
-        ctx.fillText("LOCATOR: " + (document.getElementById('myLocator').value || "------").toUpperCase(), posCall.x + 10, posCall.y + 80);
+        ctx.fillText("LOC: " + (document.getElementById('myLocator').value || "------").toUpperCase(), posCall.x + 10, posCall.y + 80);
+        
+        ctx.fillStyle = "white"; ctx.font = "bold 45px Verdana";
+        ctx.fillText((document.getElementById('myCountry').value || "COUNTRY").toUpperCase(), posCall.x + 12, posCall.y + 145);
         ctx.restore();
 
-        // Dibujar Tabla de Datos del QSO
         const style = document.getElementById('tableStyle').value;
         const x = posTable.x, y = posTable.y;
         const w = 1620, h = 220;
@@ -337,83 +235,51 @@
             ctx.strokeStyle = "#00ff99"; ctx.lineWidth = 6; ctx.strokeRect(x, y, w, h);
         } else if(style === 'modern') {
             ctx.fillStyle = "black"; ctx.fillRect(x, y, w, 60);
-            ctx.fillStyle = "rgba(255,255,255,0.95)"; ctx.fillRect(x, y+60, w, 110);
+            ctx.fillStyle = "white"; ctx.fillRect(x, y+60, w, 110);
             ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.strokeRect(x, y, w, 220);
-        } else { // Transparente
-            ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.strokeRect(x, y, w, h);
         }
 
         const labels = ["QSO WITH", "DATE", "TIME (UTC)", "BAND", "MODE", "RST"];
         const d = window.currentQsoData || {date:"--/--/--", time:"00:00 UTC"};
-        const vals = [
-            document.getElementById('toCall').value || "---", 
-            d.date, 
-            d.time, 
-            document.getElementById('qBand').value || "---", 
-            document.getElementById('qMode').value || "---", 
-            document.getElementById('qRst').value || "59"
-        ];
+        
+        // Aplicar la lógica de DV también en la vista manual
+        let currentMode = document.getElementById('qMode').value;
+        if(currentMode.toUpperCase() === 'DIGITALVOICE' || currentMode.toUpperCase() === 'DIGITAL VOICE') {
+            currentMode = 'DV';
+        }
+
+        const vals = [document.getElementById('toCall').value || "---", d.date, d.time, document.getElementById('qBand').value || "---", currentMode || "---", document.getElementById('qRst').value || "59"];
         
         labels.forEach((l, i) => {
             let posX = x + 40 + (i * 265);
-            ctx.font = "bold 22px Verdana"; 
-            ctx.fillStyle = (style === 'modern') ? "white" : "#00ff99";
+            ctx.font = "bold 22px Verdana"; ctx.fillStyle = (style === 'modern') ? "white" : "#00ff99";
             ctx.fillText(l, posX, y + 40);
-            
-            ctx.font = "bold 44px 'Courier New'"; 
-            ctx.fillStyle = (style === 'modern') ? "black" : "white";
+            ctx.font = "bold 44px 'Courier New'"; ctx.fillStyle = (style === 'modern') ? "black" : "white";
             ctx.fillText(vals[i], posX, y + 130);
         });
     }
 
-    // --- INTERACCIÓN DE MOVIMIENTO (Drag & Drop) ---
     canvas.onmousedown = (e) => {
         const r = canvas.getBoundingClientRect();
         const mx = (e.clientX - r.left) * (canvas.width / r.width);
         const my = (e.clientY - r.top) * (canvas.height / r.height);
-
-        // Prioridad a los Logos
-        for(let i=0; i<4; i++) { 
-            if(logos[i].active) { 
-                let s = parseInt(document.getElementById(`size${i}`).value); 
-                if(mx > logos[i].x && mx < logos[i].x + s && my > logos[i].y && my < logos[i].y + s) { 
-                    dragObj = 'logo'; activeLogoIdx = i; offset = {x: mx - logos[i].x, y: my - logos[i].y}; return; 
-                } 
-            } 
-        }
-        // Tabla
-        if(my > posTable.y && my < posTable.y + 250 && mx > posTable.x && mx < posTable.x + 1600) { 
-            dragObj = 'table'; offset = {x: mx - posTable.x, y: my - posTable.y}; 
-        }
-        // Indicativo
-        else if(my > posCall.y - 150 && my < posCall.y + 100 && mx > posCall.x && mx < posCall.x + 800) { 
-            dragObj = 'call'; offset = {x: mx - posCall.x, y: my - posCall.y}; 
-        }
+        for(let i=0; i<4; i++) { if(logos[i].active) { let s = parseInt(document.getElementById(`size${i}`).value); if(mx > logos[i].x && mx < logos[i].x + s && my > logos[i].y && my < logos[i].y + s) { dragObj = 'logo'; activeLogoIdx = i; offset = {x: mx - logos[i].x, y: my - logos[i].y}; return; } } }
+        if(my > posTable.y && my < posTable.y + 250) { dragObj = 'table'; offset = {x: mx - posTable.x, y: my - posTable.y}; }
+        else if(my > posCall.y - 150 && my < posCall.y + 150) { dragObj = 'call'; offset = {x: mx - posCall.x, y: my - posCall.y}; }
     };
-
     window.onmousemove = (e) => {
         if(!dragObj) return;
         const r = canvas.getBoundingClientRect();
         const mx = (e.clientX - r.left) * (canvas.width / r.width);
         const my = (e.clientY - r.top) * (canvas.height / r.height);
-        
         if(dragObj === 'logo') { logos[activeLogoIdx].x = mx - offset.x; logos[activeLogoIdx].y = my - offset.y; }
         if(dragObj === 'table') { posTable.x = mx - offset.x; posTable.y = my - offset.y; }
         if(dragObj === 'call') { posCall.x = mx - offset.x; posCall.y = my - offset.y; }
         draw();
     };
-
     window.onmouseup = () => dragObj = null;
-
-    function downloadPreview() { 
-        saveAs(canvas.toDataURL("image/png", 1.0), `PREVIA_QSL_HD.png`); 
-    }
-
-    // Inicialización
-    window.onload = () => {
-        changeBG(document.querySelector('.gal-img'));
-        draw();
-    };
+    function downloadPreview() { saveAs(canvas.toDataURL("image/png", 1.0), `PREVIA_HD.png`); }
+    window.onload = () => changeBG(document.querySelector('.gal-img'));
 </script>
 </body>
 </html>
