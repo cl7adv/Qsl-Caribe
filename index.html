@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL-CARIBEÑO V9.6 - Smart Scale</title>
+    <title>QSL-CARIBEÑO V9.7 - Big Text</title>
     <style>
         :root {
             --navy-deep: #000c1d; --panel-bg: #001a33;
@@ -75,7 +75,7 @@
 </head>
 <body>
 
-    <header><h1>QSL-CARIBEÑO V9.6</h1></header>
+    <header><h1>QSL-CARIBEÑO V9.7</h1></header>
 
     <div class="main-container">
         <div class="controls-panel">
@@ -85,12 +85,12 @@
                 <img class="gallery-item" src="https://cdn.pixabay.com/photo/2017/01/28/02/24/ocean-2014647_960_720.jpg" onclick="changeBG(this)">
             </div>
 
-            <span class="section-label">2. Cuadro QSO (Smart-Scale)</span>
+            <span class="section-label">2. Cuadro QSO (Letras Grandes)</span>
             <div class="range-container">
                 <label>Ancho</label>
-                <input type="range" id="boxW" min="250" max="860" value="750" oninput="draw()">
+                <input type="range" id="boxW" min="300" max="860" value="780" oninput="draw()">
                 <label>Altura</label>
-                <input type="range" id="boxH" min="100" max="380" value="160" oninput="draw()">
+                <input type="range" id="boxH" min="150" max="400" value="200" oninput="draw()">
                 <label>Opacidad</label>
                 <input type="range" id="boxOp" min="0" max="100" value="85" oninput="draw()">
             </div>
@@ -100,8 +100,8 @@
                 <div style="flex:1;"><label>Texto</label><input type="color" id="textColor" value="#ffffff" oninput="draw()"></div>
             </div>
 
-            <span class="section-label">3. Datos</span>
-            <input type="text" id="myCall" value="HI8-QSL" placeholder="Mi Indicativo" oninput="draw()">
+            <span class="section-label">3. Datos del Contacto</span>
+            <input type="text" id="myCall" value="HI8-QSL" oninput="draw()">
             <input type="text" id="toCall" placeholder="Indicativo Destino" oninput="draw()">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
                 <input type="date" id="qDate" oninput="draw()">
@@ -119,7 +119,7 @@
 
         <div class="preview-panel">
             <canvas id="qslCanvas" width="900" height="550"></canvas>
-            <p style="font-size: 0.7rem; color: #5c7d9d; margin-top: 8px;">📱 Arrastre con el dedo para posicionar elementos.</p>
+            <p style="font-size: 0.7rem; color: #5c7d9d; margin-top: 8px;">📱 Arrastra los elementos en el cuadro para moverlos.</p>
         </div>
     </div>
 
@@ -129,8 +129,8 @@
         let bgImg = new Image();
         bgImg.crossOrigin = "anonymous";
 
-        let posMyCall = { x: 50, y: 80, w: 250 };
-        let posDataBox = { x: 40, y: 340 };
+        let posMyCall = { x: 50, y: 90, w: 250 };
+        let posDataBox = { x: 60, y: 300 };
         let dragTarget = null;
         let dragOffset = { x: 0, y: 0 };
 
@@ -186,23 +186,22 @@
         window.addEventListener('mouseup', () => dragTarget = null);
         window.addEventListener('touchend', () => dragTarget = null);
 
-        function drawSmartLine(label, value, x, y, lineWidth, boxHeight, color) {
-            // Factor de escala basado en altura Y anchura
-            // bw influye en la longitud de la línea, bh influye en la separación vertical
-            const baseSizeH = boxHeight / 11;
-            const baseSizeW = lineWidth / 22;
-            const finalSize = Math.min(baseSizeH, baseSizeW, 18); // Limita tamaño máximo para estética
+        function drawBigLine(label, value, x, y, lineWidth, boxHeight, color) {
+            // Aumentamos los multiplicadores para que la letra sea más grande
+            const sizeFromHeight = boxHeight / 9; 
+            const sizeFromWidth = lineWidth / 15;
+            const finalSize = Math.min(sizeFromHeight, sizeFromWidth, 24); // Máximo 24px para que no sea gigante
 
             ctx.fillStyle = color;
-            ctx.font = `bold ${finalSize * 0.6}px Arial`;
+            ctx.font = `bold ${finalSize * 0.55}px Arial`;
             ctx.fillText(label.toUpperCase() + ":", x, y);
             
             const lw = ctx.measureText(label.toUpperCase() + ": ").width;
             ctx.font = `bold ${finalSize}px 'Courier New', monospace`;
             ctx.fillText(value || "", x + lw, y);
             
-            ctx.strokeStyle = color; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(x + lw, y + 4); ctx.lineTo(x + lineWidth - 5, y + 4); ctx.stroke();
+            ctx.strokeStyle = color; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(x + lw, y + 5); ctx.lineTo(x + lineWidth - 5, y + 5); ctx.stroke();
         }
 
         function draw() {
@@ -215,15 +214,15 @@
             ctx.clearRect(0,0,900,550);
             if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
 
-            // Marca de agua - ROJO NEÓN
-            ctx.shadowColor = "#ff0000"; ctx.shadowBlur = 5;
-            ctx.fillStyle = "#ff5555"; ctx.font = "bold 13px Arial";
-            ctx.fillText("ZMR-CUBA", 810, 535);
-            ctx.shadowBlur = 0; // Quitar sombra para el resto
+            // Marca de agua - ROJO VIVO
+            ctx.shadowColor = "black"; ctx.shadowBlur = 4;
+            ctx.fillStyle = "#ff1111"; ctx.font = "bold 15px Arial";
+            ctx.fillText("ZMR-CUBA", 800, 535);
+            ctx.shadowBlur = 0;
 
-            // Mi Indicativo
+            // Mi Indicativo (Enorme)
             ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 15; ctx.fillStyle = "white";
-            ctx.font = "bold 70px sans-serif";
+            ctx.font = "bold 85px sans-serif";
             const call = document.getElementById('myCall').value.toUpperCase();
             ctx.fillText(call, posMyCall.x, posMyCall.y);
             posMyCall.w = ctx.measureText(call).width + 20;
@@ -233,28 +232,27 @@
             let r = parseInt(bColor.slice(1,3), 16), g = parseInt(bColor.slice(3,5), 16), b = parseInt(bColor.slice(5,7), 16);
             ctx.fillStyle = `rgba(${r},${g},${b},${bOp})`;
             ctx.fillRect(posDataBox.x, posDataBox.y, bw, bh);
-            ctx.strokeStyle = tColor; ctx.lineWidth = 2; ctx.strokeRect(posDataBox.x, posDataBox.y, bw, bh);
+            ctx.strokeStyle = tColor; ctx.lineWidth = 2.5; ctx.strokeRect(posDataBox.x, posDataBox.y, bw, bh);
 
-            // Contenido Inteligente
             const step = bh / 4;
-            const startX = posDataBox.x + 15;
-            const innerW = bw - 30;
+            const startX = posDataBox.x + 20;
+            const innerW = bw - 40;
 
-            drawSmartLine("Confirming QSO with", document.getElementById('toCall').value, startX, posDataBox.y + step, bw - 20, bh, tColor);
+            drawBigLine("Confirming QSO with", document.getElementById('toCall').value, startX, posDataBox.y + step, bw - 20, bh, tColor);
             
             const sub = innerW / 5;
-            drawSmartLine("Date", document.getElementById('qDate').value, startX, posDataBox.y + step * 2, sub, bh, tColor);
-            drawSmartLine("Time", document.getElementById('qTime').value, startX + sub, posDataBox.y + step * 2, sub, bh, tColor);
-            drawSmartLine("Band", document.getElementById('qBand').value, startX + sub * 2, posDataBox.y + step * 2, sub, bh, tColor);
-            drawSmartLine("Mode", document.getElementById('qMode').value, startX + sub * 3, posDataBox.y + step * 2, sub, bh, tColor);
-            drawSmartLine("RST",  document.getElementById('qRst').value,  startX + sub * 4, posDataBox.y + step * 2, sub, bh, tColor);
+            drawBigLine("Date", document.getElementById('qDate').value, startX, posDataBox.y + step * 2, sub, bh, tColor);
+            drawBigLine("Time", document.getElementById('qTime').value, startX + sub, posDataBox.y + step * 2, sub, bh, tColor);
+            drawBigLine("Band", document.getElementById('qBand').value, startX + sub * 2, posDataBox.y + step * 2, sub, bh, tColor);
+            drawBigLine("Mode", document.getElementById('qMode').value, startX + sub * 3, posDataBox.y + step * 2, sub, bh, tColor);
+            drawBigLine("RST",  document.getElementById('qRst').value,  startX + sub * 4, posDataBox.y + step * 2, sub, bh, tColor);
             
-            drawSmartLine("73 / Msg", document.getElementById('qMsg').value, startX, posDataBox.y + step * 3.2, bw - 20, bh, tColor);
+            drawBigLine("73 / Remarks", document.getElementById('qMsg').value, startX, posDataBox.y + step * 3.2, bw - 20, bh, tColor);
         }
 
         function download() {
             const link = document.createElement('a');
-            link.download = `QSL_ELITE_${Date.now()}.png`;
+            link.download = `QSL_CARIBE_${Date.now()}.png`;
             link.href = canvas.toDataURL("image/png", 1.0);
             link.click();
         }
