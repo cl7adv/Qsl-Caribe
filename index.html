@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v10.3 - Custom Colors & Logos</title>
+    <title>QSL ELITE v10.3 - Logos & Watermark Edit</title>
     <style>
         :root {
-            --bg-dark: #0e2431; /* Color exacto solicitado */
+            --bg-dark: #0e2431;
             --neon-green: #00ff99;
             --neon-pink: #ff00ff;
             --text-light: #e6faff;
@@ -62,12 +62,12 @@
             border-radius: 6px; color: white; margin-bottom: 8px; font-size: 0.9em; box-sizing: border-box;
         }
 
+        .logo-box {
+            border: 1px solid #333; padding: 10px; border-radius: 8px; margin-bottom: 10px; background: #0c1a25;
+        }
+
         .color-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 10px; }
         .color-item label { font-size: 0.6em; text-align: center; }
-
-        .logo-control-unit {
-            border: 1px solid #333; padding: 10px; border-radius: 8px; margin-bottom: 10px; background: rgba(255,255,255,0.05);
-        }
 
         .btn-download {
             width: 100%; padding: 15px; background: var(--neon-green);
@@ -142,16 +142,16 @@
             </div>
             <input type="text" id="qMsg" placeholder="73 / Radio, hermandad y comunidad" oninput="draw()">
 
-            <span class="section-label">5. Logos (Max 4)</span>
-            <div id="logosContainer">
+            <span class="section-label">5. Logos Personalizados (4)</span>
+            <div id="logoControls">
                 <script>
-                    for(let i=1; i<=4; i++) {
+                    for(let i=0; i<4; i++) {
                         document.write(`
-                            <div class="logo-control-unit">
-                                <label style="color:var(--neon-pink)">LOGO ${i}</label>
-                                <input type="file" id="logoFile${i}" accept="image/*" onchange="loadLogo(${i}, event)">
+                            <div class="logo-box">
+                                <label style="color:var(--neon-green)">Logo ${i+1}</label>
+                                <input type="file" accept="image/*" onchange="loadLogo(${i}, event)">
                                 <label>Tamaño</label>
-                                <input type="range" id="logoSize${i}" min="20" max="200" value="80" oninput="draw()">
+                                <input type="range" id="logoSize${i}" min="20" max="250" value="80" oninput="draw()">
                             </div>
                         `);
                     }
@@ -163,7 +163,7 @@
 
         <div class="preview-panel">
             <canvas id="qslCanvas" width="900" height="550"></canvas>
-            <p style="font-size: 0.7rem; color: #8b949e; margin-top: 10px;">📱 Arrastra para mover el texto y los logos.</p>
+            <p style="font-size: 0.7rem; color: #8b949e; margin-top: 10px;">📱 Arrastra logos, indicativo o tabla para reubicar.</p>
         </div>
     </div>
 
@@ -182,33 +182,35 @@
         let bgImg = new Image();
         bgImg.crossOrigin = "anonymous";
 
-        // Estado de logos
+        // Array para gestionar los 4 logos
         let logos = [
-            { img: new Image(), x: 750, y: 50, size: 80, active: false },
-            { img: new Image(), x: 750, y: 150, size: 80, active: false },
-            { img: new Image(), x: 750, y: 250, size: 80, active: false },
-            { img: new Image(), x: 750, y: 350, size: 80, active: false }
+            { img: new Image(), x: 750, y: 30, active: false },
+            { img: new Image(), x: 750, y: 120, active: false },
+            { img: new Image(), x: 750, y: 210, active: false },
+            { img: new Image(), x: 750, y: 300, active: false }
         ];
 
         let posMyCall = { x: 50, y: 110, w: 300 };
         let posDataBox = { x: 60, y: 320 };
         let dragTarget = null;
-        let dragIndex = -1;
         let dragOffset = { x: 0, y: 0 };
+        let activeLogoIndex = -1;
 
         function changeBG(el) {
             document.querySelectorAll('.gallery-item').forEach(img => img.classList.remove('active'));
             if(el) { el.classList.add('active'); bgImg.src = el.src; }
         }
 
-        function loadLogo(num, event) {
+        function loadLogo(index, event) {
+            const file = event.target.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = (e) => {
-                logos[num-1].img.src = e.target.result;
-                logos[num-1].active = true;
-                logos[num-1].img.onload = draw;
+                logos[index].img.src = e.target.result;
+                logos[index].active = true;
+                logos[index].img.onload = draw;
             };
-            if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+            reader.readAsDataURL(file);
         }
 
         bgImg.onload = draw;
@@ -246,13 +248,13 @@
         function startDrag(e) {
             const coords = getCoords(e);
             
-            // Check logos first (higher Z-index)
+            // Prioridad a logos
             for(let i=0; i<4; i++) {
                 if(logos[i].active) {
-                    const s = parseInt(document.getElementById(`logoSize${i+1}`).value);
-                    if(coords.x >= logos[i].x && coords.x <= logos[i].x + s && coords.y >= logos[i].y && coords.y <= logos[i].y + s) {
+                    let size = parseInt(document.getElementById(`logoSize${i}`).value);
+                    if(coords.x >= logos[i].x && coords.x <= logos[i].x + size && coords.y >= logos[i].y && coords.y <= logos[i].y + size) {
                         dragTarget = 'logo';
-                        dragIndex = i;
+                        activeLogoIndex = i;
                         dragOffset.x = coords.x - logos[i].x;
                         dragOffset.y = coords.y - logos[i].y;
                         return;
@@ -262,7 +264,6 @@
 
             const bw = parseInt(document.getElementById('boxW').value);
             const bh = 180;
-
             if (coords.x >= posDataBox.x && coords.x <= posDataBox.x + bw && coords.y >= posDataBox.y && coords.y <= posDataBox.y + bh) {
                 dragTarget = 'dataBox';
                 dragOffset.x = coords.x - posDataBox.x; dragOffset.y = coords.y - posDataBox.y;
@@ -281,8 +282,8 @@
             } else if (dragTarget === 'myCall') {
                 posMyCall.x = coords.x - dragOffset.x; posMyCall.y = coords.y - dragOffset.y;
             } else if (dragTarget === 'logo') {
-                logos[dragIndex].x = coords.x - dragOffset.x;
-                logos[dragIndex].y = coords.y - dragOffset.y;
+                logos[activeLogoIndex].x = coords.x - dragOffset.x;
+                logos[activeLogoIndex].y = coords.y - dragOffset.y;
             }
             draw();
             e.preventDefault();
@@ -292,8 +293,8 @@
         canvas.addEventListener('touchstart', startDrag);
         window.addEventListener('mousemove', moveDrag);
         window.addEventListener('touchmove', moveDrag, {passive: false});
-        window.addEventListener('mouseup', () => dragTarget = null);
-        window.addEventListener('touchend', () => dragTarget = null);
+        window.addEventListener('mouseup', () => { dragTarget = null; activeLogoIndex = -1; });
+        window.addEventListener('touchend', () => { dragTarget = null; activeLogoIndex = -1; });
 
         function drawFullLine(label, value, x, y, width, bh, color) {
             const labelText = label.toUpperCase() + ": ";
@@ -320,23 +321,23 @@
             ctx.clearRect(0,0,900,550);
             if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
 
-            // Marca de agua OPTIMIZADA (Más pequeña y transparente)
+            // Marca de agua OPTIMIZADA (Pequeña y casi invisible)
             ctx.save();
-            ctx.globalAlpha = 0.3;
-            const watermark = "ZMR-CUBA";
-            ctx.font = "bold 14px Verdana"; ctx.textAlign = "right";
-            ctx.fillStyle = "white"; 
-            ctx.fillText(watermark, 890, 20); 
+            ctx.globalAlpha = 0.25;
+            ctx.font = "bold 12px Verdana";
+            ctx.fillStyle = "white";
+            ctx.textAlign = "right";
+            ctx.fillText("ZMR-CUBA", 890, 20);
             ctx.restore();
             ctx.textAlign = "left";
 
-            // Logos
-            for(let i=0; i<4; i++) {
-                if(logos[i].active) {
-                    const s = parseInt(document.getElementById(`logoSize${i+1}`).value);
-                    ctx.drawImage(logos[i].img, logos[i].x, logos[i].y, s, s);
+            // Dibujar Logos
+            logos.forEach((logo, index) => {
+                if(logo.active) {
+                    let size = parseInt(document.getElementById(`logoSize${index}`).value);
+                    ctx.drawImage(logo.img, logo.x, logo.y, size, size);
                 }
-            }
+            });
 
             // Mi Indicativo
             ctx.shadowColor = "rgba(0,0,0,0.9)"; ctx.shadowBlur = 15;
