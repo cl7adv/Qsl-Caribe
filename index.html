@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SISTEMA QSL ELITE - RADIO CLUB SANTA CRUZ</title>
+    <title>QSL SYSTEM PRO - RADIO CLUB SANTA CRUZ</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
     
     <style>
@@ -16,104 +16,73 @@
             --gold: #ffcc00;
         }
 
-        body {
-            font-family: 'Roboto Mono', monospace;
-            background-color: var(--bg-dark);
-            color: #fff;
-            margin: 0;
-            overflow-x: hidden;
-        }
+        body { font-family: 'Roboto Mono', monospace; background-color: var(--bg-dark); color: #fff; margin: 0; }
 
-        /* --- BARRA DE NAVEGACIÓN --- */
+        /* NAVEGACIÓN */
         nav {
             background: linear-gradient(90deg, #1e3a47, #0e2431);
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 3px solid var(--neon-green);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            padding: 15px 25px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 3px solid var(--neon-green); box-shadow: 0 4px 20px rgba(0,0,0,0.8);
             position: sticky; top: 0; z-index: 999;
         }
-
-        .nav-title { font-family: 'Orbitron', sans-serif; font-weight: bold; color: var(--neon-green); font-size: 1.4rem; }
-        .nav-btns { display: flex; gap: 10px; }
+        .nav-title { font-family: 'Orbitron', sans-serif; font-weight: bold; color: var(--neon-green); font-size: 1.2rem; }
         .nav-btn {
             background: rgba(0,0,0,0.5); border: 1px solid var(--neon-blue);
-            color: var(--neon-blue); padding: 10px 15px; border-radius: 5px;
-            cursor: pointer; font-family: 'Orbitron', sans-serif; transition: 0.3s;
+            color: var(--neon-blue); padding: 8px 15px; border-radius: 5px;
+            cursor: pointer; font-family: 'Orbitron'; transition: 0.3s; margin-left: 5px;
         }
         .nav-btn.active { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
 
-        /* --- SECCIONES --- */
-        .section { display: none; padding: 30px; animation: slideIn 0.4s ease-out; }
+        .section { display: none; padding: 25px; animation: fadeIn 0.4s; }
         .section.active { display: block; }
-        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* --- BUSCADOR REAL --- */
+        /* BUSCADOR CON RUTA /IMG/ */
         .search-container {
-            max-width: 800px; margin: 50px auto; background: var(--panel-dark);
-            padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
-            text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            max-width: 600px; margin: 50px auto; background: var(--panel-dark);
+            padding: 30px; border-radius: 20px; border: 1px solid var(--neon-green); text-align: center;
         }
-        .search-box { display: flex; gap: 0; margin-top: 30px; border-radius: 10px; overflow: hidden; border: 2px solid var(--neon-green); }
-        .search-box input { flex: 1; padding: 18px; border: none; background: #000; color: #fff; font-size: 1.2rem; outline: none; }
-        .search-box button { padding: 0 30px; background: var(--neon-green); border: none; font-weight: bold; cursor: pointer; }
+        .search-box { display: flex; margin-top: 20px; border: 2px solid var(--neon-green); border-radius: 8px; overflow: hidden; }
+        .search-box input { flex: 1; padding: 15px; border: none; background: #000; color: #fff; font-size: 1.1rem; outline: none; }
+        .search-box button { padding: 0 20px; background: var(--neon-green); border: none; font-weight: bold; cursor: pointer; }
+        
+        #result-display { margin-top: 25px; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px dashed #333; border-radius: 10px; padding: 10px; }
+        #result-display img { max-width: 100%; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
 
-        /* --- CREADOR ELITE GRID --- */
-        .creator-grid {
-            display: grid; grid-template-columns: 360px 1fr; gap: 25px; max-width: 1500px; margin: 0 auto;
-        }
+        /* CREADOR GRID */
+        .creator-grid { display: grid; grid-template-columns: 360px 1fr; gap: 20px; max-width: 1400px; margin: 0 auto; }
+        .side-panel { background: var(--panel-dark); padding: 15px; border-radius: 15px; border: 1px solid var(--neon-blue); height: 85vh; overflow-y: auto; }
+        .control-group { margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
+        .control-group label { color: var(--neon-green); font-size: 11px; display: block; margin-bottom: 5px; font-weight: bold; }
+        
+        input[type="text"], input[type="date"], input[type="time"] { width: 100%; padding: 8px; box-sizing: border-box; background: #000; color: #fff; border: 1px solid #444; }
+        canvas { max-width: 100%; height: auto; border-radius: 10px; border: 2px solid #1e3a47; cursor: move; }
+        .btn-hd { width: 100%; padding: 12px; background: var(--neon-pink); color: #fff; border: none; border-radius: 5px; cursor: pointer; font-family: 'Orbitron'; margin-top: 10px; }
 
-        .side-panel {
-            background: var(--panel-dark); padding: 20px; border-radius: 15px;
-            border: 1px solid var(--neon-blue); height: 80vh; overflow-y: auto;
-        }
-
-        .control-group { margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; }
-        .control-group label { color: var(--neon-green); font-size: 0.8rem; display: block; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; }
-
-        input[type="range"] { width: 100%; accent-color: var(--neon-pink); }
-        .val-indicator { float: right; color: var(--neon-pink); font-size: 0.7rem; }
-
-        canvas {
-            max-width: 100%; height: auto; border-radius: 10px; border: 4px solid #1e3a47;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.9); background: #000;
-        }
-
-        .btn-hd {
-            width: 100%; padding: 15px; background: var(--neon-pink); color: #fff;
-            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
-            font-family: 'Orbitron', sans-serif; text-transform: uppercase; margin-top: 10px;
-        }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 1000px) {
-            .creator-grid { grid-template-columns: 1fr; }
-            .side-panel { height: auto; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="nav-title">CL7ADV MASTER ELITE</div>
+    <div class="nav-title">RC SANTA CRUZ - CL7ADV</div>
     <div class="nav-btns">
-        <button class="nav-btn active" onclick="openTab('tab-search', this)">BUSCADOR</button>
-        <button class="nav-btn" onclick="openTab('tab-creator', this)">CREADOR QSL</button>
-        <button class="nav-btn" onclick="openTab('tab-shield', this)">ESCUDOS</button>
+        <button class="nav-btn active" onclick="openTab('tab-search', this)">🔍 BUSCAR</button>
+        <button class="nav-btn" onclick="openTab('tab-creator', this)">🎨 CREAR QSL</button>
     </div>
 </nav>
 
 <div id="tab-search" class="section active">
     <div class="search-container">
-        <h1 style="font-family: 'Bebas Neue', sans-serif; font-size: 4rem; margin: 0; letter-spacing: 4px;">EXPLORADOR QSL</h1>
-        <p style="color: var(--neon-blue);">Radio Club Santa Cruz del Sur - Camagüey</p>
+        <h2 style="font-family: 'Orbitron'; color: var(--neon-green);">BUSCADOR DE QSL</h2>
+        <p style="font-size: 12px; opacity: 0.7;">Introduce el indicativo para buscar en la carpeta /img/</p>
         <div class="search-box">
-            <input type="text" id="qslInput" placeholder="EJEMPLO: CO7ADV">
-            <button onclick="alert('Conectando a Base de Datos Local...')">BUSCAR</button>
+            <input type="text" id="qslSearchInput" placeholder="EJ: CO7ADV" onkeyup="if(event.key==='Enter') searchInFolder()">
+            <button onclick="searchInFolder()">BUSCAR</button>
         </div>
-        <p style="margin-top: 30px; font-size: 0.8rem; opacity: 0.5;">Servidor: Activo | QSLs indexadas: 12,402</p>
+        
+        <div id="result-display">
+            <p id="search-status" style="color: #666;">Esperando búsqueda...</p>
+        </div>
     </div>
 </div>
 
@@ -121,164 +90,170 @@
     <div class="creator-grid">
         <div class="side-panel">
             <div class="control-group">
-                <label>1. Fondo de Tarjeta</label>
-                <input type="file" id="loadBG" accept="image/*" onchange="handleImage(this, 'bg')">
-                <p style="font-size: 9px; margin-top: 5px; color: #888;">*Sube una foto de 900x550 para mejor calidad.</p>
+                <label>Fondo y Logo Club</label>
+                <input type="file" onchange="handleImage(this, 'bg')" style="font-size: 10px; margin-bottom: 5px;">
+                <input type="file" onchange="handleImage(this, 'logo')" style="font-size: 10px;">
             </div>
 
             <div class="control-group">
-                <label>2. Logotipo Personalizado</label>
-                <input type="file" id="loadLogo" accept="image/*" onchange="handleImage(this, 'logo')">
-                <label style="margin-top:10px;">Tamaño Logo: <span id="v-logo" class="val-indicator">120px</span></label>
-                <input type="range" id="logoSize" min="50" max="400" value="120" oninput="draw()">
+                <label>Identidad (Callsign)</label>
+                <input type="text" id="callsign" value="CL7ADV" oninput="draw()">
+                <input type="color" id="callColor" value="#00ff99" oninput="draw()" style="width:100%; height:25px; margin-top:5px;">
             </div>
 
             <div class="control-group">
-                <label>3. Mi Identidad</label>
-                <input type="text" id="callsign" value="CL7ADV" oninput="draw()" style="width:100%; padding:10px; box-sizing:border-box; background:#000; color:#fff; border:1px solid var(--neon-blue);">
-                <label style="margin-top:10px;">Color Nombre:</label>
-                <input type="color" id="callColor" value="#00ff99" oninput="draw()" style="width:100%; height:30px; border:none; background:none; cursor:pointer;">
+                <label>Fecha y Hora UTC</label>
+                <div style="display: flex; gap: 5px; margin-bottom: 5px;">
+                    <input type="date" id="qDate" oninput="draw()">
+                    <input type="time" id="qTime" oninput="draw()">
+                </div>
+                <button onclick="setCurrentTime()" style="width:100%; background: var(--neon-blue); border:none; padding:5px; font-size:10px; font-weight:bold; cursor:pointer;">CAPTURAR HORA ACTUAL</button>
             </div>
 
             <div class="control-group">
-                <label>4. Ajustes de Tabla QSO</label>
-                <label>Ancho Tabla: <span id="v-width" class="val-indicator">780px</span></label>
+                <label>Datos QSO</label>
+                <input type="text" id="toCall" placeholder="Confirming with..." oninput="draw()" style="margin-bottom:5px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
+                    <input type="text" id="qBand" value="40m" oninput="draw()">
+                    <input type="text" id="qMode" value="FT8" oninput="draw()">
+                    <input type="text" id="qRst" value="599" oninput="draw()">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Ajustes de Tabla</label>
                 <input type="range" id="boxW" min="300" max="850" value="780" oninput="draw()">
-                
-                <label style="margin-top:10px;">Opacidad: <span id="v-op" class="val-indicator">85%</span></label>
-                <input type="range" id="boxOp" min="0" max="100" value="85" oninput="draw()">
-                
-                <label style="margin-top:10px;">Datos del Contacto:</label>
-                <input type="text" id="toCall" placeholder="A quién confirmas?" oninput="draw()" style="width:100%; background:#000; color:white; border:1px solid #444; margin-bottom:5px;">
-                <input type="text" id="qsoData" value="BAND: 40m | MODE: FT8 | RST: -05" oninput="draw()" style="width:100%; background:#000; color:white; border:1px solid #444;">
+                <input type="range" id="boxOp" min="10" max="100" value="85" oninput="draw()">
             </div>
 
-            <button class="btn-hd" onclick="download()">Descargar QSL Ultra HD</button>
+            <button class="btn-hd" onclick="download()">GUARDAR QSL</button>
         </div>
 
-        <div class="preview-panel" style="text-align: center;">
+        <div style="text-align: center;">
             <canvas id="mainCanvas" width="900" height="550"></canvas>
-            <div style="margin-top:15px; padding:15px; background: rgba(0,0,0,0.5); border-radius:10px; font-size: 0.8rem; color: var(--neon-blue);">
-                [!] MODO EDICIÓN ACTIVO: Puedes arrastrar el Nombre, la Tabla o el Logo con el ratón.
-            </div>
+            <p style="font-size: 11px; margin-top: 10px; color: var(--neon-blue);">Pulsar y arrastrar para mover textos y logos.</p>
         </div>
-    </div>
-</div>
-
-<div id="tab-shield" class="section">
-    <div style="text-align: center; max-width: 600px; margin: 0 auto;">
-        <h2 style="font-family: 'Orbitron'; color: var(--gold);">ESCUDO OFICIAL</h2>
-        <div style="background: var(--panel-dark); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-            <input type="text" id="s-call" placeholder="INDICATIVO" oninput="drawShield()" style="padding:10px; margin:5px;">
-            <input type="text" id="s-loc" placeholder="LOCATOR" oninput="drawShield()" style="padding:10px; margin:5px;">
-        </div>
-        <canvas id="shieldCanvas" width="600" height="700"></canvas>
     </div>
 </div>
 
 <script>
+    // --- LÓGICA DE BÚSQUEDA EN /IMG/ ---
+    function searchInFolder() {
+        const input = document.getElementById('qslSearchInput').value.trim().toUpperCase();
+        const display = document.getElementById('result-display');
+        const status = document.getElementById('search-status');
+
+        if(!input) return;
+
+        status.innerText = `Buscando ${input} en /img/...`;
+        display.innerHTML = ''; // Limpiar previo
+
+        // Intentar cargar la imagen desde la carpeta local /img/
+        const imgPath = `img/${input}.jpg`;
+        const testImg = new Image();
+        
+        testImg.onload = function() {
+            display.innerHTML = `
+                <p style="color: var(--neon-green); margin-bottom:10px;">¡QSL ENCONTRADA!</p>
+                <img src="${imgPath}" alt="QSL ${input}">
+                <a href="${imgPath}" download style="margin-top:10px; color: var(--neon-pink); text-decoration:none; font-size:12px;">[ Descargar Archivo ]</a>
+            `;
+        };
+
+        testImg.onerror = function() {
+            // Si falla JPG, intentar PNG
+            const pngPath = `img/${input}.png`;
+            const testPng = new Image();
+            testPng.onload = function() {
+                display.innerHTML = `
+                    <p style="color: var(--neon-green); margin-bottom:10px;">¡QSL ENCONTRADA!</p>
+                    <img src="${pngPath}" alt="QSL ${input}">
+                    <a href="${pngPath}" download style="margin-top:10px; color: var(--neon-pink); text-decoration:none; font-size:12px;">[ Descargar Archivo ]</a>
+                `;
+            };
+            testPng.onerror = function() {
+                display.innerHTML = `<p style="color: #ff4444;">❌ No se encontró ${input}.jpg o .png en la carpeta /img/</p>`;
+            };
+            testPng.src = pngPath;
+        };
+
+        testImg.src = imgPath;
+    }
+
+    // --- LÓGICA DEL CREADOR (CANVAS) ---
     const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d');
-    
-    // Almacenes de imágenes
-    let imgBG = new Image();
-    let imgLogo = new Image();
-    imgBG.crossOrigin = "anonymous";
-    imgLogo.crossOrigin = "anonymous";
+    let imgBG = new Image(); let imgLogo = new Image();
+    imgBG.crossOrigin = imgLogo.crossOrigin = "anonymous";
 
-    // Posiciones iniciales de objetos
     let oCall = { x: 50, y: 120, w: 300, h: 80 };
     let oBox = { x: 60, y: 330, w: 780, h: 180 };
     let oLogo = { x: 730, y: 30, w: 120, h: 120 };
-    
-    let dragging = null;
-    let offset = { x: 0, y: 0 };
+    let dragging = null; let offset = { x: 0, y: 0 };
 
-    // --- MANEJO DE IMÁGENES ---
     function handleImage(input, type) {
         const reader = new FileReader();
-        reader.onload = (e) => {
-            if(type === 'bg') imgBG.src = e.target.result;
-            else imgLogo.src = e.target.result;
-        };
+        reader.onload = (e) => { if(type === 'bg') imgBG.src = e.target.result; else imgLogo.src = e.target.result; };
         if(input.files[0]) reader.readAsDataURL(input.files[0]);
     }
 
-    // --- RENDERIZADO PRINCIPAL ---
+    function setCurrentTime() {
+        const now = new Date();
+        document.getElementById('qDate').value = now.toISOString().split('T')[0];
+        document.getElementById('qTime').value = now.toTimeString().split(' ')[0].substring(0, 5);
+        draw();
+    }
+
     function draw() {
-        // Actualizar valores de los sliders
-        document.getElementById('v-logo').innerText = document.getElementById('logoSize').value + "px";
-        document.getElementById('v-width').innerText = document.getElementById('boxW').value + "px";
-        document.getElementById('v-op').innerText = document.getElementById('boxOp').value + "%";
-
         ctx.clearRect(0,0,900,550);
+        if(imgBG.src) ctx.drawImage(imgBG, 0, 0, 900, 550);
+        else { ctx.fillStyle = "#111"; ctx.fillRect(0,0,900,550); }
 
-        // 1. Dibujar Fondo
-        if(imgBG.src) {
-            ctx.drawImage(imgBG, 0, 0, 900, 550);
-        } else {
-            ctx.fillStyle = "#111"; ctx.fillRect(0,0,900,550);
-            ctx.fillStyle = "#333"; ctx.font = "20px Arial"; ctx.fillText("Sube una imagen de fondo...", 300, 270);
-        }
+        if(imgLogo.src) ctx.drawImage(imgLogo, oLogo.x, oLogo.y, oLogo.w, oLogo.h);
 
-        // 2. Dibujar Logo
-        if(imgLogo.src) {
-            const size = parseInt(document.getElementById('logoSize').value);
-            oLogo.w = oLogo.h = size;
-            ctx.drawImage(imgLogo, oLogo.x, oLogo.y, size, size);
-        }
-
-        // 3. Dibujar Nombre (Callsign) con Fuente Bebas Neue si carga, o Arial Black
-        ctx.shadowBlur = 15; ctx.shadowColor = "rgba(0,0,0,0.8)";
+        ctx.shadowBlur = 10; ctx.shadowColor = "black";
         ctx.fillStyle = document.getElementById('callColor').value;
-        ctx.font = "bold 110px 'Bebas Neue', 'Arial Black', sans-serif";
-        const callTxt = document.getElementById('callsign').value.toUpperCase();
-        ctx.fillText(callTxt, oCall.x, oCall.y);
-        oCall.w = ctx.measureText(callTxt).width;
+        ctx.font = "bold 100px 'Bebas Neue'";
+        const call = document.getElementById('callsign').value.toUpperCase();
+        ctx.fillText(call, oCall.x, oCall.y);
+        oCall.w = ctx.measureText(call).width;
         ctx.shadowBlur = 0;
 
-        // 4. Dibujar Tabla de Datos
         const boxW = parseInt(document.getElementById('boxW').value);
         const boxOp = document.getElementById('boxOp').value / 100;
         oBox.w = boxW;
-        
         ctx.fillStyle = `rgba(14, 36, 49, ${boxOp})`;
-        ctx.beginPath();
-        ctx.roundRect(oBox.x, oBox.y, oBox.w, oBox.h, 15);
-        ctx.fill();
-        ctx.strokeStyle = "#00ff99"; ctx.lineWidth = 3; ctx.stroke();
+        ctx.beginPath(); ctx.roundRect(oBox.x, oBox.y, oBox.w, oBox.h, 10); ctx.fill();
+        ctx.strokeStyle = "#00ff99"; ctx.lineWidth = 2; ctx.stroke();
 
-        // 5. Textos dentro de la tabla
-        ctx.fillStyle = "#fff";
-        ctx.font = "bold 22px 'Roboto Mono'";
-        ctx.fillText("CONFIRMING QSO WITH: " + document.getElementById('toCall').value.toUpperCase(), oBox.x + 30, oBox.y + 55);
+        ctx.fillStyle = "white"; ctx.font = "bold 20px 'Roboto Mono'";
+        ctx.fillText("QSO WITH: " + document.getElementById('toCall').value.toUpperCase(), oBox.x + 25, oBox.y + 45);
         
-        ctx.font = "18px 'Roboto Mono'";
-        ctx.fillStyle = "#00d2ff";
-        ctx.fillText(document.getElementById('qsoData').value.toUpperCase(), oBox.x + 30, oBox.y + 110);
+        ctx.font = "18px 'Roboto Mono'"; ctx.fillStyle = "#00d2ff";
+        const dateVal = document.getElementById('qDate').value || "----/--/--";
+        const timeVal = document.getElementById('qTime').value || "--:--";
+        ctx.fillText(`DATE: ${dateVal}  TIME: ${timeVal} UTC`, oBox.x + 25, oBox.y + 90);
         
-        ctx.font = "italic 18px Arial";
-        ctx.fillStyle = "#ffcc00";
-        ctx.fillText("Radio Club Santa Cruz del Sur - 73 & DX!", oBox.x + 30, oBox.y + 155);
+        ctx.fillStyle = "white";
+        ctx.fillText(`BAND: ${document.getElementById('qBand').value}  MODE: ${document.getElementById('qMode').value}  RST: ${document.getElementById('qRst').value}`, oBox.x + 25, oBox.y + 130);
+        ctx.fillStyle = "#ffcc00"; ctx.font = "italic 16px Arial";
+        ctx.fillText("Radio Club Santa Cruz - Camagüey, Cuba", oBox.x + 25, oBox.y + 165);
     }
 
-    // --- INTERACTIVIDAD ---
+    // ARRASTRE
     function getMouse(e) {
         const r = canvas.getBoundingClientRect();
         const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
         const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
         return { x: x * (900/r.width), y: y * (550/r.height) };
     }
-
     canvas.onmousedown = canvas.ontouchstart = (e) => {
         const m = getMouse(e);
         if(m.x > oLogo.x && m.x < oLogo.x + oLogo.w && m.y > oLogo.y && m.y < oLogo.y + oLogo.h) dragging = oLogo;
-        else if(m.x > oCall.x && m.x < oCall.x + oCall.w && m.y > oCall.y - 90 && m.y < oCall.y) dragging = oCall;
+        else if(m.x > oCall.x && m.x < oCall.x + oCall.w && m.y > oCall.y - 80 && m.y < oCall.y) dragging = oCall;
         else if(m.x > oBox.x && m.x < oBox.x + oBox.w && m.y > oBox.y && m.y < oBox.y + oBox.h) dragging = oBox;
-        
         if(dragging) { offset.x = m.x - dragging.x; offset.y = m.y - dragging.y; e.preventDefault(); }
     };
-
     window.onmousemove = window.ontouchmove = (e) => {
         if(!dragging) return;
         const m = getMouse(e);
@@ -287,49 +262,25 @@
     };
     window.onmouseup = window.ontouchend = () => dragging = null;
 
-    // --- TAB SYSTEM ---
     function openTab(id, btn) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
         if(id === 'tab-creator') setTimeout(draw, 100);
-        if(id === 'tab-shield') drawShield();
-    }
-
-    // --- ESCUDO ---
-    function drawShield() {
-        const c = document.getElementById('shieldCanvas');
-        const x = c.getContext('2d');
-        const call = document.getElementById('s-call').value || "CL7ADV";
-        const loc = document.getElementById('s-loc').value || "EL98";
-
-        x.clearRect(0,0,600,700);
-        x.beginPath(); x.moveTo(50,50); x.lineTo(550,50); x.lineTo(550,400);
-        x.bezierCurveTo(550,650,300,680,300,680); x.bezierCurveTo(300,680,50,650,50,400);
-        x.closePath(); x.fillStyle = "#1e3a47"; x.fill();
-        x.strokeStyle = "#ffcc00"; x.lineWidth = 15; x.stroke();
-        x.fillStyle = "#ffcc00"; x.fillRect(0,320,600,80);
-        x.fillStyle = "#1e3a47"; x.font = "bold 35px Arial"; x.textAlign = "center";
-        x.fillText("RADIO CLUB SANTA CRUZ", 300, 375);
-        x.fillStyle = "#fff"; x.font = "bold 80px Orbitron"; x.fillText(call.toUpperCase(), 300, 220);
-        x.font = "bold 40px Courier New"; x.fillText(loc.toUpperCase(), 300, 550);
     }
 
     function download() {
         const link = document.createElement('a');
-        link.download = 'QSL_HD_ELITE.png';
+        link.download = 'QSL_HD.png';
         link.href = canvas.toDataURL('image/png', 1.0);
         link.click();
     }
 
-    // Inicio forzado
-    window.onload = () => {
+    window.onload = () => { 
+        setCurrentTime(); 
         imgBG.src = "https://cdn.pixabay.com/photo/2017/01/20/00/30/maldives-1993704_960_720.jpg";
-        drawShield();
-        setTimeout(draw, 500); // Esperar a fuentes
     };
 </script>
-
 </body>
 </html>
