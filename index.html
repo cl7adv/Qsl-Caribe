@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QSL Caribe — Generador</title>
+  <style>
+    :root {
+      --bg: #0b1b2b;
+      --panel: #10223a;
+      --accent: #3fd0c9;
+      --accent2: #ffd36e;
+      --text: #eaf6ff;
+      --muted: #a9c1d6;
+      --danger: #ff6b6b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(180deg, #06121f 0%, var(--bg) 50%, #0e243b 100%);
+      color: var(--text);
+    }
+    header {
+      padding: 24px 16px;
+      background:
+        radial-gradient(1200px 240px at 50% -100px, rgba(63,208,201,0.25), transparent 60%),
+        linear-gradient(90deg, rgba(255,211,110,0.25), rgba(63,208,201,0.2));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .brand .logo {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: conic-gradient(from 180deg, var(--accent), var(--accent2), var(--accent));
+      box-shadow: 0 0 16px rgba(255,211,110,0.35), 0 0 24px rgba(63,208,201,0.25);
+    }
+    .brand h1 {
+      font-size: 20px; margin: 0;
+      letter-spacing: 0.4px; font-weight: 700;
+    }
+    .brand p {
+      margin: 2px 0 0 0; font-size: 13px; color: var(--muted);
+    }
+    main {
+      max-width: 1100px; margin: 24px auto; padding: 0 16px;
+      display: grid; grid-template-columns: 370px 1fr; gap: 20px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    }
+    .panel h2 {
+      font-size: 16px; margin: 0 0 12px 0;
+      font-weight: 700; letter-spacing: 0.3px;
+    }
+    form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    form .full { grid-column: 1 / -1; }
+    label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; }
+    input, select, textarea {
+      width: 100%; padding: 10px 12px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1); background: #0c1d30; color: var(--text);
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(63,208,201,0.6);
+      box-shadow: 0 0 0 3px rgba(63,208,201,0.15);
+    }
+    textarea { min-height: 70px; resize: vertical; }
+    .actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    button {
+      appearance: none; border: none; border-radius: 10px;
+      padding: 10px 14px; font-weight: 700; cursor: pointer;
+      background: #0c1d30; color: var(--text);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    button.primary {
+      background: linear-gradient(90deg, var(--accent), #73e5cf);
+      color: #06121f; border: none;
+      box-shadow: 0 10px 20px rgba(63,208,201,0.25);
+    }
+    button.secondary { border-color: rgba(255,255,255,0.2); }
+    button.danger { background: var(--danger); color: #1b0a0a; }
+    .preview {
+      display: grid; grid-template-rows: auto 1fr; gap: 12px;
+    }
+    .legend { font-size: 12px; color: var(--muted); }
+    canvas {
+      width: 100%; height: auto;
+      background: #071420; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.35);
+    }
+    footer {
+      max-width: 1100px; margin: 12px auto 40px; padding: 0 16px;
+      color: var(--muted); font-size: 12px;
+    }
+    /* Estilo para impresión: solo la tarjeta, sin interfaz */
+    @media print {
+      body { background: #fff; }
+      header, .panel:not(.preview), footer { display: none !important; }
+      .preview { padding: 0; margin: 0; border: none; }
+      canvas {
+        width: 100% !important; height: auto !important; border: none;
+        box-shadow: none; background: #fff;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>QSL Caribe — Generador</h1>
+        <p>Tarjetas QSL elegantes, cálidas y listas para imprimir o guardar</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Datos del QSO</h2>
+      <form id="qsoForm">
+        <div class="row">
+          <div>
+            <label for="indicativo">Indicativo</label>
+            <input id="indicativo" placeholder="CM2ABC" required />
+          </div>
+          <div>
+            <label for="nombre">Nombre del operador</label>
+            <input id="nombre" placeholder="Alfred" />
+          </div>
+          <div>
+            <label for="ubicacion">QTH / Ubicación</label>
+            <input id="ubicacion" placeholder="Santa Cruz del Sur, Camagüey, Cuba" />
+          </div>
+          <div>
+            <label for="pais">País</label>
+            <input id="pais" placeholder="Cuba" />
+          </div>
+          <div>
+            <label for="fecha">Fecha</label>
+            <input id="fecha" type="date" />
+          </div>
+          <div>
+            <label for="hora">Hora (UTC)</label>
+            <input id="hora" type="time" />
+          </div>
+          <div>
+            <label for="frecuencia">Frecuencia (MHz)</label>
+            <input id="frecuencia" placeholder="14.070" />
+          </div>
+          <div>
+            <label for="modo">Modo</label>
+            <select id="modo">
+              <option>SSB</option><option>CW</option><option>FT8</option><option>FM</option><option>AM</option><option>DIGI</option>
+            </select>
+          </div>
+          <div>
+            <label for="rst">Señal (RST)</label>
+            <input id="rst" placeholder="59 / 599" />
+          </div>
+          <div>
+            <label for="qsl">QSL vía</label>
+            <input id="qsl" placeholder="Directa / Buro / eQSL / LoTW" />
+          </div>
+          <div class="full">
+            <label for="notas">Notas</label>
+            <textarea id="notas" placeholder="Gracias por el QSO. 73 y DX!"></textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="button" class="primary" id="btnGenerar">Generar tarjeta</button>
+          <button type="button" class="secondary" id="btnDescargar">Descargar PNG</button>
+          <button type="button" class="secondary" id="btnImprimir">Imprimir</button>
+          <button type="button" class="danger" id="btnLimpiar">Limpiar</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel preview">
+      <h2>Vista previa</h2>
+      <p class="legend">La tarjeta se redibuja con tus datos. Usa Descargar para guardar como imagen o Imprimir para PDF.</p>
+      <canvas id="qslCanvas" width="1200" height="800" aria-label="Tarjeta QSL generada"></canvas>
+    </section>
+  </main>
+
+  <footer>
+    Hecho con cariño caribeño y sin dependencias externas. Celebra cada QSO.
+  </footer>
+
+  <script>
+    const form = document.getElementById('qsoForm');
+    const canvas = document.getElementById('qslCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Tipografías del sistema para robustez
+    const fontTitle = "700 62px system-ui, Segoe UI, Arial";
+    const fontLabel = "700 20px system-ui, Segoe UI, Arial";
+    const fontText  = "400 22px system-ui, Segoe UI, Arial";
+    const fontSmall = "400 16px system-ui, Segoe UI, Arial";
+
+    // Botones
+    document.getElementById('btnGenerar').addEventListener('click', () => drawCard(readData()));
+    document.getElementById('btnDescargar').addEventListener('click', downloadPNG);
+    document.getElementById('btnImprimir').addEventListener('click', () => window.print());
+    document.getElementById('btnLimpiar').addEventListener('click', () => { form.reset(); drawCard(defaultData()); });
+
+    // Inicial
+    drawCard(defaultData());
+
+    function defaultData() {
+      return {
+        indicativo: "CM2ABC",
+        nombre: "Alfred",
+        ubicacion: "Santa Cruz del Sur, Camagüey",
+        pais: "Cuba",
+        fecha: new Date().toISOString().slice(0,10),
+        hora: new Date().toISOString().slice(11,16),
+        frecuencia: "14.070",
+        modo: "SSB",
+        rst: "59",
+        qsl: "eQSL / LoTW",
+        notas: "Gracias por el QSO. 73 y DX!"
+      };
+    }
+
+    function readData() {
+      const get = id => document.getElementById(id).value.trim();
+      return {
+        indicativo: get("indicativo") || "—",
+        nombre: get("nombre"),
+        ubicacion: get("ubicacion"),
+        pais: get("pais"),
+        fecha: get("fecha"),
+        hora: get("hora"),
+        frecuencia: get("frecuencia"),
+        modo: get("modo"),
+        rst: get("rst"),
+        qsl: get("qsl"),
+        notas: get("notas"),
+      };
+    }
+
+    function downloadPNG() {
+      const url = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `QSL_${Date.now()}.png`;
+      a.click();
+    }
+
+    function drawCard(d) {
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0,0,W,H);
+
+      // Fondo: gradiente mar-caribe con luz
+      const g = ctx.createLinearGradient(0,0,0,H);
+      g.addColorStop(0, "#062036");
+      g.addColorStop(0.5, "#0c2c45");
+      g.addColorStop(1, "#103251");
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,W,H);
+
+      // Brillos suaves
+      drawGlow(260,140,280,"rgba(63,208,201,0.28)");
+      drawGlow(W-240,120,240,"rgba(255,211,110,0.25)");
+
+      // Tarjeta con borde y sombra
+      const pad = 40;
+      const card = { x: pad, y: pad, w: W - pad*2, h: H - pad*2, r: 26 };
+      roundedRect(card.x, card.y, card.w, card.h, card.r, "#0b1f33", true);
+      ctx.strokeStyle = "rgba(255,255,255,0.08)";
+      ctx.lineWidth = 2;
+      roundedRect(card.x, card.y, card.w, card.h, card.r, null, false);
+
+      // Franja superior con gradiente
+      const topH = 140;
+      const gt = ctx.createLinearGradient(card.x, card.y, card.x+card.w, card.y);
+      gt.addColorStop(0, "rgba(63,208,201,0.35)");
+      gt.addColorStop(1, "rgba(255,211,110,0.35)");
+      ctx.fillStyle = gt;
+      roundedRect(card.x, card.y, card.w, topH, card.r, true);
+
+      // Título: Indicativo grande
+      ctx.fillStyle = "#06121f";
+      ctx.textBaseline = "top";
+      ctx.font = fontTitle;
+      const title = (d.indicativo || "—").toUpperCase();
+      ctx.fillText(title, card.x + 30, card.y + 30);
+
+      // Gaviotas minimalistas en la franja
+      drawSeagulls(card.x + card.w - 220, card.y + 48, 170, 60, 3);
+
+      // Identidad lateral (país / ubicación)
+      ctx.font = fontSmall;
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      const loc = [d.ubicacion, d.pais].filter(Boolean).join(" • ");
+      ctx.fillText(loc || "QTH: —", card.x + 36, card.y + topH + 12);
+
+      // Área de datos QSO
+      const baseY = card.y + topH + 60;
+      const colX1 = card.x + 36;
+      const colX2 = card.x + card.w/2 + 20;
+      const lineGap = 52;
+
+      drawField("Fecha", d.fecha || "—", colX1, baseY + lineGap*0);
+      drawField("Hora (UTC)", d.hora || "—", colX1, baseY + lineGap*1);
+      drawField("Frecuencia (MHz)", d.frecuencia || "—", colX1, baseY + lineGap*2);
+      drawField("Modo", d.modo || "—", colX1, baseY + lineGap*3);
+
+      drawField("Señal (RST)", d.rst || "—", colX2, baseY + lineGap*0);
+      drawField("QSL vía", d.qsl || "—", colX2, baseY + lineGap*1);
+      drawField("Operador", d.nombre || "—", colX2, baseY + lineGap*2);
+      drawField("QTH", d.ubicacion || "—", colX2, baseY + lineGap*3);
+
+      // Separador
+      ctx.strokeStyle = "rgba(255,255,255,0.08)";
+      drawSeparator(card.x + 30, baseY + lineGap*4 + 10, card.w - 60);
+
+      // Notas / Mensaje
+      ctx.font = fontLabel;
+      ctx.fillStyle = "rgba(255,255,255,0.9)";
+      ctx.fillText("Notas", colX1, baseY + lineGap*4 + 30);
+      ctx.font = fontText;
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      wrapText(d.notas || "—", colX1, baseY + lineGap*4 + 60, card.w - 72, 28);
+
+      // Pie de firma
+      const footY = card.y + card.h - 88;
+      ctx.font = fontSmall;
+      ctx.fillStyle = "rgba(255,255,255,0.65)";
+      ctx.fillText("Confirmo QSO. 73 y DX — Firma:", colX1, footY);
+      ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(colX1 + 280, footY + 14);
+      ctx.lineTo(card.x + card.w - 40, footY + 14);
+      ctx.stroke();
+
+      // Sello lateral
+      drawSeal(card.x + card.w - 120, card.y + card.h - 120, 78, title);
+    }
+
+    function drawField(label, value, x, y) {
+      const ctx = canvas.getContext('2d');
+      ctx.textBaseline = "top";
+      ctx.font = "700 20px system-ui, Segoe UI, Arial";
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      ctx.fillText(label.toUpperCase(), x, y);
+      ctx.font = "400 26px system-ui, Segoe UI, Arial";
+      ctx.fillStyle = "rgba(255,255,255,0.92)";
+      ctx.fillText(value, x, y + 26);
+    }
+
+    function drawSeparator(x, y, w) {
+      const ctx = canvas.getContext('2d');
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + w, y);
+      ctx.stroke();
+    }
+
+    function roundedRect(x,y,w,h,r,fill=true) {
+      const ctx = canvas.getContext('2d');
+      ctx.beginPath();
+      ctx.moveTo(x+r,y);
+      ctx.arcTo(x+w,y,x+w,y+h,r);
+      ctx.arcTo(x+w,y+h,x,y+h,r);
+      ctx.arcTo(x,y+h,x,y,r);
+      ctx.arcTo(x,y,x+w,y,r);
+      if (fill) ctx.fill(); else ctx.stroke();
+    }
+
+    function drawGlow(x,y,r,color) {
+      const ctx = canvas.getContext('2d');
+      const g = ctx.createRadialGradient(x,y,0,x,y,r);
+      g.addColorStop(0, color);
+      g.addColorStop(1, "transparent");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x,y,r,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    function drawSeagulls(x, y, w, h, n=3) {
+      const ctx = canvas.getContext('2d');
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.strokeStyle = "rgba(6,18,31,0.8)";
+      ctx.lineWidth = 3;
+      for (let i=0;i<n;i++) {
+        const ox = (w/(n-1||1))*i + (i%2?8:-8);
+        const oy = (i%2?10:-6);
+        ctx.beginPath();
+        ctx.moveTo(ox, oy);
+        ctx.quadraticCurveTo(ox+14, oy-10, ox+32, oy);
+        ctx.quadraticCurveTo(ox+48, oy+10, ox+64, oy);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawSeal(cx, cy, r, text) {
+      const ctx = canvas.getContext('2d');
+      // Anillo
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI*2);
+      ctx.strokeStyle = "rgba(63,208,201,0.7)";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Gaviota central estilo sello
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.strokeStyle = "rgba(255,211,110,0.9)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(-18, -6);
+      ctx.quadraticCurveTo(0, -20, 18, -6);
+      ctx.quadraticCurveTo(32, 2, 44, 0);
+      ctx.stroke();
+      ctx.restore();
+
+      // Texto pequeño
+      ctx.font = "700 14px system-ui, Segoe UI, Arial";
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      const t = (text || "").slice(0,12);
+      const tw = ctx.measureText(t).width;
+      ctx.fillText(t, cx - tw/2, cy + r + 16);
+    }
+
+    function wrapText(str, x, y, maxW, lineH) {
+      const ctx = canvas.getContext('2d');
+      if (!str) return;
+      const words = str.split(/\s+/);
+      let line = "";
+      for (let i=0;i<words.length;i++) {
+        const test = line + words[i] + " ";
+        const w = ctx.measureText(test).width;
+        if (w > maxW && i>0) {
+          ctx.fillText(line, x, y);
+          line = words[i] + " ";
+          y += lineH;
+        } else {
+          line = test;
+        }
+      }
+      ctx.fillText(line, x, y);
+    }
+  </script>
+</body>
+</html>
