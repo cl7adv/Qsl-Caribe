@@ -3,25 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Generador QSL Caribeño - CL7ADV</title>
+    <title>Generador QSL Neón - CL7ADV</title>
     <style>
         :root {
-            --primary: #00bcd4;
-            --primary-dark: #009688;
-            --accent: #ff9800;
-            --gold: #ffe082;
-            --glass: rgba(14, 36, 49, 0.85);
+            /* Paleta Neón */
+            --primary: #0ff; /* Cyan Neón */
+            --secondary: #f0f; /* Magenta Neón */
+            --bg-dark: #050505;
+            --glass: rgba(0, 0, 0, 0.8);
+            --neon-border: #0ff;
+            --text-glow: 0 0 10px #0ff, 0 0 20px #0ff;
         }
 
         body {
-            font-family: "Trebuchet MS", Arial, sans-serif;
-            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
-            background-attachment: fixed; color: #fff; margin: 0;
+            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
+            color: #fff; margin: 0;
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
 
-        header { padding: 15px; text-align: center; }
-        header h1 { margin: 0; font-size: 1.8rem; text-shadow: 0 0 10px var(--gold); }
+        header { padding: 20px; text-align: center; }
+        header h1 { 
+            margin: 0; font-size: 2rem; 
+            color: var(--primary); 
+            text-shadow: var(--text-glow);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
 
         .main-container {
             display: flex; flex-direction: row; gap: 20px;
@@ -29,36 +37,57 @@
         }
 
         .controls-panel {
-            flex: 0 0 350px; background: var(--glass); backdrop-filter: blur(10px);
-            padding: 20px; border-radius: 20px; border: 1px solid var(--primary);
-            height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            flex: 0 0 350px; background: var(--glass); 
+            backdrop-filter: blur(15px);
+            padding: 20px; border-radius: 15px; 
+            border: 2px solid var(--primary);
+            height: 85vh; overflow-y: auto; 
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
         }
 
+        /* Scrollbar Neón */
+        .controls-panel::-webkit-scrollbar { width: 5px; }
+        .controls-panel::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
         .section-label {
-            color: var(--gold); font-size: 0.8em; margin: 15px 0 8px;
-            display: block; border-bottom: 1px solid rgba(255,224,130,0.3);
+            color: var(--secondary); font-size: 0.85em; margin: 20px 0 10px;
+            display: block; border-bottom: 1px solid var(--secondary);
             text-transform: uppercase; font-weight: bold;
+            text-shadow: 0 0 5px var(--secondary);
         }
 
         input[type="text"], input[type="date"], input[type="time"], input[type="file"] {
-            width: 100%; padding: 10px; background: #fff; border: none;
-            border-radius: 8px; color: #333; margin-bottom: 8px; font-size: 0.85em; box-sizing: border-box;
+            width: 100%; padding: 10px; background: #111; border: 1px solid var(--primary);
+            border-radius: 5px; color: #fff; margin-bottom: 10px; font-size: 0.85em; box-sizing: border-box;
+            outline: none;
         }
+        
+        input[type="text"]:focus { box-shadow: 0 0 10px var(--primary); }
 
-        .range-box { background: rgba(255,255,255,0.1); padding: 8px; border-radius: 8px; margin-bottom: 10px; }
-        label { font-size: 0.75em; color: var(--gold); display: block; margin-bottom: 5px; }
+        .range-box { background: rgba(0, 255, 255, 0.05); padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid var(--primary); }
+        label { font-size: 0.75em; color: var(--primary); display: block; margin-bottom: 5px; }
 
         .btn-download {
-            width: 100%; padding: 15px; background: var(--accent);
-            color: #fff; font-weight: bold; border: none; border-radius: 12px;
+            width: 100%; padding: 15px; background: transparent;
+            color: var(--secondary); font-weight: bold; 
+            border: 2px solid var(--secondary); border-radius: 5px;
             cursor: pointer; text-transform: uppercase; margin-top: 10px;
+            transition: all 0.3s;
+            text-shadow: 0 0 5px var(--secondary);
+            box-shadow: inset 0 0 5px var(--secondary);
+        }
+
+        .btn-download:hover {
+            background: var(--secondary);
+            color: #000;
+            box-shadow: 0 0 20px var(--secondary);
         }
 
         .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         canvas {
-            max-width: 95%; height: auto; border-radius: 15px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); border: 2px solid #fff;
-            cursor: crosshair; background: #eee;
+            max-width: 95%; height: auto; border-radius: 5px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8); border: 3px solid var(--primary);
+            cursor: crosshair; background: #000;
         }
 
         @media (max-width: 900px) {
@@ -69,7 +98,7 @@
 </head>
 <body>
 
-    <header><h1>🌴 Generador QSL Caribeño 🌊</h1></header>
+    <header><h1>⚡ QSL NEON GENERATOR ⚡</h1></header>
 
     <div class="main-container">
         <div class="controls-panel">
@@ -85,13 +114,13 @@
                 <input type="range" id="logo2Size" min="30" max="350" value="100" oninput="draw()">
             </div>
 
-            <span class="section-label">2. Imagen de Fondo</span>
+            <span class="section-label">2. Escenario</span>
             <input type="file" id="bgInput" accept="image/*">
 
-            <span class="section-label">3. Colores y Datos</span>
+            <span class="section-label">3. Personalización Neón</span>
             <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <input type="color" id="callColor" value="#ffe082" oninput="draw()" title="Color de Indicativo">
-                <input type="color" id="textColor" value="#00ff99" oninput="draw()" title="Color de Texto">
+                <input type="color" id="callColor" value="#00ffff" oninput="draw()" title="Color de Indicativo">
+                <input type="color" id="textColor" value="#ff00ff" oninput="draw()" title="Color de Datos">
             </div>
             <input type="text" id="myCall" value="CL7ADV" oninput="draw()">
             <input type="text" id="myLoc" value="EL98xx" oninput="draw()">
@@ -107,14 +136,16 @@
                 <input type="text" id="qMode" placeholder="Modo" oninput="draw()">
                 <input type="text" id="qRst" placeholder="RST" oninput="draw()">
             </div>
-            <input type="text" id="qMsg" value="Radio, hermandad y comunidad" oninput="draw()">
+            <input type="text" id="qMsg" value="73's Radioafición Neón" oninput="draw()">
 
-            <button class="btn-download" onclick="downloadQSL()">DESCARGAR QSL</button>
+            <button class="btn-download" onclick="downloadQSL()">DESCARGAR QSL PNG</button>
         </div>
 
         <div class="preview-panel">
             <canvas id="qslCanvas" width="900" height="550"></canvas>
-            <p style="font-size: 0.8rem; margin-top: 10px; color: var(--gold);">🖱️ Arrastra cualquier elemento para ubicarlo.</p>
+            <p style="font-size: 0.8rem; margin-top: 15px; color: var(--primary); text-shadow: 0 0 5px var(--primary);">
+                GLOW ACTIVE: Arrastra los elementos para componer.
+            </p>
         </div>
     </div>
 
@@ -126,7 +157,6 @@
         let l1Img = new Image();
         let l2Img = new Image();
         
-        // Estado de posiciones y tamaños
         let pos = {
             logo1: { x: 730, y: 50, w: 120, h: 120 },
             logo2: { x: 600, y: 50, w: 100, h: 100 },
@@ -137,9 +167,8 @@
         let dragging = null;
         let offset = { x: 0, y: 0 };
 
-        // Carga inicial
         bgImg.crossOrigin = "anonymous";
-        bgImg.src = "https://cdn.pixabay.com/photo/2017/01/20/00/30/maldives-1993704_960_720.jpg";
+        bgImg.src = "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=900&h=550&auto=format&fit=crop";
 
         function setupFile(id, img) {
             document.getElementById(id).addEventListener('change', e => {
@@ -156,7 +185,6 @@
         l1Img.onload = draw;
         l2Img.onload = draw;
 
-        // --- LÓGICA DE MOVIMIENTO MEJORADA ---
         function getMousePos(e) {
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
@@ -168,8 +196,6 @@
 
         function startDragging(e) {
             const m = getMousePos(e);
-            
-            // Comprobar logos primero (para que tengan prioridad si están sobre la tabla)
             if (l1Img.src && m.x > pos.logo1.x && m.x < pos.logo1.x + pos.logo1.w && m.y > pos.logo1.y && m.y < pos.logo1.y + pos.logo1.h) dragging = "logo1";
             else if (l2Img.src && m.x > pos.logo2.x && m.x < pos.logo2.x + pos.logo2.w && m.y > pos.logo2.y && m.y < pos.logo2.y + pos.logo2.h) dragging = "logo2";
             else if (m.x > pos.call.x && m.x < pos.call.x + pos.call.w && m.y > pos.call.y - 80 && m.y < pos.call.y + 10) dragging = "call";
@@ -198,50 +224,67 @@
         window.addEventListener('mouseup', () => dragging = null);
         window.addEventListener('touchend', () => dragging = null);
 
-        // --- DIBUJO ---
         function drawField(label, val, x, y, w, color) {
+            ctx.shadowBlur = 0;
             ctx.fillStyle = color;
-            ctx.font = "bold 15px Verdana";
+            ctx.font = "bold 15px sans-serif";
             ctx.fillText(label.toUpperCase() + ":", x, y);
             const lw = ctx.measureText(label.toUpperCase() + ":").width;
-            ctx.font = "bold 20px 'Courier New'";
+            
+            // Valor con brillo
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = color;
+            ctx.font = "bold 20px monospace";
             ctx.fillText(val || "", x + lw + 10, y);
+            
+            // Línea Neón
             ctx.strokeStyle = color; ctx.lineWidth = 1;
+            ctx.shadowBlur = 5;
             ctx.beginPath(); ctx.moveTo(x + lw + 5, y + 5); ctx.lineTo(x + w, y + 5); ctx.stroke();
+            ctx.shadowBlur = 0;
         }
 
         function draw() {
             ctx.clearRect(0,0,900,550);
-            if (bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
+            
+            // Fondo con filtro oscuro para resaltar neón
+            if (bgImg.src) {
+                ctx.drawImage(bgImg, 0, 0, 900, 550);
+                ctx.fillStyle = "rgba(0,0,0,0.4)";
+                ctx.fillRect(0,0,900,550);
+            }
 
-            // Marca de agua
-            ctx.font = "bold 22px Verdana"; ctx.textAlign = "right";
-            ctx.strokeStyle = "black"; ctx.lineWidth = 4; ctx.strokeText("ZMR-CUBA", 880, 35);
-            ctx.fillStyle = "red"; ctx.fillText("ZMR-CUBA", 880, 35); ctx.textAlign = "left";
+            // Marca de agua Neón
+            ctx.font = "bold 22px Arial"; ctx.textAlign = "right";
+            ctx.shadowBlur = 10; ctx.shadowColor = "red";
+            ctx.fillStyle = "#ff0044"; ctx.fillText("ZMR-CUBA", 880, 35); ctx.textAlign = "left";
 
-            // Actualizar tamaños de logos desde sliders
             pos.logo1.w = pos.logo1.h = parseInt(document.getElementById('logo1Size').value);
             pos.logo2.w = pos.logo2.h = parseInt(document.getElementById('logo2Size').value);
 
-            // Dibujar logos si existen
             if (l1Img.src) ctx.drawImage(l1Img, pos.logo1.x, pos.logo1.y, pos.logo1.w, pos.logo1.h);
             if (l2Img.src) ctx.drawImage(l2Img, pos.logo2.x, pos.logo2.y, pos.logo2.w, pos.logo2.h);
 
-            // Indicativo
+            // Indicativo Neón
             const cColor = document.getElementById('callColor').value;
-            ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 10;
-            ctx.fillStyle = cColor; ctx.font = "bold 90px 'Trebuchet MS'";
+            ctx.shadowColor = cColor; ctx.shadowBlur = 20;
+            ctx.fillStyle = cColor; ctx.font = "bold 90px sans-serif";
             ctx.fillText(document.getElementById('myCall').value.toUpperCase(), pos.call.x, pos.call.y);
-            ctx.fillStyle = "#fff"; ctx.font = "bold 30px Verdana";
+            
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = "#fff"; ctx.font = "bold 30px monospace";
             ctx.fillText("LOCATOR: " + document.getElementById('myLoc').value.toUpperCase(), pos.call.x, pos.call.y + 45);
-            ctx.shadowBlur = 0;
+            
             pos.call.w = Math.max(ctx.measureText(document.getElementById('myCall').value).width + 50, 300);
 
-            // Tabla de Datos
+            // Tabla de Datos Estilo Vidrio/Neón
             const tColor = document.getElementById('textColor').value;
-            ctx.fillStyle = "rgba(14, 36, 49, 0.85)";
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
             ctx.fillRect(pos.box.x, pos.box.y, pos.box.w, pos.box.h);
+            
             ctx.strokeStyle = tColor; ctx.lineWidth = 2;
+            ctx.shadowColor = tColor; ctx.shadowBlur = 15;
             ctx.strokeRect(pos.box.x, pos.box.y, pos.box.w, pos.box.h);
 
             const startX = pos.box.x + 20;
@@ -260,7 +303,7 @@
 
         function downloadQSL() {
             const link = document.createElement('a');
-            link.download = `QSL_${document.getElementById('myCall').value}.png`;
+            link.download = `QSL_NEON_${document.getElementById('myCall').value}.png`;
             link.href = canvas.toDataURL('image/png', 1.0);
             link.click();
         }
