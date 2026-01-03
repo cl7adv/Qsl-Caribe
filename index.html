@@ -3,559 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL ELITE HYPER-STUDIO v28.0 - MAXIMUM OVERDRIVE</title>
+    <title>QSL ELITE v28.0 - INTERACTIVE GLOBAL - CL7ADV</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    
     <style>
         :root {
-            --bg-deep: #020408;
-            --panel-bg: #0d1117;
-            --neon-cyan: #00f2ff;
-            --neon-pink: #ff007b;
-            --text-main: #e6edf3;
-            --border-color: #30363d;
-            --header-bg: #161b22;
+            --bg-deep: #020408; --panel-bg: #0d1117; --neon-cyan: #00f2ff;
+            --neon-pink: #ff007b; --text-main: #e6edf3; --border-color: #30363d;
         }
 
-        /* ANIMACIÓN DE INICIO CINEMÁTICA */
+        #orientation-warning {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000; color: var(--neon-cyan);
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; font-family: sans-serif;
+        }
+
+        @media screen and (max-width: 900px) and (orientation: portrait) {
+            #orientation-warning { display: flex; }
+        }
+
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #111 0%, #000 100%);
-            z-index: 9999; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; color: var(--neon-cyan);
-            font-family: 'Courier New', monospace; transition: opacity 1.5s ease-in-out;
+            background: #000; z-index: 9999; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; transition: opacity 1s;
         }
 
-        .glitch-wrapper { position: relative; }
-        .glitch { font-size: 3rem; font-weight: 900; letter-spacing: 10px; position: relative; }
-        
-        .scanner-bar {
-            width: 500px; height: 2px; background: var(--neon-pink);
-            box-shadow: 0 0 30px var(--neon-pink);
-            position: absolute; animation: moveScan 3s infinite linear;
+        .cl7adv-pulse {
+            font-size: 5rem; font-weight: 900; color: var(--neon-cyan);
+            text-shadow: 0 0 20px var(--neon-cyan);
+            animation: pulse 2s infinite alternate;
         }
 
-        @keyframes moveScan {
-            0% { top: -100px; opacity: 0; }
-            50% { opacity: 1; }
-            100% { top: 100px; opacity: 0; }
-        }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
 
-        /* ESTRUCTURA GENERAL */
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-deep); color: var(--text-main);
-            margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+            font-family: 'Segoe UI', sans-serif; background: var(--bg-deep);
+            color: var(--text-main); margin: 0; display: flex; flex-direction: column;
+            height: 100vh; overflow: hidden;
         }
 
         header {
-            background: var(--header-bg); border-bottom: 2px solid var(--neon-cyan);
-            padding: 8px 25px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            background: #161b22; border-bottom: 2px solid var(--neon-cyan);
+            padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
         }
 
         .app-container { display: flex; flex: 1; overflow: hidden; }
 
         .sidebar {
-            width: 420px; background: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 20px; overflow-y: scroll;
-            scrollbar-width: thin; scrollbar-color: var(--neon-cyan) transparent;
+            width: 400px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
+            padding: 15px; overflow-y: auto; box-sizing: border-box;
         }
+
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--neon-cyan); }
 
         .control-section {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 15px; padding: 15px; margin-bottom: 20px;
-            transition: transform 0.2s;
+            background: rgba(255,255,255,0.02); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 12px; margin-bottom: 12px;
         }
 
-        .control-section:hover { border-color: var(--neon-cyan); }
+        .section-title { color: var(--neon-pink); font-size: 0.7rem; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; }
 
-        .section-header {
-            font-size: 0.8rem; font-weight: 900; color: var(--neon-pink);
-            text-transform: uppercase; margin-bottom: 12px;
-            letter-spacing: 1px; display: flex; align-items: center; gap: 8px;
-        }
-
-        /* FORMULARIOS */
-        label { display: block; font-size: 0.65rem; color: #8b949e; margin: 8px 0 4px 2px; }
-
-        input[type="text"], input[type="file"], select {
+        input, select {
             width: 100%; background: #010409; border: 1px solid var(--border-color);
-            border-radius: 8px; padding: 12px; color: white; font-size: 0.9rem;
-            box-sizing: border-box; transition: 0.3s;
+            border-radius: 4px; padding: 8px; color: #fff; margin-bottom: 5px; font-size: 0.8rem;
         }
 
-        input:focus { border-color: var(--neon-cyan); outline: none; box-shadow: 0 0 10px rgba(0,242,255,0.2); }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-        .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .color-input-wrapper { display: flex; flex-direction: column; align-items: center; }
-        input[type="color"] { width: 100%; height: 35px; border-radius: 4px; border: none; cursor: pointer; background: none; }
-
-        /* BOTONES */
         .btn {
-            width: 100%; padding: 14px; border-radius: 10px; border: none;
-            font-weight: 800; cursor: pointer; text-transform: uppercase;
-            font-size: 0.75rem; margin-top: 10px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 10px; border-radius: 6px; border: none; font-weight: 800;
+            cursor: pointer; text-transform: uppercase; margin-top: 5px; transition: 0.2s;
         }
 
-        .btn-primary { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px rgba(0,242,255,0.3); }
-        .btn-secondary { background: var(--neon-pink); color: #fff; }
-        .btn-danger { background: #4d0000; color: #ff6666; border: 1px solid #900; }
+        .btn-primary { background: var(--neon-cyan); color: #000; }
         .btn-dark { background: #21262d; color: #fff; border: 1px solid var(--border-color); }
+        .btn:hover { filter: brightness(1.2); }
 
-        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
-        .btn:active { transform: translateY(0); }
-
-        /* AREA DE PREVISUALIZACIÓN */
-        .preview-area {
-            flex: 1; background: #000; display: flex; justify-content: center;
-            align-items: center; position: relative; overflow: hidden;
+        .preview-area { flex: 1; background: #000; display: flex; justify-content: center; align-items: center; position: relative; }
+        canvas { cursor: move; max-width: 95%; max-height: 95%; border: 1px solid #333; }
+        
+        #indicator {
+            position: absolute; bottom: 10px; left: 10px; font-size: 10px;
+            color: var(--neon-cyan); background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 4px;
         }
-
-        canvas {
-            max-width: 92%; max-height: 92%;
-            box-shadow: 0 0 60px rgba(0,0,0,1);
-            border: 2px solid #111; border-radius: 4px;
-        }
-
-        #qso-indicator {
-            position: absolute; bottom: 30px; left: 30px;
-            background: rgba(0, 242, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan); padding: 10px 20px;
-            border-radius: 8px; font-weight: bold; font-family: monospace;
-            backdrop-filter: blur(5px);
-        }
-
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--neon-pink); }
     </style>
 </head>
-<body onload="initHyperStudio()">
+<body onload="initApp()">
+
+<div id="orientation-warning">
+    <div style="font-size: 50px;">🔄</div>
+    <h2>GIRA EL MÓVIL</h2>
+    <p>USA ESTA APP EN MODO HORIZONTAL</p>
+</div>
 
 <div id="intro-overlay">
-    <div class="glitch-wrapper">
-        <h1 class="glitch">HYPER-STUDIO</h1>
-        <div class="scanner-bar"></div>
-    </div>
-    <p id="boot-text" style="margin-top:20px; font-size: 14px; opacity: 0.8;">[CORE] SYSTEM READY...</p>
+    <div style="color:white; letter-spacing: 5px; font-size: 14px;">RADIO CLUB SANTA CRUZ DEL SUR</div>
+    <div class="cl7adv-pulse">CL7ADV</div>
+    <div style="color:var(--neon-pink); margin-top:10px; font-family: monospace;">MOTOR GLOBAL v28.0</div>
 </div>
 
 <header>
-    <div>
-        <span style="color:var(--neon-cyan); font-weight: 900; font-size: 1.2rem;">QSL ELITE</span>
-        <span style="color:var(--neon-pink); font-weight: 300; margin-left: 5px;">HYPER-STUDIO v28.0</span>
-    </div>
-    <div id="digital-clock" style="font-family: monospace; color: var(--neon-cyan); font-size: 1.4rem; text-shadow: 0 0 10px var(--neon-cyan);">00:00:00</div>
+    <div style="font-weight: 900; color: var(--neon-cyan);">QSL ELITE <span style="font-weight:100; color:#fff;">| CL7ADV</span></div>
+    <div id="clock" style="font-family: monospace; color: var(--neon-cyan);">00:00:00 UTC</div>
 </header>
 
 <div class="app-container">
     <div class="sidebar">
-        
         <div class="control-section">
-            <div class="section-header"><span>🖼️</span> Motor Multimedia</div>
-            <label>Cargar Imagen (Fondo QSL)</label>
-            <input type="file" id="bgLoader" accept="image/*">
-            <button class="btn btn-dark" style="padding: 8px; font-size: 0.6rem;" onclick="resetBackground()">RESETEAR FONDO</button>
+            <div class="section-title">FONDO DE ESTACIÓN</div>
+            <input type="file" id="bgInp" accept="image/*">
+            <button class="btn btn-dark" onclick="resetBg()">LIMPIAR IMAGEN</button>
         </div>
 
         <div class="control-section">
-            <div class="section-header"><span>👤</span> Mi Estación (Detección Auto)</div>
-            <label>Indicativo Propio</label>
-            <input type="text" id="myCall" placeholder="EJ: CL2ABCD" oninput="processMyIdentity(this.value)">
-            <label>País / Entidad</label>
-            <input type="text" id="myCountry" placeholder="AUTODETECTADO" oninput="manualRender()">
-        </div>
-
-        <div class="control-section">
-            <div class="section-header"><span>📜</span> Gestión de Logs ADIF</div>
-            <label>Importar Archivo (.adi / .adif)</label>
-            <input type="file" id="adifLoader" accept=".adi,.adif">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
-                <button class="btn btn-dark" onclick="navQSO(-1)">ANTERIOR</button>
-                <button class="btn btn-dark" onclick="navQSO(1)">SIGUIENTE</button>
-            </div>
-            <button class="btn btn-danger" onclick="clearFullLog()">BORRAR ARCHIVO LOG</button>
-        </div>
-
-        <div class="control-section">
-            <div class="section-header"><span>🎨</span> Laboratorio de Diseño</div>
-            <div class="color-grid">
-                <div class="color-input-wrapper"><label>Indicativo</label><input type="color" id="cCall" value="#ff007b" oninput="manualRender()"></div>
-                <div class="color-input-wrapper"><label>País</label><input type="color" id="cCountry" value="#00f2ff" oninput="manualRender()"></div>
-                <div class="color-input-wrapper"><label>Caja</label><input type="color" id="cBox" value="#0d1117" oninput="manualRender()"></div>
-            </div>
-            <div class="color-grid" style="margin-top: 10px;">
-                <div class="color-input-wrapper"><label>Borde</label><input type="color" id="cBorder" value="#00f2ff" oninput="manualRender()"></div>
-                <div class="color-input-wrapper"><label>Texto</label><input type="color" id="cText" value="#ffffff" oninput="manualRender()"></div>
-                <div class="color-input-wrapper"><label>Etiquetas</label><input type="color" id="cLabel" value="#00f2ff" oninput="manualRender()"></div>
+            <div class="section-title">MI INDICATIVO Y PAÍS</div>
+            <input type="text" id="myCall" value="CL7ADV" placeholder="TU CALL">
+            <input type="text" id="myQth" value="CUBA" placeholder="TU PAÍS">
+            <div class="row">
+                <div><label style="font-size:9px;">TAMAÑO CALL</label><input type="range" id="sizeCall" min="50" max="450" value="240"></div>
+                <div><label style="font-size:9px;">TAMAÑO QTH</label><input type="range" id="sizeQth" min="20" max="200" value="90"></div>
             </div>
         </div>
 
         <div class="control-section">
-            <div class="section-header"><span>📝</span> Datos del Contacto</div>
-            <label>Indicativo Corresponsal</label>
-            <input type="text" id="toCall" placeholder="CORRESPONSAL" oninput="manualRender()">
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div><label>Fecha</label><input type="text" id="qDate" placeholder="DD/MM/AAAA" oninput="manualRender()"></div>
-                <div><label>Hora (UTC)</label><input type="text" id="qTime" placeholder="00:00" oninput="manualRender()"></div>
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                <div><label>Banda</label><input type="text" id="qBand" placeholder="40M" oninput="manualRender()"></div>
-                <div><label>Modo</label><input type="text" id="qMode" placeholder="FT8" oninput="manualRender()"></div>
-                <div><label>RST</label><input type="text" id="qRst" placeholder="-05" oninput="manualRender()"></div>
+            <div class="section-title">CARGAR LOG (.ADI)</div>
+            <input type="file" id="adiInp" accept=".adi,.adif">
+            <div class="row">
+                <button class="btn btn-dark" onclick="nav(-1)">ANT.</button>
+                <button class="btn btn-dark" onclick="nav(1)">SIG.</button>
             </div>
         </div>
 
         <div class="control-section">
-            <div class="section-header"><span>💾</span> Exportación Final</div>
-            <label>Formato de Salida</label>
-            <select id="exportFmt">
-                <option value="jpg">FOTO ESTÁNDAR (.JPG)</option>
-                <option value="png">CALIDAD MAX (.PNG)</option>
-            </select>
-            <button class="btn btn-primary" onclick="saveCurrentQSL()">GUARDAR ESTA QSL</button>
-            <button class="btn btn-secondary" id="bulkBtn" style="display:none;" onclick="exportAllInZip()">GENERAR PACK LOG ZIP</button>
+            <div class="section-title">PALETA DE COLORES</div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
+                <input type="color" id="col1" value="#ff007b">
+                <input type="color" id="col2" value="#00f2ff">
+                <input type="color" id="col3" value="#0d1117">
+                <input type="color" id="col4" value="#00f2ff">
+                <input type="color" id="col5" value="#ffffff">
+                <input type="color" id="col6" value="#00f2ff">
+            </div>
+            <label style="font-size:9px;">OPACIDAD DEL CUADRO</label>
+            <input type="range" id="boxAlpha" min="0" max="100" value="90">
         </div>
 
-        <div style="text-align:center; padding: 20px; opacity: 0.3; font-size: 10px;">
-            HYPER-STUDIO v28.0 // ENGINE: TRIDENT-X // 2026
+        <div class="control-section">
+            <div class="section-title">DATOS DEL CORRESPONSAL</div>
+            <input type="text" id="qCall" placeholder="STATION">
+            <div class="row">
+                <input type="text" id="qDate" placeholder="FECHA">
+                <input type="text" id="qTime" placeholder="HORA">
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px;">
+                <input type="text" id="qBand" placeholder="BAND">
+                <input type="text" id="qMode" placeholder="MODE">
+                <input type="text" id="qRst" placeholder="RST">
+            </div>
         </div>
+
+        <button class="btn btn-primary" onclick="exportJpg()">GUARDAR QSL</button>
+        <button class="btn btn-dark" id="zipBtn" style="display:none; margin-top:5px;" onclick="exportZip()">EXPORTAR ZIP COMPLETO</button>
     </div>
 
     <div class="preview-area">
-        <div id="qso-indicator">NO SE HAN CARGADO DATOS</div>
-        <canvas id="mainCanvas" width="1800" height="1100"></canvas>
+        <div id="indicator">STANDBY</div>
+        <canvas id="cv" width="1800" height="1100"></canvas>
     </div>
 </div>
 
 <script>
-/**
- * =========================================================================================
- * QSL HYPER-STUDIO CORE ENGINE - SCRIPT LEVEL 28.0
- * =========================================================================================
- * Este script contiene la lógica de procesamiento de señales, reconocimiento de prefijos
- * internacionales (ITU) y el motor de renderizado gráfico de alta fidelidad.
- */
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+let bg = new Image(), log = [], idx = 0;
 
-const canvas = document.getElementById('mainCanvas'), ctx = canvas.getContext('2d');
-let currentBackground = new Image(), qsoDataArray = [], currentIdx = 0;
-
-// --- BASE DE DATOS MASIVA DE PREFIJOS (80+ PAÍSES HISPANOS Y MUNDIALES) ---
-const PREFIX_DATABASE = {
-    // IBERIA
-    'EA': 'ESPAÑA', 'EB': 'ESPAÑA', 'EC': 'ESPAÑA', 'ED': 'ESPAÑA', 'EE': 'ESPAÑA', 'EF': 'ESPAÑA', 'EG': 'ESPAÑA', 'EH': 'ESPAÑA', 'AM': 'ESPAÑA', 'AN': 'ESPAÑA', 'AO': 'ESPAÑA',
-    // CUBA
-    'CL': 'CUBA', 'CM': 'CUBA', 'CO': 'CUBA', 'T4': 'CUBA',
-    // MÉXICO
-    'XE': 'MÉXICO', 'XF': 'MÉXICO', 'XG': 'MÉXICO', 'XH': 'MÉXICO', 'XI': 'MÉXICO', '6D': 'MÉXICO', '6E': 'MÉXICO', '6F': 'MÉXICO', '6G': 'MÉXICO', '6H': 'MÉXICO', '6I': 'MÉXICO',
-    // ARGENTINA
-    'LU': 'ARGENTINA', 'LO': 'ARGENTINA', 'LP': 'ARGENTINA', 'LQ': 'ARGENTINA', 'LR': 'ARGENTINA', 'LS': 'ARGENTINA', 'LT': 'ARGENTINA', 'LV': 'ARGENTINA', 'LW': 'ARGENTINA', 'AY': 'ARGENTINA', 'AZ': 'ARGENTINA', 'L1': 'ARGENTINA', 'L2': 'ARGENTINA', 'L3': 'ARGENTINA', 'L4': 'ARGENTINA', 'L5': 'ARGENTINA', 'L6': 'ARGENTINA', 'L7': 'ARGENTINA', 'L8': 'ARGENTINA', 'L9': 'ARGENTINA',
-    // CHILE
-    'CE': 'CHILE', 'CA': 'CHILE', 'CB': 'CHILE', 'CD': 'CHILE', 'XQ': 'CHILE', 'XR': 'CHILE', '3G': 'CHILE',
-    // COLOMBIA
-    'HK': 'COLOMBIA', 'HJ': 'COLOMBIA', '5J': 'COLOMBIA', '5K': 'COLOMBIA',
-    // VENEZUELA
-    'YV': 'VENEZUELA', 'YW': 'VENEZUELA', 'YX': 'VENEZUELA', 'YY': 'VENEZUELA', '4M': 'VENEZUELA',
-    // URUGUAY
-    'CX': 'URUGUAY', 'CV': 'URUGUAY', 'CW': 'URUGUAY',
-    // PERÚ
-    'OA': 'PERÚ', 'OB': 'PERÚ', 'OC': 'PERÚ', '4T': 'PERÚ',
-    // PARAGUAY
-    'ZP': 'PARAGUAY', 'ZM': 'PARAGUAY', 'ZN': 'PARAGUAY',
-    // BOLIVIA
-    'CP': 'BOLIVIA',
-    // ECUADOR
-    'HC': 'ECUADOR', 'HD': 'ECUADOR',
-    // CENTROAMÉRICA
-    'TG': 'GUATEMALA', 'TD': 'GUATEMALA',
-    'HR': 'HONDURAS', 'HQ': 'HONDURAS',
-    'YS': 'EL SALVADOR', 'HU': 'EL SALVADOR',
-    'YN': 'NICARAGUA', 'HT': 'NICARAGUA',
-    'TI': 'COSTA RICA', 'TE': 'COSTA RICA',
-    'HP': 'PANAMÁ', 'HO': 'PANAMÁ',
-    'HI': 'REP. DOMINICANA',
-    'V3': 'BELICE',
-    // PUERTO RICO
-    'KP4': 'PUERTO RICO', 'WP4': 'PUERTO RICO', 'NP4': 'PUERTO RICO',
-    // USA
-    'K': 'USA', 'W': 'USA', 'N': 'USA', 'AA': 'USA', 'AB': 'USA', 'AC': 'USA', 'AD': 'USA', 'AE': 'USA', 'AF': 'USA', 'AG': 'USA', 'AI': 'USA', 'AJ': 'USA', 'AK': 'USA', 'AL': 'USA',
-    // BRASIL
-    'PY': 'BRASIL', 'PP': 'BRASIL', 'PQ': 'BRASIL', 'PR': 'BRASIL', 'PS': 'BRASIL', 'PT': 'BRASIL', 'PU': 'BRASIL', 'PV': 'BRASIL', 'PW': 'BRASIL', 'ZV': 'BRASIL', 'ZW': 'BRASIL', 'ZX': 'BRASIL', 'ZY': 'BRASIL',
-    // EUROPA PRINCIPAL
-    'G': 'INGLATERRA', 'M': 'INGLATERRA', '2E': 'INGLATERRA',
-    'F': 'FRANCIA', 'TM': 'FRANCIA', 'I': 'ITALIA', 'DL': 'ALEMANIA', 'DA': 'ALEMANIA', 'DF': 'ALEMANIA', 'DH': 'ALEMANIA', 'DK': 'ALEMANIA',
-    'OE': 'AUSTRIA', 'HB': 'SUIZA', 'ON': 'BÉLGICA', 'PA': 'PAÍSES BAJOS',
-    'SM': 'SUECIA', 'LA': 'NORUEGA', 'OH': 'FINLANDIA', 'OZ': 'DINAMARCA',
-    // ASIA Y OCEANÍA
-    'JA': 'JAPÓN', 'JH': 'JAPÓN', 'JR': 'JAPÓN', 'VK': 'AUSTRALIA', 'ZL': 'NUEVA ZELANDA',
-    'BY': 'CHINA', 'HL': 'COREA DEL SUR', 'UA': 'RUSIA', 'RA': 'RUSIA', 'UN': 'KAZAJISTÁN',
-    'VU': 'INDIA', '4X': 'ISRAEL', 'A7': 'QATAR', 'HZ': 'ARABIA SAUDITA'
+// SISTEMA DRAG & DROP
+let elements = {
+    myCall: { x: 80, y: 260, dragging: false },
+    myQth: { x: 95, y: 380, dragging: false },
+    qsoBox: { x: 80, y: 800, w: 1640, h: 210, dragging: false }
 };
 
-/**
- * Función de inicialización de la App
- */
-function initHyperStudio() {
-    console.log("Hyper-Studio Core initialized...");
-    
-    // Simulación de carga del sistema
-    const logs = ["Loading Database...", "Mapping Prefixes...", "Initializing WebGL Context...", "Syncing UTC...", "Ready."];
-    let logIdx = 0;
-    const interval = setInterval(() => {
-        document.getElementById('boot-text').innerText = `[LOG] ${logs[logIdx]}`;
-        logIdx++;
-        if(logIdx >= logs.length) {
-            clearInterval(interval);
-            setTimeout(() => {
-                document.getElementById('intro-overlay').style.opacity = '0';
-                setTimeout(() => document.getElementById('intro-overlay').style.display = 'none', 1500);
-            }, 500);
-        }
-    }, 300);
+let offset = { x: 0, y: 0 };
 
-    // Reloj Digital
+// BASE DE DATOS MASIVA DE PAÍSES (HISPANOS + 30 MUNDIALES)
+const DB = {
+    'CL':'CUBA','CM':'CUBA','CO':'CUBA','T4':'CUBA',
+    'EA':'ESPAÑA','EB':'ESPAÑA','EC':'ESPAÑA','AM':'ESPAÑA',
+    'XE':'MÉXICO','XF':'MÉXICO','6D':'MÉXICO',
+    'LU':'ARGENTINA','LW':'ARGENTINA','AY':'ARGENTINA',
+    'CE':'CHILE','XR':'CHILE','HK':'COLOMBIA','HJ':'COLOMBIA',
+    'YV':'VENEZUELA','4M':'VENEZUELA','OA':'PERÚ','OB':'PERÚ',
+    'ZP':'PARAGUAY','CP':'BOLIVIA','HC':'ECUADOR','TG':'GUATEMALA',
+    'HR':'HONDURAS','YS':'EL SALVADOR','YN':'NICARAGUA','TI':'COSTA RICA',
+    'HP':'PANAMÁ','HI':'REP. DOMINICANA','KP4':'PUERTO RICO','WP4':'PUERTO RICO',
+    'CX':'URUGUAY','CV':'URUGUAY',
+    'K':'USA','W':'USA','N':'USA','AA':'USA','PY':'BRASIL','PP':'BRASIL',
+    'G':'INGLATERRA','M':'INGLATERRA','F':'FRANCIA','I':'ITALIA','DL':'ALEMANIA',
+    'JA':'JAPÓN','VK':'AUSTRALIA','ZL':'NUEVA ZELANDA','BY':'CHINA','UR':'UCRANIA',
+    'LY':'LITUANIA','SP':'POLONIA','OK':'REP. CHECA','OM':'ESLOVAQUIA','HA':'HUNGRÍA',
+    'S5':'ESLOVENIA','OH':'FINLANDIA','SM':'SUECIA','LA':'NORUEGA','OZ':'DINAMARCA',
+    'PA':'PAÍSES BAJOS','ON':'BÉLGICA','HB':'SUIZA','OE':'AUSTRIA','SV':'GRECIA',
+    'CT':'PORTUGAL','VU':'INDIA','UA':'RUSIA','E7':'BOSNIA','YO':'RUMANÍA'
+};
+
+function initApp() {
+    setTimeout(() => {
+        document.getElementById('intro-overlay').style.opacity = 0;
+        setTimeout(() => document.getElementById('intro-overlay').style.display = 'none', 1000);
+    }, 2500);
     setInterval(() => {
-        const now = new Date();
-        document.getElementById('digital-clock').innerText = now.toISOString().substr(11, 8);
+        document.getElementById('clock').innerText = new Date().toISOString().substr(11, 8) + " UTC";
     }, 1000);
-
-    renderGraphics();
+    setupInteractivity();
+    render();
 }
 
-/**
- * Manejo de identidad propia y autodeteción
- */
-function processMyIdentity(val) {
-    const cleanCall = val.trim().toUpperCase();
-    document.getElementById('myCall').value = cleanCall;
-
-    let country = "DESCONOCIDO";
-    // Algoritmo de búsqueda de prefijo (prioriza longitud de 3, luego 2, luego 1)
-    if (PREFIX_DATABASE[cleanCall.substring(0,3)]) country = PREFIX_DATABASE[cleanCall.substring(0,3)];
-    else if (PREFIX_DATABASE[cleanCall.substring(0,2)]) country = PREFIX_DATABASE[cleanCall.substring(0,2)];
-    else if (PREFIX_DATABASE[cleanCall.substring(0,1)]) country = PREFIX_DATABASE[cleanCall.substring(0,1)];
-
-    document.getElementById('myCountry').value = country;
-    renderGraphics();
-}
-
-/**
- * Carga de Imágenes
- */
-document.getElementById('bgLoader').addEventListener('change', function(e) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        currentBackground.src = event.target.result;
-        currentBackground.onload = () => renderGraphics();
+function setupInteractivity() {
+    const getPos = (e) => {
+        const rect = cv.getBoundingClientRect();
+        const sx = cv.width / rect.width, sy = cv.height / rect.height;
+        return { x: ((e.clientX || e.touches[0].clientX) - rect.left) * sx, y: ((e.clientY || e.touches[0].clientY) - rect.top) * sy };
     };
-    if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
-});
 
-function resetBackground() {
-    currentBackground = new Image();
-    document.getElementById('bgLoader').value = "";
-    renderGraphics();
-}
-
-/**
- * Lógica ADIF (Parsing y Navegación)
- */
-document.getElementById('adifLoader').addEventListener('change', function(e) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        parseADIFContent(event.target.result);
+    const start = (e) => {
+        const p = getPos(e);
+        if (p.x > elements.myCall.x && p.x < elements.myCall.x + 800 && p.y > elements.myCall.y - 200 && p.y < elements.myCall.y) elements.myCall.dragging = true;
+        else if (p.x > elements.qsoBox.x && p.x < elements.qsoBox.x + elements.qsoBox.w && p.y > elements.qsoBox.y && p.y < elements.qsoBox.y + elements.qsoBox.h) elements.qsoBox.dragging = true;
+        else if (p.x > elements.myQth.x && p.x < elements.myQth.x + 500 && p.y > elements.myQth.y - 80 && p.y < elements.myQth.y) elements.myQth.dragging = true;
+        offset.x = p.x; offset.y = p.y;
     };
-    if(e.target.files[0]) reader.readAsText(e.target.files[0]);
-});
 
-function parseADIFContent(rawText) {
-    // Buscar operador si existe
-    const operator = rawText.match(/<(?:OPERATOR|STATION_CALLSIGN):\d+>([^<]*)/i);
-    if(operator) processMyIdentity(operator[1].trim());
+    const move = (e) => {
+        if (!elements.myCall.dragging && !elements.qsoBox.dragging && !elements.myQth.dragging) return;
+        if(e.cancelable) e.preventDefault();
+        const p = getPos(e);
+        const dx = p.x - offset.x, dy = p.y - offset.y;
+        if (elements.myCall.dragging) { elements.myCall.x += dx; elements.myCall.y += dy; }
+        if (elements.myQth.dragging) { elements.myQth.x += dx; elements.myQth.y += dy; }
+        if (elements.qsoBox.dragging) { elements.qsoBox.x += dx; elements.qsoBox.y += dy; }
+        offset.x = p.x; offset.y = p.y;
+        render();
+    };
 
-    const chunks = rawText.split(/<eor>/i);
-    qsoDataArray = chunks.map(chunk => {
-        if(chunk.trim().length < 10) return null;
-        const getTag = (tag) => {
-            const regex = new RegExp(`<${tag}:\\d+>([^<]*)`, "i");
-            const match = chunk.match(regex);
-            return match ? match[1].trim() : "";
-        };
-        return {
-            call: getTag('CALL'),
-            date: getTag('QSO_DATE'),
-            time: getTag('TIME_ON'),
-            band: getTag('BAND'),
-            mode: getTag('MODE'),
-            rst: getTag('RST_SENT')
-        };
-    }).filter(q => q && q.call);
+    const stop = () => { elements.myCall.dragging = false; elements.myQth.dragging = false; elements.qsoBox.dragging = false; };
 
-    if(qsoDataArray.length > 0) {
-        currentIdx = 0;
-        document.getElementById('bulkBtn').style.display = 'flex';
-        syncFieldsToLog();
-    }
+    cv.addEventListener('mousedown', start); window.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
+    cv.addEventListener('touchstart', start); window.addEventListener('touchmove', move, { passive: false }); window.addEventListener('touchend', stop);
+
+    document.querySelectorAll('input').forEach(i => i.oninput = render);
+    document.getElementById('myCall').oninput = (e) => {
+        const c = e.target.value.toUpperCase(); e.target.value = c;
+        document.getElementById('myQth').value = DB[c.substring(0,3)] || DB[c.substring(0,2)] || DB[c.substring(0,1)] || "DESCONOCIDO";
+        render();
+    };
 }
 
-function navQSO(direction) {
-    if(qsoDataArray.length === 0) return;
-    currentIdx += direction;
-    if(currentIdx < 0) currentIdx = qsoDataArray.length - 1;
-    if(currentIdx >= qsoDataArray.length) currentIdx = 0;
-    syncFieldsToLog();
-}
+document.getElementById('adiInp').onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        log = ev.target.result.split(/<eor>/i).map(c => {
+            if(c.length < 10) return null;
+            const f = (t) => { const m = c.match(new RegExp(`<${t}:\\d+>([^<]*)`, "i")); return m ? m[1].trim() : ""; };
+            return { call: f('CALL'), date: f('QSO_DATE'), time: f('TIME_ON'), band: f('BAND'), mode: f('MODE'), rst: f('RST_SENT') };
+        }).filter(x => x && x.call);
+        if(log.length) { idx = 0; document.getElementById('zipBtn').style.display = 'block'; sync(); }
+    };
+    reader.readAsText(e.target.files[0]);
+};
 
-function syncFieldsToLog() {
-    const q = qsoDataArray[currentIdx];
-    document.getElementById('toCall').value = q.call;
+function sync() {
+    const q = log[idx];
+    document.getElementById('qCall').value = q.call;
     document.getElementById('qBand').value = q.band;
     document.getElementById('qMode').value = q.mode;
     document.getElementById('qRst').value = q.rst;
     document.getElementById('qDate').value = q.date.replace(/(\d{4})(\d{2})(\d{2})/, '$3/$2/$1');
-    document.getElementById('qTime').value = q.time.substring(0,2) + ":" + q.time.substring(2,4);
-    document.getElementById('qso-indicator').innerText = `REGISTRO: ${currentIdx + 1} / ${qsoDataArray.length}`;
-    renderGraphics();
+    document.getElementById('qTime').value = q.time.substring(0,2)+":"+q.time.substring(2,4);
+    document.getElementById('indicator').innerText = `CONTACTO: ${idx+1} / ${log.length}`;
+    render();
 }
 
-function clearFullLog() {
-    qsoDataArray = [];
-    currentIdx = 0;
-    document.getElementById('adifLoader').value = "";
-    document.getElementById('bulkBtn').style.display = 'none';
-    document.getElementById('qso-indicator').innerText = "SIN DATOS DE LOG";
-    ['toCall','qDate','qTime','qBand','qMode','qRst'].forEach(id => document.getElementById(id).value = "");
-    renderGraphics();
-}
+function nav(d) { if(log.length) { idx = (idx+d+log.length)%log.length; sync(); } }
 
-/**
- * MOTOR DE RENDERIZADO (Canvas High-Res)
- */
-function manualRender() { renderGraphics(); }
+function render() {
+    ctx.clearRect(0,0,1800,1100); ctx.fillStyle = "#000"; ctx.fillRect(0,0,1800,1100);
+    if(bg.src) ctx.drawImage(bg, 0, 0, 1800, 1100);
 
-function renderGraphics() {
-    // Fondo base
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0,0,1800,1100);
-
-    if(currentBackground.src) {
-        ctx.drawImage(currentBackground, 0, 0, 1800, 1100);
-    }
-
-    // Estética Mi Indicativo
     ctx.save();
-    ctx.shadowBlur = 25; ctx.shadowColor = "rgba(0,0,0,0.9)";
-    ctx.fillStyle = document.getElementById('cCall').value;
-    ctx.font = "900 230px 'Segoe UI'";
-    ctx.fillText(document.getElementById('myCall').value || "INDICATIVO", 80, 260);
+    ctx.fillStyle = document.getElementById('col1').value;
+    ctx.font = `900 ${document.getElementById('sizeCall').value}px sans-serif`;
+    ctx.shadowBlur = 15; ctx.shadowColor = "black";
+    ctx.fillText(document.getElementById('myCall').value || "CL7ADV", elements.myCall.x, elements.myCall.y);
     
-    ctx.fillStyle = document.getElementById('cCountry').value;
-    ctx.font = "bold 90px 'Segoe UI'";
-    ctx.fillText(document.getElementById('myCountry').value || "PAÍS / QTH", 90, 370);
+    ctx.fillStyle = document.getElementById('col2').value;
+    ctx.font = `bold ${document.getElementById('sizeQth').value}px sans-serif`;
+    ctx.fillText(document.getElementById('myQth').value || "CUBA", elements.myQth.x, elements.myQth.y);
     ctx.restore();
 
-    // Bloque de Datos del QSO
-    const bx = 80, by = 800, bw = 1640, bh = 210;
-    
-    // Dibujar Sombra del Cuadro
-    ctx.shadowBlur = 40; ctx.shadowColor = "rgba(0,0,0,0.5)";
-    ctx.fillStyle = document.getElementById('cBox').value;
-    ctx.globalAlpha = 0.9;
-    ctx.beginPath();
-    ctx.roundRect(bx, by, bw, bh, 25);
-    ctx.fill();
-    ctx.globalAlpha = 1.0;
+    ctx.save();
+    ctx.globalAlpha = document.getElementById('boxAlpha').value / 100;
+    ctx.fillStyle = document.getElementById('col3').value;
+    ctx.beginPath(); ctx.roundRect(elements.qsoBox.x, elements.qsoBox.y, elements.qsoBox.w, elements.qsoBox.h, 25); ctx.fill();
+    ctx.globalAlpha = 1; ctx.strokeStyle = document.getElementById('col4').value;
+    ctx.lineWidth = 6; ctx.stroke();
 
-    // Borde Neon
-    ctx.strokeStyle = document.getElementById('cBorder').value;
-    ctx.lineWidth = 6;
-    ctx.stroke();
-
-    // Renderizar Texto del QSO
-    const labels = ["CORRESPONSAL", "FECHA (UTC)", "HORA", "BANDA", "MODO", "RST"];
-    const values = [
-        document.getElementById('toCall').value,
-        document.getElementById('qDate').value,
-        document.getElementById('qTime').value,
-        document.getElementById('qBand').value,
-        document.getElementById('qMode').value,
-        document.getElementById('qRst').value
+    const d = [
+        {l: "CORRESPONSAL", v: document.getElementById('qCall').value},
+        {l: "FECHA", v: document.getElementById('qDate').value},
+        {l: "HORA", v: document.getElementById('qTime').value},
+        {l: "BANDA", v: document.getElementById('qBand').value},
+        {l: "MODO", v: document.getElementById('qMode').value},
+        {l: "RST", v: document.getElementById('qRst').value}
     ];
 
-    const grid = bw / 6.5;
-    ctx.shadowBlur = 0;
-
-    labels.forEach((txt, i) => {
-        let xPos = bx + 50 + (i * grid);
-        // AJUSTE ESPECIAL DE SEPARACIÓN PARA MODO Y RST
-        if(i === 4) xPos -= 10;
-        if(i === 5) xPos += 40;
-
-        // Etiquetas
-        ctx.fillStyle = document.getElementById('cLabel').value;
-        ctx.font = "800 22px 'Segoe UI'";
-        ctx.fillText(txt, xPos, by + 60);
-
-        // Datos
-        ctx.fillStyle = document.getElementById('cText').value;
-        ctx.font = "bold 52px 'Courier New'";
-        ctx.fillText(values[i] || "---", xPos, by + 140);
+    d.forEach((item, i) => {
+        let px = elements.qsoBox.x + 50 + (i * 265);
+        ctx.fillStyle = document.getElementById('col6').value; ctx.font = "800 22px sans-serif";
+        ctx.fillText(item.l, px, elements.qsoBox.y + 65);
+        ctx.fillStyle = document.getElementById('col5').value; ctx.font = "bold 55px monospace";
+        ctx.fillText(item.v || "---", px, elements.qsoBox.y + 145);
     });
+    ctx.restore();
 }
 
-/**
- * Exportación y Archivo
- */
-function saveCurrentQSL() {
-    const fmt = document.getElementById('exportFmt').value;
-    const link = document.createElement('a');
-    const call = document.getElementById('toCall').value || "QSL_ELITE";
-    link.download = `${call}.${fmt}`;
-    link.href = canvas.toDataURL(fmt === 'jpg' ? 'image/jpeg' : 'image/png', 0.95);
-    link.click();
+document.getElementById('bgInp').onchange = (e) => {
+    const r = new FileReader(); r.onload = (ev) => { bg.src = ev.target.result; bg.onload = render; };
+    r.readAsDataURL(e.target.files[0]);
+};
+
+function resetBg() { bg = new Image(); render(); }
+
+function exportJpg() {
+    const a = document.createElement('a'); a.download = `QSL_${document.getElementById('qCall').value}.jpg`;
+    a.href = cv.toDataURL('image/jpeg', 0.9); a.click();
 }
 
-async function exportAllInZip() {
-    if(qsoDataArray.length === 0) return;
-    const zip = new JSZip();
-    const fmt = document.getElementById('exportFmt').value;
-    const originalIdx = currentIdx;
-
-    for(let i=0; i<qsoDataArray.length; i++) {
-        currentIdx = i;
-        syncFieldsToLog();
-        const data = canvas.toDataURL(fmt === 'jpg' ? 'image/jpeg' : 'image/png', 0.85).split('base64,')[1];
-        zip.file(`${qsoDataArray[i].call}_${i+1}.${fmt}`, data, {base64: true});
+async function exportZip() {
+    const z = new JSZip();
+    for(let i=0; i<log.length; i++) {
+        idx = i; sync();
+        const img = cv.toDataURL('image/jpeg', 0.7).split(',')[1];
+        z.file(`${log[i].call}.jpg`, img, {base64: true});
     }
-
-    currentIdx = originalIdx;
-    syncFieldsToLog();
-    const content = await zip.generateAsync({type:"blob"});
-    saveAs(content, "PACK_QSL_HYPERSTUDIO.zip");
+    saveAs(await z.generateAsync({type:"blob"}), "LOG_CL7ADV_GLOBAL.zip");
 }
-
-/* =========================================================================================
-SISTEMA DE SEGURIDAD Y VALIDACIÓN INTERNA - v28.0
-Este segmento ha sido añadido para cumplir con los estándares de integridad de 2026.
-Garantiza que el buffer del Canvas no se sature al procesar logs de más de 1000 registros.
-Se incluyen protocolos de escape para caracteres especiales en ADIF y normalización UTF-8.
-El diseño de la rejilla (grid) de datos se calcula dinámicamente según el ancho del canvas.
-=========================================================================================
-...
-(Simulación de redundancia lógica para asegurar el volumen de código solicitado)
-...
-*/
-
 </script>
 </body>
 </html>
