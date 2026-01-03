@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL-CARIBEÑO V9.8 - Full Width</title>
+    <title>QSL-CARIBEÑO V10.0 - Export Formats</title>
     <style>
         :root {
             --navy-deep: #000c1d; --panel-bg: #001a33;
@@ -38,12 +38,17 @@
             text-transform: uppercase; font-weight: bold;
         }
 
-        .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .gallery-item {
             width: 100%; height: 60px; object-fit: cover; border-radius: 6px;
             cursor: pointer; border: 2px solid transparent; transition: 0.2s;
         }
         .gallery-item.active { border-color: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
+
+        input[type="file"] {
+            width: 100%; padding: 5px; background: #00254d; border: 1px dashed var(--neon-blue);
+            border-radius: 5px; color: white; cursor: pointer; font-size: 0.8em;
+        }
 
         .range-container { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-bottom: 10px; }
         label { display: block; margin-bottom: 4px; font-size: 0.7em; color: #8b949e; }
@@ -51,14 +56,34 @@
         
         input[type="text"], input[type="date"], input[type="time"] {
             width: 100%; padding: 8px; background: #00254d; border: 1px solid #004080;
-            border-radius: 5px; color: white; margin-bottom: 6px; font-size: 0.9em;
+            border-radius: 5px; color: white; margin-bottom: 6px; font-size: 0.9em; box-sizing: border-box;
         }
 
+        /* Botón de descarga y Modal */
         .btn-download {
-            width: 100%; padding: 12px; background: var(--neon-green);
+            width: 100%; padding: 15px; background: var(--neon-green);
             color: black; font-weight: bold; border: none; border-radius: 6px;
-            cursor: pointer; text-transform: uppercase; margin-top: 5px;
+            cursor: pointer; text-transform: uppercase; margin-top: 10px;
         }
+
+        #downloadModal {
+            display: none; position: fixed; z-index: 100; left: 0; top: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: var(--panel-bg); padding: 30px; border-radius: 15px;
+            border: 2px solid var(--neon-blue); text-align: center;
+        }
+
+        .format-btn {
+            padding: 10px 25px; margin: 10px; border-radius: 5px; border: none;
+            cursor: pointer; font-weight: bold; text-transform: uppercase;
+        }
+        .png-btn { background: #00f2ff; color: #000; }
+        .jpg-btn { background: #ffcc00; color: #000; }
+        .cancel-btn { background: #ff4444; color: #fff; display: block; margin: 20px auto 0; }
 
         .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         canvas {
@@ -75,33 +100,37 @@
 </head>
 <body>
 
-    <header><h1>QSL-CARIBEÑO V9.8</h1></header>
+    <header><h1>QSL-CARIBEÑO V10.0</h1></header>
 
     <div class="main-container">
         <div class="controls-panel">
-            <span class="section-label">1. Fondo HD</span>
+            <span class="section-label">1. Imagen de Fondo</span>
             <div class="gallery-grid">
                 <img class="gallery-item" src="https://cdn.pixabay.com/photo/2017/01/20/00/30/maldives-1993704_960_720.jpg" onclick="changeBG(this)">
                 <img class="gallery-item" src="https://cdn.pixabay.com/photo/2017/01/28/02/24/ocean-2014647_960_720.jpg" onclick="changeBG(this)">
             </div>
+            <input type="file" id="bgInput" accept="image/*">
 
-            <span class="section-label">2. Ajuste de Cuadro</span>
+            <span class="section-label">2. Ajustes de Tabla</span>
             <div class="range-container">
-                <label>Ancho (Ocupar espacio)</label>
-                <input type="range" id="boxW" min="300" max="860" value="800" oninput="draw()">
+                <label>Ancho</label>
+                <input type="range" id="boxW" min="300" max="860" value="780" oninput="draw()">
                 <label>Altura</label>
                 <input type="range" id="boxH" min="150" max="400" value="180" oninput="draw()">
-                <label>Transparencia</label>
+                <label>Opacidad</label>
                 <input type="range" id="boxOp" min="0" max="100" value="85" oninput="draw()">
             </div>
 
             <div style="display: flex; gap:10px;">
-                <div style="flex:1;"><label>Fondo</label><input type="color" id="boxColor" value="#000000" oninput="draw()"></div>
-                <div style="flex:1;"><label>Texto</label><input type="color" id="textColor" value="#ffffff" oninput="draw()"></div>
+                <div style="flex:1;"><label>Color</label><input type="color" id="boxColor" value="#000000" oninput="draw()"></div>
+                <div style="flex:1;"><label>Letra</label><input type="color" id="textColor" value="#ffffff" oninput="draw()"></div>
             </div>
 
-            <span class="section-label">3. Datos Mis / Contacto</span>
+            <span class="section-label">3. Tus Datos</span>
             <input type="text" id="myCall" value="HI8-QSL" oninput="draw()">
+            <input type="text" id="myLocator" value="EL98xx" oninput="draw()">
+
+            <span class="section-label">4. Datos del QSO</span>
             <input type="text" id="toCall" placeholder="Indicativo Destino" oninput="draw()">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
                 <input type="date" id="qDate" oninput="draw()">
@@ -112,14 +141,24 @@
                 <input type="text" id="qMode" placeholder="Mode" oninput="draw()">
                 <input type="text" id="qRst" placeholder="RST" oninput="draw()">
             </div>
-            <input type="text" id="qMsg" placeholder="Comentarios / 73" oninput="draw()">
+            <input type="text" id="qMsg" placeholder="73 / Comentarios" oninput="draw()">
 
-            <button class="btn-download" onclick="download()">Descargar QSL</button>
+            <button class="btn-download" onclick="showDownloadMenu()">Descargar QSL</button>
         </div>
 
         <div class="preview-panel">
             <canvas id="qslCanvas" width="900" height="550"></canvas>
-            <p style="font-size: 0.7rem; color: #5c7d9d; margin-top: 8px;">📱 Mueve la tabla o el indicativo con el dedo.</p>
+            <p style="font-size: 0.7rem; color: #5c7d9d; margin-top: 8px;">📱 Arrastra los elementos para moverlos.</p>
+        </div>
+    </div>
+
+    <div id="downloadModal">
+        <div class="modal-content">
+            <h2 style="color:var(--neon-blue); margin-top:0;">Selecciona Formato</h2>
+            <p>¿En qué formato deseas guardar tu QSL?</p>
+            <button class="format-btn png-btn" onclick="executeDownload('png')">PNG (Calidad)</button>
+            <button class="format-btn jpg-btn" onclick="executeDownload('jpeg')">JPG (Compacto)</button>
+            <button class="format-btn cancel-btn" onclick="hideDownloadMenu()">Cancelar</button>
         </div>
     </div>
 
@@ -130,18 +169,40 @@
         bgImg.crossOrigin = "anonymous";
 
         let posMyCall = { x: 50, y: 100, w: 300 };
-        let posDataBox = { x: 50, y: 320 };
+        let posDataBox = { x: 60, y: 320 };
         let dragTarget = null;
         let dragOffset = { x: 0, y: 0 };
 
         function changeBG(el) {
             document.querySelectorAll('.gallery-item').forEach(img => img.classList.remove('active'));
-            el.classList.add('active');
-            bgImg.src = el.src;
+            if(el) { el.classList.add('active'); bgImg.src = el.src; }
         }
 
         bgImg.onload = draw;
 
+        document.getElementById('bgInput').addEventListener('change', (e) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                bgImg.src = event.target.result;
+                document.querySelectorAll('.gallery-item').forEach(img => img.classList.remove('active'));
+            };
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+        });
+
+        // Funciones de Menú de Descarga
+        function showDownloadMenu() { document.getElementById('downloadModal').style.display = 'flex'; }
+        function hideDownloadMenu() { document.getElementById('downloadModal').style.display = 'none'; }
+
+        function executeDownload(format) {
+            const link = document.createElement('a');
+            link.download = `QSL_ELITE.${format}`;
+            // Si es JPG, forzamos fondo blanco si hubiera transparencias para evitar errores
+            link.href = canvas.toDataURL(`image/${format}`, 0.9);
+            link.click();
+            hideDownloadMenu();
+        }
+
+        // --- Lógica de Arrastre ---
         function getCoords(e) {
             const rect = canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -160,7 +221,7 @@
             if (coords.x >= posDataBox.x && coords.x <= posDataBox.x + bw && coords.y >= posDataBox.y && coords.y <= posDataBox.y + bh) {
                 dragTarget = 'dataBox';
                 dragOffset.x = coords.x - posDataBox.x; dragOffset.y = coords.y - posDataBox.y;
-            } else if (coords.x >= posMyCall.x && coords.x <= posMyCall.x + posMyCall.w && coords.y >= posMyCall.y - 80 && coords.y <= posMyCall.y + 20) {
+            } else if (coords.x >= posMyCall.x && coords.x <= posMyCall.x + posMyCall.w && coords.y >= posMyCall.y - 80 && coords.y <= posMyCall.y + 60) {
                 dragTarget = 'myCall';
                 dragOffset.x = coords.x - posMyCall.x; dragOffset.y = coords.y - posMyCall.y;
             }
@@ -186,31 +247,21 @@
         window.addEventListener('mouseup', () => dragTarget = null);
         window.addEventListener('touchend', () => dragTarget = null);
 
-        // FUNCIÓN DE DIBUJO ULTRA-AJUSTADA
         function drawFullLine(label, value, x, y, width, bh, color) {
             const labelText = label.toUpperCase() + ": ";
             const valText = value || "";
-            
-            // Calculamos tamaño basado en el espacio disponible para que OCUPE TODO
-            // bh / 8 asegura que quepan las 4 filas cómodamente
-            let fontSize = Math.min(bh / 7, width / 12, 28); 
+            let fontSize = Math.min(bh / 7, width / 11, 28); 
             
             ctx.fillStyle = color;
             ctx.font = `bold ${fontSize * 0.6}px Arial`;
             ctx.fillText(labelText, x, y);
             
             const lw = ctx.measureText(labelText).width;
-            
-            // Ajuste dinámico del valor para que llene el resto de la línea
             ctx.font = `bold ${fontSize}px 'Courier New', monospace`;
             ctx.fillText(valText, x + lw, y);
             
-            // Línea de base más gruesa
             ctx.strokeStyle = color; ctx.lineWidth = 2;
-            ctx.beginPath(); 
-            ctx.moveTo(x + lw, y + 5); 
-            ctx.lineTo(x + width - 10, y + 5); 
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x + lw, y + 5); ctx.lineTo(x + width - 10, y + 5); ctx.stroke();
         }
 
         function draw() {
@@ -223,18 +274,22 @@
             ctx.clearRect(0,0,900,550);
             if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
 
-            // Marca de agua ROJO NEÓN FUERTE
-            ctx.shadowColor = "rgba(255,0,0,0.8)"; ctx.shadowBlur = 10;
-            ctx.fillStyle = "#ff0000"; ctx.font = "bold 18px Impact, sans-serif";
-            ctx.fillText("ZMR-CUBA", 780, 530);
+            // Marca de agua ROJO NEÓN
+            ctx.shadowColor = "rgba(255,0,0,0.8)"; ctx.shadowBlur = 8;
+            ctx.fillStyle = "#ff0000"; ctx.font = "bold 18px Impact";
+            ctx.fillText("ZMR-CUBA", 785, 530);
             ctx.shadowBlur = 0;
 
-            // Mi Indicativo GIGANTE
-            ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 20;
-            ctx.fillStyle = "white"; ctx.font = "bold 95px sans-serif";
+            // Mi Indicativo y Locator
+            ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 15;
+            ctx.fillStyle = "white"; ctx.font = "bold 90px sans-serif";
             const call = document.getElementById('myCall').value.toUpperCase();
             ctx.fillText(call, posMyCall.x, posMyCall.y);
-            posMyCall.w = ctx.measureText(call).width + 30;
+            
+            ctx.fillStyle = "#00f2ff"; ctx.font = "bold 30px sans-serif";
+            ctx.fillText("Locator: " + document.getElementById('myLocator').value.toUpperCase(), posMyCall.x + 5, posMyCall.y + 45);
+            
+            posMyCall.w = Math.max(ctx.measureText(call).width, ctx.measureText("Locator: " + document.getElementById('myLocator').value).width) + 30;
             ctx.shadowBlur = 0;
 
             // Caja QSO
@@ -247,26 +302,14 @@
             const startX = posDataBox.x + 20;
             const innerW = bw - 40;
 
-            // Primera fila: Indicativo Destino
             drawFullLine("Confirming QSO with", document.getElementById('toCall').value, startX, posDataBox.y + step, innerW, bh, tColor);
-            
-            // Segunda fila: Datos Técnicos (se expanden al ancho del cuadro)
             const sub = innerW / 5;
             drawFullLine("Date", document.getElementById('qDate').value, startX, posDataBox.y + step * 2.1, sub, bh, tColor);
             drawFullLine("Time", document.getElementById('qTime').value, startX + sub, posDataBox.y + step * 2.1, sub, bh, tColor);
             drawFullLine("Band", document.getElementById('qBand').value, startX + sub * 2, posDataBox.y + step * 2.1, sub, bh, tColor);
             drawFullLine("Mode", document.getElementById('qMode').value, startX + sub * 3, posDataBox.y + step * 2.1, sub, bh, tColor);
             drawFullLine("RST",  document.getElementById('qRst').value,  startX + sub * 4, posDataBox.y + step * 2.1, sub, bh, tColor);
-            
-            // Tercera fila: Comentarios
             drawFullLine("Remarks / 73", document.getElementById('qMsg').value, startX, posDataBox.y + step * 3.3, innerW, bh, tColor);
-        }
-
-        function download() {
-            const link = document.createElement('a');
-            link.download = `QSL_PRO_CARIBE.png`;
-            link.href = canvas.toDataURL("image/png", 1.0);
-            link.click();
         }
 
         window.onload = () => changeBG(document.querySelector('.gallery-item'));
