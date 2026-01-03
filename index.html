@@ -2,323 +2,267 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v12.0 - ADIF ZIP Export</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QSL ELITE PRO v13.0 - Ultra HD & ADIF</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    
     <style>
-        :root {
-            --bg-dark: #0e2431;
-            --neon-green: #00ff99;
-            --neon-pink: #ff00ff;
-            --text-light: #e6faff;
-        }
-
-        body {
-            font-family: 'Verdana', sans-serif;
-            background-color: #050a14; color: var(--text-light);
-            margin: 0; display: flex; flex-direction: column; align-items: center;
-        }
-
-        header { 
-            padding: 15px; text-align: center; width: 100%; 
-            background: var(--bg-dark); border-bottom: 2px solid var(--neon-green);
-        }
-
-        .main-container {
-            display: flex; flex-direction: row; gap: 20px;
-            padding: 20px; max-width: 1400px; width: 100%; box-sizing: border-box;
-        }
-
-        .controls-panel {
-            flex: 0 0 320px; background: var(--bg-dark);
-            padding: 20px; border-radius: 12px; border: 2px solid var(--neon-green);
-            height: 85vh; overflow-y: auto;
-        }
-
-        .section-label {
-            color: var(--neon-green); font-size: 0.8em; margin-top: 15px;
-            margin-bottom: 8px; display: block; border-bottom: 1px solid #30363d;
-            text-transform: uppercase; font-weight: bold;
-        }
-
-        input[type="text"], input[type="date"], input[type="file"], select {
-            width: 100%; padding: 8px; background: #050a14; border: 1px solid var(--neon-green);
-            border-radius: 6px; color: white; margin-bottom: 8px; font-size: 0.9em; box-sizing: border-box;
-        }
-
-        .btn-action {
-            width: 100%; padding: 15px; font-weight: bold; border: none; border-radius: 6px;
-            cursor: pointer; text-transform: uppercase; margin-top: 10px;
-        }
-        .btn-download { background: var(--neon-green); color: #000; }
-        .btn-zip { background: var(--neon-pink); color: #fff; display: none; }
-
-        .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; }
-        canvas { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--neon-green); }
-
-        /* Galería de resultados */
-        #batchGallery {
-            width: 100%; max-width: 1200px; margin-top: 30px;
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px; padding: 20px; background: var(--bg-dark); border-radius: 12px;
-            display: none;
-        }
-        .batch-item { text-align: center; font-size: 0.7em; }
-        .batch-item img { width: 100%; border-radius: 4px; border: 1px solid #444; }
-
-        .logo-box { border: 1px solid #333; padding: 10px; border-radius: 8px; margin-bottom: 10px; background: #0c1a25; }
-        .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .gallery-item { width: 100%; height: 50px; object-fit: cover; cursor: pointer; border-radius: 4px; border: 2px solid transparent; }
-        .gallery-item.active { border-color: var(--neon-pink); }
+        :root { --bg-dark: #0e2431; --neon: #00ff99; --pink: #ff00ff; --light: #e6faff; }
+        body { font-family: 'Segoe UI', Verdana, sans-serif; background: #050a14; color: var(--light); margin: 0; display: flex; flex-direction: column; align-items: center; }
+        header { padding: 20px; text-align: center; width: 100%; background: var(--bg-dark); border-bottom: 3px solid var(--neon); box-shadow: 0 4px 15px rgba(0,255,153,0.3); }
+        .main-wrapper { display: flex; flex-direction: row; gap: 20px; padding: 20px; width: 100%; max-width: 1600px; box-sizing: border-box; }
+        .side-bar { flex: 0 0 350px; background: var(--bg-dark); padding: 20px; border-radius: 15px; border: 2px solid var(--neon); height: 88vh; overflow-y: auto; }
+        .section-title { color: var(--neon); font-size: 0.9em; margin: 20px 0 10px; display: block; border-bottom: 1px solid #333; text-transform: uppercase; letter-spacing: 1px; }
+        input, select { width: 100%; padding: 10px; background: #050a14; border: 1px solid var(--neon); border-radius: 8px; color: white; margin-bottom: 10px; font-size: 0.9em; }
+        .btn { width: 100%; padding: 15px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin: 5px 0; }
+        .btn-zip { background: var(--pink); color: white; display: none; box-shadow: 0 0 15px var(--pink); }
+        .btn-previa { background: var(--neon); color: #000; }
+        .canvas-area { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        canvas { width: 100%; max-width: 1000px; height: auto; border-radius: 12px; border: 2px solid var(--neon); background: #000; cursor: move; }
+        #previewContainer { width: 100%; max-width: 1500px; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; padding: 30px; display: none; background: rgba(0,0,0,0.5); margin-top: 20px; border-radius: 20px; }
+        .qsl-mini { background: #111; padding: 10px; border-radius: 10px; border: 1px solid #444; text-align: center; }
+        .qsl-mini img { width: 100%; border-radius: 5px; margin-bottom: 8px; }
+        .logo-ctrl { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .gal-img { width: 100%; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; }
+        .gal-img.active { border-color: var(--pink); }
     </style>
 </head>
 <body>
 
-    <header><h1>QSL ELITE v12.0 - ZIP AUTO-EXPORT</h1></header>
+<header><h1 style="margin:0;">QSL ELITE PRO v13.0 - AUTO BATCH</h1></header>
 
-    <div class="main-container">
-        <div class="controls-panel">
-            <span class="section-label">📂 Automatización ADIF</span>
-            <input type="file" id="adifInput" accept=".adi,.adif" onchange="handleADIF(event)">
-            <button class="btn-action btn-zip" id="btnZip" onclick="generateAndZip()">Descargar Todo en .ZIP</button>
+<div class="main-wrapper">
+    <div class="side-bar">
+        <span class="section-title">📁 Importar Log ADIF</span>
+        <input type="file" id="adifInput" accept=".adi,.adif" onchange="handleADIF(event)">
+        <button class="btn btn-zip" id="btnZip" onclick="generateAndZip()">Descargar .ZIP Completo</button>
 
-            <span class="section-label">🎨 Estilo y Fondo</span>
-            <div class="gallery-grid">
-                <img class="gallery-item" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600" onclick="changeBG(this)">
-                <img class="gallery-item" src="https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=600" onclick="changeBG(this)">
-            </div>
-            
-            <select id="tableStyle" onchange="draw()">
-                <option value="modern">Moderno (Segmentado)</option>
-                <option value="normal" selected>Normal (Caja)</option>
-                <option value="transparent">Transparente</option>
-            </select>
+        <span class="section-title">🎨 Configuración Visual</span>
+        <div class="gallery">
+            <img class="gal-img" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800" onclick="changeBG(this)">
+            <img class="gal-img" src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800" onclick="changeBG(this)">
+        </div>
+        <select id="tableStyle" onchange="draw()">
+            <option value="modern">Diseño Moderno (Segmentado)</option>
+            <option value="normal" selected>Diseño Clásico (Caja)</option>
+            <option value="transparent">Diseño Minimalista (Transparente)</option>
+        </select>
 
-            <span class="section-label">👤 Mis Datos</span>
-            <input type="text" id="myCall" value="CL7ADV" oninput="draw()">
-            <input type="text" id="myLocator" value="EL98xx" oninput="draw()">
+        <span class="section-title">👤 Mis Datos</span>
+        <input type="text" id="myCall" value="CL7ADV" oninput="draw()">
+        <input type="text" id="myLocator" value="EL98xx" oninput="draw()">
 
-            <span class="section-label">📡 Datos QSO</span>
-            <input type="text" id="toCall" placeholder="Indicativo Destino" oninput="draw()">
-            <input type="date" id="qDate" oninput="draw()">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
-                <input type="text" id="qBand" placeholder="Banda" oninput="draw()">
-                <input type="text" id="qMode" placeholder="Modo" oninput="draw()">
-            </div>
-
-            <span class="section-label">🖼️ Logos (4)</span>
-            <div id="logoControls">
-                <script>
-                    for(let i=0; i<4; i++) {
-                        document.write(`
-                            <div class="logo-box">
-                                <input type="file" accept="image/*" onchange="loadLogo(${i}, event)">
-                                <input type="range" id="logoSize${i}" min="20" max="200" value="80" oninput="draw()">
-                            </div>
-                        `);
-                    }
-                </script>
-            </div>
-
-            <button class="btn-action btn-download" onclick="downloadSingle()">Descargar Previa</button>
+        <span class="section-title">📡 Datos Previa</span>
+        <input type="text" id="toCall" placeholder="Indicativo Destino" oninput="draw()">
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="qBand" placeholder="Band" oninput="draw()">
+            <input type="text" id="qMode" placeholder="Mode" oninput="draw()">
+            <input type="text" id="qRst" placeholder="RST" oninput="draw()">
         </div>
 
-        <div class="preview-panel">
-            <canvas id="qslCanvas" width="900" height="550"></canvas>
-            <p id="status" style="margin-top:10px; color:var(--neon-green); font-weight:bold;"></p>
+        <span class="section-title">🖼️ Gestión de Logos</span>
+        <div id="logosContainer">
+            <script>
+                for(let i=0; i<4; i++) {
+                    document.write(`
+                    <div class="logo-ctrl">
+                        <input type="file" accept="image/*" onchange="loadLogo(${i}, event)">
+                        <input type="range" id="size${i}" min="40" max="400" value="150" oninput="draw()">
+                    </div>`);
+                }
+            </script>
         </div>
+        <button class="btn btn-previa" onclick="downloadPreview()">Descargar Previa HD</button>
     </div>
 
-    <div id="batchGallery"></div>
+    <div class="canvas-area">
+        <canvas id="qslCanvas" width="1800" height="1100"></canvas>
+        <p id="msg" style="color:var(--neon); margin-top:15px; font-weight:bold;"></p>
+    </div>
+</div>
 
-    <script>
-        const canvas = document.getElementById('qslCanvas');
-        const ctx = canvas.getContext('2d');
-        let bgImg = new Image();
-        bgImg.crossOrigin = "anonymous";
-        let adifRecords = [];
-        let logos = Array.from({length: 4}, () => ({ img: new Image(), x: 750, y: 30, active: false }));
+<div id="previewContainer"></div>
 
-        let posMyCall = { x: 50, y: 110 };
-        let posDataBox = { x: 60, y: 380 };
-        let dragTarget = null;
-        let dragOffset = { x: 0, y: 0 };
-        let activeLogoIdx = -1;
+<script>
+    const canvas = document.getElementById('qslCanvas');
+    const ctx = canvas.getContext('2d');
+    let bgImg = new Image(); bgImg.crossOrigin = "anonymous";
+    let adifRecords = [];
+    let logos = Array.from({length: 4}, () => ({ img: new Image(), x: 1500, y: 100, active: false }));
+    
+    // Posiciones escaladas para 1800x1100
+    let posCall = { x: 100, y: 220 };
+    let posTable = { x: 100, y: 800 };
+    let dragObj = null; let offset = { x:0, y:0 }; let activeLogoIdx = -1;
 
-        // --- LÓGICA ADIF & ZIP ---
-        function handleADIF(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                adifRecords = parseADIF(text);
-                if(adifRecords.length > 0) {
-                    document.getElementById('btnZip').style.display = 'block';
-                    document.getElementById('status').innerText = `✅ ${adifRecords.length} Contactos Listos`;
-                    fillRecord(adifRecords[0]);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function parseADIF(text) {
-            const records = [];
-            const parts = text.split(/<eor>|<EOR>/i);
-            parts.forEach(part => {
-                if (!part.trim()) return;
-                const rec = {};
-                const tags = { CALL: "toCall", BAND: "qBand", MODE: "qMode", QSO_DATE: "qDate" };
-                for (let tag in tags) {
-                    const reg = new RegExp(`<${tag}:(\\d+)>([^<]*)`, "i");
-                    const match = part.match(reg);
-                    if (match) rec[tags[tag]] = match[2].trim();
-                }
-                if (rec.toCall) records.push(rec);
-            });
-            return records;
-        }
-
-        function fillRecord(rec) {
-            document.getElementById('toCall').value = rec.toCall || "";
-            document.getElementById('qBand').value = rec.qBand || "";
-            document.getElementById('qMode').value = rec.qMode || "";
-            if(rec.qDate) {
-                let d = rec.qDate;
-                document.getElementById('qDate').value = `${d.substring(0,4)}-${d.substring(4,6)}-${d.substring(6,8)}`;
+    // --- PROCESADOR ADIF ---
+    function handleADIF(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const text = e.target.result;
+            adifRecords = parseADIF(text);
+            if(adifRecords.length > 0) {
+                document.getElementById('btnZip').style.display = 'block';
+                document.getElementById('msg').innerText = `✅ LOG CARGADO: ${adifRecords.length} QSO's`;
+                await updateGallery();
             }
-            draw();
-        }
-
-        async function generateAndZip() {
-            const zip = new JSZip();
-            const gallery = document.getElementById('batchGallery');
-            gallery.innerHTML = "<h2>Procesando...</h2>";
-            gallery.style.display = "grid";
-            
-            document.getElementById('status').innerText = "⏳ Generando archivos...";
-
-            for(let i=0; i<adifRecords.length; i++) {
-                fillRecord(adifRecords[i]);
-                await new Promise(r => setTimeout(r, 50)); // Render time
-                
-                const dataUrl = canvas.toDataURL("image/png");
-                const base64Data = dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
-                zip.file(`QSL_${adifRecords[i].toCall}_${i}.png`, base64Data, {base64: true});
-
-                // Añadir a la ventana visual de abajo
-                const item = document.createElement('div');
-                item.className = 'batch-item';
-                item.innerHTML = `<img src="${dataUrl}"><p>${adifRecords[i].toCall}</p>`;
-                gallery.appendChild(item);
-            }
-
-            zip.generateAsync({type:"blob"}).then(function(content) {
-                saveAs(content, "QSL_PACK_CARIBE.zip");
-                document.getElementById('status').innerText = "✅ ¡Descarga Completa!";
-            });
-        }
-
-        // --- LÓGICA GRÁFICA ---
-        function changeBG(el) {
-            document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active'); bgImg.src = el.src;
-        }
-
-        function loadLogo(idx, e) {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => { 
-                    logos[idx].img.src = ev.target.result; 
-                    logos[idx].active = true; 
-                    logos[idx].y = 30 + (idx * 100);
-                    logos[idx].img.onload = draw;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        bgImg.onload = draw;
-
-        // Drag & Drop
-        canvas.onmousedown = (e) => {
-            const r = canvas.getBoundingClientRect();
-            const x = (e.clientX - r.left) * (canvas.width / r.width);
-            const y = (e.clientY - r.top) * (canvas.height / r.height);
-            
-            for(let i=0; i<4; i++) {
-                if(logos[i].active) {
-                    let s = parseInt(document.getElementById(`logoSize${i}`).value);
-                    if(x > logos[i].x && x < logos[i].x + s && y > logos[i].y && y < logos[i].y + s) {
-                        dragTarget = 'logo'; activeLogoIdx = i;
-                        dragOffset = { x: x - logos[i].x, y: y - logos[i].y }; return;
-                    }
-                }
-            }
-            if(y > posDataBox.y && y < posDataBox.y + 150) { dragTarget = 'box'; dragOffset = { x: x - posDataBox.x, y: y - posDataBox.y }; }
-            else if(y > posMyCall.y - 80 && y < posMyCall.y + 20) { dragTarget = 'call'; dragOffset = { x: x - posMyCall.x, y: y - posMyCall.y }; }
         };
+        reader.readAsText(file);
+    }
 
-        window.onmousemove = (e) => {
-            if(!dragTarget) return;
-            const r = canvas.getBoundingClientRect();
-            const x = (e.clientX - r.left) * (canvas.width / r.width);
-            const y = (e.clientY - r.top) * (canvas.height / r.height);
-            if(dragTarget === 'logo') { logos[activeLogoIdx].x = x - dragOffset.x; logos[activeLogoIdx].y = y - dragOffset.y; }
-            if(dragTarget === 'box') { posDataBox.x = x - dragOffset.x; posDataBox.y = y - dragOffset.y; }
-            if(dragTarget === 'call') { posMyCall.x = x - dragOffset.x; posMyCall.y = y - dragOffset.y; }
-            draw();
-        };
-        window.onmouseup = () => dragTarget = null;
-
-        function draw() {
-            ctx.clearRect(0,0,900,550);
-            if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
-            
-            // Marca de agua
-            ctx.globalAlpha = 0.2; ctx.fillStyle = "white"; ctx.font = "12px Verdana";
-            ctx.fillText("ZMR-BATCH-ELITE", 780, 20); ctx.globalAlpha = 1.0;
-
-            // Logos
-            logos.forEach((l, i) => { if(l.active) { let s = document.getElementById(`logoSize${i}`).value; ctx.drawImage(l.img, l.x, l.y, s, s); } });
-
-            // Mi Indicativo
-            ctx.save(); ctx.shadowBlur = 10; ctx.shadowColor = "black";
-            ctx.fillStyle = "#ff00ff"; ctx.font = "bold 90px Verdana";
-            ctx.fillText(document.getElementById('myCall').value.toUpperCase(), posMyCall.x, posMyCall.y);
-            ctx.fillStyle = "#00ff99"; ctx.font = "bold 30px Verdana";
-            ctx.fillText("LOC: " + document.getElementById('myLocator').value.toUpperCase(), posMyCall.x, posMyCall.y + 40);
-            ctx.restore();
-
-            // Tabla
-            const style = document.getElementById('tableStyle').value;
-            const x = posDataBox.x, y = posDataBox.y;
-            if(style === 'normal') {
-                ctx.fillStyle = "rgba(14, 36, 49, 0.85)"; ctx.fillRect(x, y, 780, 110);
-                ctx.strokeStyle = "#00ff99"; ctx.strokeRect(x, y, 780, 110);
-            } else if(style === 'modern') {
-                ctx.fillStyle = "black"; ctx.fillRect(x, y, 780, 30);
-                ctx.fillStyle = "white"; ctx.fillRect(x, y+30, 780, 50);
-                ctx.strokeStyle = "white"; ctx.strokeRect(x, y, 780, 100);
+    function parseADIF(text) {
+        const results = [];
+        const entries = text.split(/<eor>|<EOR>/i);
+        entries.forEach(e => {
+            if(!e.trim()) return;
+            const item = {};
+            const tags = { CALL:'toCall', QSO_DATE:'qDate', TIME_ON:'qTime', BAND:'qBand', MODE:'qMode', RST_SENT:'qRst' };
+            for(let t in tags) {
+                const reg = new RegExp(`<${t}:(\\d+)>([^<]*)`, "i");
+                const m = e.match(reg);
+                if(m) item[tags[t]] = m[2].trim();
             }
+            if(item.toCall) results.push(item);
+        });
+        return results;
+    }
 
-            const labels = ["DESTINO", "FECHA", "BANDA", "MODO"];
-            const vals = [document.getElementById('toCall').value, document.getElementById('qDate').value, document.getElementById('qBand').value, document.getElementById('qMode').value];
-            labels.forEach((l, i) => {
-                ctx.font = "bold 11px Verdana"; ctx.fillStyle = (style === 'modern') ? "white" : "#00ff99";
-                ctx.fillText(l, x + 20 + (i*190), y + 20);
-                ctx.font = "bold 18px Courier"; ctx.fillStyle = (style === 'modern') ? "black" : "white";
-                ctx.fillText(vals[i] || "---", x + 20 + (i*190), y + 55);
-            });
+    async function updateGallery() {
+        const container = document.getElementById('previewContainer');
+        container.innerHTML = ""; container.style.display = "grid";
+        for(let i=0; i < Math.min(adifRecords.length, 12); i++) { // Mostrar primeros 12 para no saturar
+            fillData(adifRecords[i]);
+            await new Promise(r => setTimeout(r, 50));
+            const div = document.createElement('div');
+            div.className = 'qsl-mini';
+            div.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.5)}"><p>${adifRecords[i].toCall}</p>`;
+            container.appendChild(div);
+        }
+    }
+
+    function fillData(rec) {
+        document.getElementById('toCall').value = rec.toCall || "";
+        document.getElementById('qBand').value = rec.qBand || "";
+        document.getElementById('qMode').value = rec.qMode || "";
+        document.getElementById('qRst').value = rec.qRst || "59";
+        // Formatear Fecha/Hora
+        let d = rec.qDate || "";
+        let t = rec.qTime || "";
+        window.currentQsoData = { 
+            date: d ? `${d.substr(6,2)}/${d.substr(4,2)}/${d.substr(0,4)}` : "--/--/--",
+            time: t ? `${t.substr(0,2)}:${t.substr(2,2)} UTC` : "00:00 UTC"
+        };
+        draw();
+    }
+
+    async function generateAndZip() {
+        const zip = new JSZip();
+        const myCall = document.getElementById('myCall').value;
+        document.getElementById('msg').innerText = "🚀 Procesando paquete ZIP...";
+        
+        for(let i=0; i<adifRecords.length; i++) {
+            fillData(adifRecords[i]);
+            await new Promise(r => setTimeout(r, 40));
+            const blob = await new Promise(res => canvas.toBlob(res, 'image/png', 1.0));
+            zip.file(`QSL_${adifRecords[i].toCall}_${i}.png`, blob);
+        }
+        
+        zip.generateAsync({type:"blob"}).then(blob => {
+            saveAs(blob, `PACK_QSL_${myCall}.zip`);
+            document.getElementById('msg').innerText = "✅ ZIP Descargado con éxito.";
+        });
+    }
+
+    // --- MOTOR GRÁFICO ---
+    function changeBG(el) {
+        document.querySelectorAll('.gal-img').forEach(i => i.classList.remove('active'));
+        el.classList.add('active'); bgImg.src = el.src;
+    }
+
+    function loadLogo(idx, e) {
+        const f = e.target.files[0];
+        if(f) {
+            const r = new FileReader();
+            r.onload = (ev) => { logos[idx].img.src = ev.target.result; logos[idx].active = true; logos[idx].img.onload = draw; };
+            r.readAsDataURL(f);
+        }
+    }
+
+    bgImg.onload = draw;
+
+    function draw() {
+        ctx.clearRect(0,0,1800,1100);
+        if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 1800, 1100);
+        
+        // Marca de agua
+        ctx.globalAlpha = 0.15; ctx.fillStyle = "white"; ctx.font = "24px Verdana";
+        ctx.fillText("ZMR-QSL-ELITE-PRO-SYSTEM", 1450, 40); ctx.globalAlpha = 1.0;
+
+        // Logos
+        logos.forEach((l, i) => { if(l.active) { let s = document.getElementById(`size${i}`).value; ctx.drawImage(l.img, l.x, l.y, s, s); } });
+
+        // Mi Info
+        ctx.save(); ctx.shadowBlur = 20; ctx.shadowColor = "black";
+        ctx.fillStyle = varColor('--pink'); ctx.font = "bold 180px Verdana";
+        ctx.fillText(document.getElementById('myCall').value.toUpperCase(), posCall.x, posCall.y);
+        ctx.fillStyle = varColor('--neon'); ctx.font = "bold 60px Verdana";
+        ctx.fillText("LOCATOR: " + document.getElementById('myLocator').value.toUpperCase(), posCall.x + 10, posCall.y + 80);
+        ctx.restore();
+
+        // Tabla de Datos
+        const style = document.getElementById('tableStyle').value;
+        const x = posTable.x, y = posTable.y;
+        const w = 1600, h = 220;
+
+        if(style === 'normal') {
+            ctx.fillStyle = "rgba(14, 36, 49, 0.9)"; ctx.fillRect(x, y, w, h);
+            ctx.strokeStyle = varColor('--neon'); ctx.lineWidth = 6; ctx.strokeRect(x, y, w, h);
+        } else if(style === 'modern') {
+            ctx.fillStyle = "black"; ctx.fillRect(x, y, w, 60);
+            ctx.fillStyle = "white"; ctx.fillRect(x, y+60, w, 100);
+            ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.strokeRect(x, y, w, 200);
         }
 
-        function downloadSingle() {
-            saveAs(canvas.toDataURL(), `QSL_PREVIA.png`);
-        }
+        const labels = ["QSO WITH", "DATE", "TIME (UTC)", "BAND", "MODE", "RST"];
+        const d = window.currentQsoData || {date:"--/--/--", time:"00:00 UTC"};
+        const vals = [document.getElementById('toCall').value, d.date, d.time, document.getElementById('qBand').value, document.getElementById('qMode').value, document.getElementById('qRst').value];
+        
+        labels.forEach((l, i) => {
+            let posX = x + 40 + (i * 260);
+            ctx.font = "bold 24px Verdana"; ctx.fillStyle = (style === 'modern') ? "white" : varColor('--neon');
+            ctx.fillText(l, posX, y + 45);
+            ctx.font = "bold 40px 'Courier New'"; ctx.fillStyle = (style === 'modern') ? "black" : "white";
+            ctx.fillText(vals[i] || "---", posX, y + 120);
+        });
+    }
 
-        window.onload = () => changeBG(document.querySelector('.gallery-item'));
-    </script>
+    function varColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    
+    // Mouse Interaction
+    canvas.onmousedown = (e) => {
+        const r = canvas.getBoundingClientRect();
+        const mx = (e.clientX - r.left) * (canvas.width / r.width);
+        const my = (e.clientY - r.top) * (canvas.height / r.height);
+        for(let i=0; i<4; i++) { if(logos[i].active) { let s = parseInt(document.getElementById(`size${i}`).value); if(mx > logos[i].x && mx < logos[i].x + s && my > logos[i].y && my < logos[i].y + s) { dragObj = 'logo'; activeLogoIdx = i; offset = {x: mx - logos[i].x, y: my - logos[i].y}; return; } } }
+        if(my > posTable.y && my < posTable.y + 250) { dragObj = 'table'; offset = {x: mx - posTable.x, y: my - posTable.y}; }
+        else if(my > posCall.y - 150 && my < posCall.y + 100) { dragObj = 'call'; offset = {x: mx - posCall.x, y: my - posCall.y}; }
+    };
+    window.onmousemove = (e) => {
+        if(!dragObj) return;
+        const r = canvas.getBoundingClientRect();
+        const mx = (e.clientX - r.left) * (canvas.width / r.width);
+        const my = (e.clientY - r.top) * (canvas.height / r.height);
+        if(dragObj === 'logo') { logos[activeLogoIdx].x = mx - offset.x; logos[activeLogoIdx].y = my - offset.y; }
+        if(dragObj === 'table') { posTable.x = mx - offset.x; posTable.y = my - offset.y; }
+        if(dragObj === 'call') { posCall.x = mx - offset.x; posCall.y = my - offset.y; }
+        draw();
+    };
+    window.onmouseup = () => dragObj = null;
+
+    function downloadPreview() { saveAs(canvas.toDataURL("image/png", 1.0), `PREVIA_QSL.png`); }
+    window.onload = () => changeBG(document.querySelector('.gal-img'));
+</script>
 </body>
 </html>
