@@ -2,225 +2,139 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>QSL Finder Ultra Lite</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<title>QSLs de Amistad – CL7ADV</title>
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0d47a1;
-  color: #fff;
-  text-align: center;
-}
-
-header {
-  padding: 30px;
-}
-
-.buscador {
-  margin-top: 20px;
-}
-
-#indicativo {
-  padding: 12px;
-  width: 220px;
-  border-radius: 6px;
-  border: none;
-  font-size: 1.1rem;
-  text-transform: uppercase;
-}
-
-#buscarBtn {
-  padding: 12px 20px;
-  margin-left: 10px;
-  background: #ff9800;
-  border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.loader {
-  margin-top: 30px;
-}
-
-.oculto {
-  display: none;
-}
-
-.barra {
-  width: 80%;
-  max-width: 400px;
-  height: 12px;
-  background: rgba(255,255,255,0.3);
-  border-radius: 10px;
-  margin: 20px auto;
-}
-
-#barraFill {
-  height: 100%;
-  width: 0%;
-  background: #ffe082;
-  border-radius: 10px;
-  transition: width 0.1s;
-}
-
-.resultado {
-  margin-top: 40px;
-}
-
-#lista {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-
-.qsl {
-  background: rgba(255,255,255,0.1);
-  padding: 10px;
-  border-radius: 10px;
-  width: 300px;
-  border: 1px solid rgba(255,255,255,0.3);
-}
-
-.qsl img {
-  width: 100%;
-  border-radius: 8px;
-  border: 2px solid #fff;
-}
-
-.btn-descargar {
-  margin-top: 20px;
-  padding: 12px 25px;
-  background: #2e7d32;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-}
+    body {
+        font-family: "Georgia", serif;
+        background: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        color: #222;
+    }
+    header {
+        background: #0a1a33;
+        color: white;
+        padding: 25px;
+        text-align: center;
+        border-bottom: 5px solid #c9a86a;
+    }
+    h1 {
+        margin: 0;
+        font-size: 38px;
+        letter-spacing: 2px;
+    }
+    h2 {
+        color: #0a1a33;
+        border-left: 5px solid #c9a86a;
+        padding-left: 10px;
+    }
+    .container {
+        width: 90%;
+        max-width: 900px;
+        margin: auto;
+        padding: 20px;
+    }
+    .qsl-gallery img {
+        width: 100%;
+        max-width: 260px;
+        margin: 10px;
+        border: 3px solid #c9a86a;
+        border-radius: 5px;
+    }
+    .qsl-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    form {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        border: 2px solid #c9a86a;
+    }
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #aaa;
+        border-radius: 5px;
+    }
+    button {
+        background: #0a1a33;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    footer {
+        text-align: center;
+        padding: 20px;
+        background: #0a1a33;
+        color: white;
+        margin-top: 40px;
+    }
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>🔎 QSL Finder Ultra Lite</h1>
-  <p>Busca tus tarjetas QSL por indicativo</p>
+    <h1>CL7ADV – QSLs de Amistad</h1>
+    <p>Un espacio humilde para compartir radio, hermandad y memoria.</p>
 </header>
 
-<section class="buscador">
-  <input id="indicativo" type="text" placeholder="CO7ADV" autocomplete="off">
-  <button id="buscarBtn">Buscar</button>
-</section>
+<div class="container">
 
-<section id="loader" class="loader oculto">
-  <div class="barra">
-    <div id="barraFill"></div>
-  </div>
-  <p>Buscando archivos…</p>
-</section>
+    <h2>Galería de QSL</h2>
+    <p>Aquí comparto mis QSL digitales con cariño y respeto.</p>
 
-<section id="resultado" class="resultado oculto">
-  <h2>Resultados</h2>
-  <div id="lista"></div>
-  <button id="descargarTodo" class="btn-descargar">Descargar Todo</button>
-</section>
+    <div class="qsl-gallery">
+        <!-- AGREGA TUS QSL AQUÍ -->
+        <img src="qsl1.jpg" alt="QSL 1">
+        <img src="qsl2.jpg" alt="QSL 2">
+        <img src="qsl3.jpg" alt="QSL 3">
+    </div>
+
+    <h2>Confirmar un QSO</h2>
+    <p>Si hicimos contacto, puedes dejar tu confirmación aquí.</p>
+
+    <form action="https://formspree.io/f/tu_codigo" method="POST">
+        <label>Tu indicativo:</label>
+        <input type="text" name="callsign" required>
+
+        <label>Fecha del QSO:</label>
+        <input type="date" name="date" required>
+
+        <label>Banda:</label>
+        <select name="band">
+            <option>40m</option>
+            <option>20m</option>
+            <option>15m</option>
+            <option>10m</option>
+        </select>
+
+        <label>Modo:</label>
+        <select name="mode">
+            <option>SSB</option>
+            <option>CW</option>
+            <option>FT8</option>
+            <option>FM</option>
+        </select>
+
+        <label>Mensaje opcional:</label>
+        <textarea name="message" rows="4"></textarea>
+
+        <button type="submit">Enviar confirmación</button>
+    </form>
+
+</div>
 
 <footer>
-  <p>CL7ADV — QSL Finder Ultra Lite</p>
+    © 2026 CL7ADV – Con hermandad y respeto.
 </footer>
-
-<script>
-const input = document.getElementById("indicativo");
-const btn = document.getElementById("buscarBtn");
-const loader = document.getElementById("loader");
-const fill = document.getElementById("barraFill");
-const lista = document.getElementById("lista");
-const resultado = document.getElementById("resultado");
-const btnTodo = document.getElementById("descargarTodo");
-
-btn.onclick = buscar;
-
-function buscar() {
-  const call = input.value.trim().toUpperCase();
-  if (!call) return;
-
-  loader.classList.remove("oculto");
-  resultado.classList.add("oculto");
-  lista.innerHTML = "";
-  fill.style.width = "0%";
-
-  const exts = ["jpg", "png", "jpeg"];
-  const pruebas = [];
-
-  exts.forEach(ext => {
-    pruebas.push(`${call}.${ext}`);
-    for (let i = 1; i <= 15; i++) {
-      pruebas.push(`${call}-${i}.${ext}`);
-    }
-  });
-
-  let procesados = 0;
-  const total = pruebas.length;
-  const encontradas = [];
-
-  pruebas.forEach(nombre => {
-    const ruta = `img/${nombre}`;
-
-    fetch(ruta, { method: "HEAD" })
-      .then(res => {
-        if (res.ok) encontradas.push(ruta);
-        avanzar();
-      })
-      .catch(() => avanzar());
-  });
-
-  function avanzar() {
-    procesados++;
-    const pct = Math.round((procesados / total) * 100);
-    fill.style.width = pct + "%";
-
-    if (procesados === total) {
-      loader.classList.add("oculto");
-      mostrar(encontradas);
-    }
-  }
-}
-
-function mostrar(arr) {
-  if (arr.length === 0) {
-    lista.innerHTML = `<p>No se encontraron QSLs.</p>`;
-  } else {
-    arr.forEach(url => {
-      const nombre = url.split("/").pop();
-      lista.innerHTML += `
-        <div class="qsl">
-          <img src="${url}">
-          <p>${nombre}</p>
-          <a href="${url}" download class="btn-descargar">Descargar</a>
-        </div>
-      `;
-    });
-  }
-
-  resultado.classList.remove("oculto");
-
-  btnTodo.onclick = () => {
-    arr.forEach(url => {
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = url.split("/").pop();
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    });
-  };
-}
-</script>
 
 </body>
 </html>
