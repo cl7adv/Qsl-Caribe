@@ -6,200 +6,201 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
         :root {
-            --primary: #00eaff; /* Celeste Neón */
-            --accent: #ff00ff;  /* Rosa Neón */
+            --neon-blue: #00eaff;
+            --neon-pink: #ff00ff;
             --cuba-red: #d40000;
-            --cuba-blue: #002a8f;
-            --glass: rgba(10, 25, 35, 0.95);
+            --glass: rgba(5, 15, 25, 0.9);
         }
 
         body { 
             margin: 0; font-family: 'Segoe UI', sans-serif; 
             background: #000 url('https://i.postimg.cc/k47vQh5X/qsl-caribena-neon-noche-final.jpg') no-repeat center center fixed;
             background-size: cover; color: #fff;
-            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            display: flex; align-items: center; justify-content: center; min-height: 100vh;
+            overflow: hidden;
         }
 
-        /* Menú de Ventanas */
-        .nav-tabs {
-            margin-top: 20px; display: flex; gap: 10px; z-index: 10;
+        /* Pantalla de Encendido */
+        #power-on {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        .tab-btn {
-            padding: 12px 25px; border: 2px solid var(--primary); background: var(--glass);
-            color: var(--primary); cursor: pointer; border-radius: 10px 10px 0 0;
-            font-weight: bold; transition: 0.3s; text-transform: uppercase;
+        .power-btn {
+            padding: 20px 40px; font-size: 1.5rem; border: 3px solid var(--neon-blue);
+            background: none; color: var(--neon-blue); cursor: pointer; border-radius: 50px;
+            box-shadow: 0 0 20px var(--neon-blue); font-weight: bold; transition: 0.3s;
         }
-
-        .tab-btn.active {
-            background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary);
-        }
+        .power-btn:hover { background: var(--neon-blue); color: #000; }
 
         /* Contenedor Principal */
         .main-panel {
-            width: 90%; max-width: 700px; background: var(--glass);
-            border: 2px solid var(--primary); border-radius: 0 20px 20px 20px;
-            padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px); position: relative;
+            width: 90%; max-width: 650px; background: var(--glass);
+            border: 2px solid var(--neon-blue); border-radius: 20px;
+            padding: 30px; box-shadow: 0 0 40px rgba(0, 234, 255, 0.3);
+            backdrop-filter: blur(10px); display: none; text-align: center;
         }
 
-        .view { display: none; text-align: center; animation: fadeIn 0.5s; }
-        .view.active { display: block; }
+        .nav-tabs { display: flex; gap: 5px; justify-content: center; margin-bottom: 20px; }
+        .tab-btn {
+            background: rgba(255,255,255,0.1); border: 1px solid var(--neon-blue);
+            color: #fff; padding: 10px 20px; cursor: pointer; border-radius: 5px;
+        }
+        .tab-btn.active { background: var(--neon-blue); color: #000; font-weight: bold; }
+
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.5s; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Estilos Buscador */
-        h1 { font-size: 1.8rem; text-shadow: 0 0 10px var(--primary); margin-bottom: 5px; }
-        .subtitle { color: #ff9800; font-size: 0.8rem; margin-bottom: 25px; letter-spacing: 2px; }
-
-        input {
-            padding: 15px; width: 60%; border-radius: 10px; border: 2px solid #333;
-            background: #000; color: var(--primary); font-size: 1.2rem; text-align: center;
+        /* Elementos UI */
+        h1 { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); margin: 0; }
+        input { 
+            padding: 15px; width: 70%; border-radius: 10px; border: 2px solid var(--neon-pink); 
+            background: #000; color: var(--neon-blue); font-size: 1.2rem; text-align: center; margin: 20px 0;
         }
-
-        .btn-action {
+        .action-btn {
             padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer;
-            font-weight: bold; margin-top: 10px; background: var(--primary); color: #000;
+            font-weight: bold; background: var(--cuba-red); color: #fff; box-shadow: 0 4px 0 #8b0000;
         }
+        .action-btn:active { transform: translateY(4px); box-shadow: none; }
 
-        /* Estilos Morse */
-        .visualizer { width: 100%; height: 80px; background: #000; margin: 15px 0; border-radius: 5px; border: 1px solid var(--accent); }
-        .morse-output { 
-            font-size: 2rem; color: var(--accent); min-height: 80px; 
-            background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border: 1px solid #333;
+        /* Visualizador y Salida Morse */
+        .morse-display { 
+            font-size: 2.5rem; color: var(--neon-pink); min-height: 80px; 
+            background: #000; border-radius: 10px; border: 1px solid #333; margin: 15px 0; padding: 10px;
         }
+        canvas { width: 100%; height: 60px; background: #000; border-radius: 5px; }
 
-        /* Barra de Carga */
-        .progress-container { width: 80%; height: 8px; background: #222; margin: 20px auto; border-radius: 10px; display: none; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--primary); width: 0%; box-shadow: 0 0 10px var(--primary); }
-
-        footer { margin-top: 30px; font-size: 0.8rem; opacity: 0.6; }
+        footer { margin-top: 30px; font-size: 0.8rem; opacity: 0.5; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('qsl-view', this)">📁 Buscador QSL</button>
-        <button class="tab-btn" onclick="switchTab('morse-view', this)">📡 Escucha Morse</button>
+    <div id="power-on">
+        <h2 style="color:var(--neon-blue)">ESTACIÓN ZMR</h2>
+        <button class="power-btn" onclick="startStation()">ENCENDER EQUIPO</button>
+        <p style="color:#555; margin-top:20px;">Santa Cruz del Sur, Cuba</p>
     </div>
 
-    <div class="main-panel">
-        
-        <div id="qsl-view" class="view active">
-            <h1>🌴 QSL CARIBEÑA</h1>
-            <p class="subtitle">RADIO CLUB SANTA CRUZ DEL SUR - CUBA</p>
-            
-            <input type="text" id="callsign" placeholder="INDICATIVO" maxlength="10">
-            <br>
-            <button class="btn-action" onclick="buscarQSL()">SINTONIZAR QSL</button>
-
-            <div class="progress-container" id="pContainer">
-                <div class="progress-fill" id="pFill"></div>
-            </div>
-            <div id="qslStatus" style="margin-top:10px; color:var(--primary); font-weight:bold;"></div>
-            <div id="qslResult"></div>
+    <div class="main-panel" id="ui">
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('qsl-v', this)">📁 BUSCADOR QSL</button>
+            <button class="tab-btn" onclick="switchTab('morse-v', this)">📡 DECODIFICADOR CW</button>
         </div>
 
-        <div id="morse-view" class="view">
-            <h1>📻 DECODIFICADOR CW</h1>
-            <p class="subtitle">SINTONÍA POR MICRÓFONO (AMATEUR RADIO)</p>
-            
-            <button class="btn-action" id="startMic" style="background:var(--accent)">ACTIVAR ESCUCHA</button>
-            <canvas id="visualizer" class="visualizer"></canvas>
-            
-            <div id="morseCode" style="color:var(--primary); font-size:1.2rem; height:20px;"></div>
-            <div class="morse-output" id="textOutput">...</div>
-            
-            <button class="btn-action" onclick="document.getElementById('textOutput').innerText='...'" style="background:#444; color:#fff; font-size:0.7rem;">BORRAR TEXTO</button>
+        <div id="qsl-v" class="view active">
+            <h1>🌴 QSL CARIBEÑA</h1>
+            <input type="text" id="callsign" placeholder="INDICATIVO">
+            <br>
+            <button class="action-btn" onclick="buscarQSL()">SINTONIZAR ARCHIVO</button>
+            <div id="qslStatus" style="margin-top:20px; color:var(--neon-blue);"></div>
+        </div>
+
+        <div id="morse-v" class="view">
+            <h1>📻 RADIO ESCUCHA CW</h1>
+            <canvas id="visualizer"></canvas>
+            <div id="dots-n-dashes" style="color:var(--neon-blue); height: 20px;"></div>
+            <div class="morse-display" id="morseText">...</div>
+            <button onclick="document.getElementById('morseText').innerText='...'" style="background:#333; color:#fff; border:none; padding:5px 15px; border-radius:5px; cursor:pointer;">LIMPIAR</button>
         </div>
 
         <footer>
-            CL7ADV &bull; Alfred &bull; Santa Cruz del Sur &bull; 2026
+            CL7ADV &bull; Alfred &bull; ZMR CUBA &bull; 2026
         </footer>
     </div>
 
     <script>
-        // --- LÓGICA DE NAVEGACIÓN ---
-        function switchTab(viewId, btn) {
+        let audioCtx, analyser, isMicActive = false;
+        const morseMap = {'.-':'A','-...':'B','-.-.':'C','-..':'D','.':'E','..-.':'F','--.':'G','....':'H','..':'I','.---':'J','-.-':'K','.-..':'L','--':'M','-.':'N','---':'O','.--.':'P','--.-':'Q','.-.':'R','...':'S','-':'T','..-':'U','...-':'V','.--':'W','-..-':'X','-.--':'Y','--..':'Z','-----':'0','.----':'1','..---':'2','...--':'3','....-':'4','.....':'5','-....':'6','--...':'7','---..':'8','----.':'9'};
+
+        // Encender la estación y habilitar audio
+        function startStation() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            document.getElementById('power-on').style.display = 'none';
+            document.getElementById('ui').style.display = 'block';
+            playStatic();
+        }
+
+        function switchTab(id, btn) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
+            document.getElementById(id).classList.add('active');
             btn.classList.add('active');
+            if(id === 'morse-v' && !isMicActive) initMorseMic();
         }
 
-        // --- LÓGICA BUSCADOR QSL ---
+        // Sonido de Estática
+        function playStatic() {
+            if(!audioCtx) return;
+            const src = audioCtx.createBufferSource();
+            const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 1, audioCtx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < buf.length; i++) data[i] = Math.random() * 2 - 1;
+            src.buffer = buf;
+            const g = audioCtx.createGain();
+            g.gain.setValueAtTime(0.02, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+            src.connect(g); g.connect(audioCtx.destination);
+            src.start();
+        }
+
+        // Lógica Buscador
         function buscarQSL() {
-            const call = document.getElementById('callsign').value.trim().toUpperCase();
-            if(!call) return;
-
-            const pFill = document.getElementById('pFill');
-            const pBox = document.getElementById('pContainer');
+            playStatic();
+            const call = document.getElementById('callsign').value.toUpperCase();
             const status = document.getElementById('qslStatus');
-            const res = document.getElementById('qslResult');
-
-            res.innerHTML = "";
-            pBox.style.display = "block";
-            status.innerText = "SINTONIZANDO SEÑAL...";
-
-            let p = 0;
-            const anim = setInterval(() => {
-                p += 5;
-                pFill.style.width = p + "%";
-                if(p == 50) status.innerText = "BUSCANDO EN BASE DE DATOS...";
-                if(p >= 100) {
-                    clearInterval(anim);
-                    status.innerText = "";
-                    pBox.style.display = "none";
-                    res.innerHTML = `<div style="color:#ff6b6b; border:1px solid #ff6b6b; padding:10px; margin-top:20px; border-radius:10px;">⚠️ QSL NO ENCONTRADA PARA ${call}</div>`;
-                    setTimeout(() => { res.innerHTML = ""; }, 10000); // 10s Reset
-                }
-            }, 50);
+            if(!call) return;
+            status.innerText = "⏳ BUSCANDO EN LOGS DE SANTA CRUZ...";
+            setTimeout(() => {
+                status.innerHTML = `<span style="color:var(--neon-pink)">❌ QSL NO DISPONIBLE PARA ${call}</span><br><small>Reintento en 10s...</small>`;
+                setTimeout(() => { 
+                    status.innerText = ""; 
+                    document.getElementById('callsign').value = "";
+                }, 10000);
+            }, 2000);
         }
 
-        // --- LÓGICA DECODIFICADOR MORSE ---
-        const morseDoc = {'.-':'A','-...':'B','-.-.':'C','-..':'D','.':'E','..-.':'F','--.':'G','....':'H','..':'I','.---':'J','-.-':'K','.-..':'L','--':'M','-.':'N','---':'O','.--.':'P','--.-':'Q','.-.':'R','...':'S','-':'T','..-':'U','...-':'V','.--':'W','-..-':'X','-.--':'Y','--..':'Z','-----':'0','.----':'1','..---':'2','...--':'3','....-':'4','.....':'5','-....':'6','--...':'7','---..':'8','----.':'9'};
-        
-        let audioCtx, analyser, currentMorse = "", startTime = 0, silenceTime = Date.now();
-        const startBtn = document.getElementById('startMic');
+        // Lógica Decodificador Morse
+        let currentMorse = "", startTime = 0, silenceTime = Date.now();
+        async function initMorseMic() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const source = audioCtx.createMediaStreamSource(stream);
+                analyser = audioCtx.createAnalyser();
+                source.connect(analyser);
+                isMicActive = true;
+                processMorse();
+            } catch(e) { alert("Micrófono no disponible"); }
+        }
 
-        startBtn.onclick = async () => {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const source = audioCtx.createMediaStreamSource(stream);
-            analyser = audioCtx.createAnalyser();
-            source.connect(analyser);
-            startBtn.innerText = "🎙️ ESCUCHANDO...";
-            startBtn.disabled = true;
-            processAudio();
-        };
-
-        function processAudio() {
+        function processMorse() {
             const data = new Uint8Array(analyser.frequencyBinCount);
             analyser.getByteFrequencyData(data);
             const vol = data.reduce((a, b) => a + b) / data.length;
             const now = Date.now();
 
-            if (vol > 45) { // Umbral de sonido
+            if (vol > 40) {
                 if (startTime === 0) startTime = now;
                 silenceTime = 0;
             } else {
                 if (startTime !== 0) {
                     let d = now - startTime;
                     currentMorse += (d < 250) ? "." : "-";
-                    document.getElementById('morseCode').innerText = currentMorse;
+                    document.getElementById('dots-n-dashes').innerText = currentMorse;
                     startTime = 0;
                     silenceTime = now;
                 }
                 if (silenceTime !== 0 && now - silenceTime > 800 && currentMorse !== "") {
-                    let char = morseDoc[currentMorse] || "?";
-                    const out = document.getElementById('textOutput');
+                    let char = morseMap[currentMorse] || "?";
+                    const out = document.getElementById('morseText');
                     if(out.innerText === "...") out.innerText = "";
                     out.innerText += char;
                     currentMorse = "";
-                    document.getElementById('morseCode').innerText = "";
+                    document.getElementById('dots-n-dashes').innerText = "";
                 }
             }
-            requestAnimationFrame(processAudio);
+            requestAnimationFrame(processMorse);
         }
     </script>
 </body>
