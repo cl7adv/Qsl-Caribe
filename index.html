@@ -2,170 +2,262 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Navegador QSL Caribeño - CL7ADV</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    body { margin: 0; font-family: "Trebuchet MS", Arial, sans-serif; background: linear-gradient(to bottom, #00bcd4, #009688); color: #fff; text-align: center; }
-    .container { max-width: 900px; margin: 40px auto; padding: 25px; background: rgba(0,0,0,0.4); border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.6); }
-    h1 { font-size: 2.2rem; margin-bottom: 15px; text-shadow: 0 0 10px #ffe082; }
-    #indicativo { padding: 12px; font-size: 1.1rem; border: none; border-radius: 8px; margin-right: 10px; width: 220px; text-transform: uppercase; color: #333; font-weight: bold; }
-    #buscarBtn { padding: 12px 25px; font-size: 1.1rem; background: #ff9800; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-    #buscarBtn:hover { background: #f57c00; transform: scale(1.05); }
-    
-    /* Loader y Barra de Progreso */
-    .loader-wrap { display: none; margin-top: 20px; flex-direction: column; align-items: center; }
-    .progress-bar { position: relative; width: 80%; max-width: 400px; height: 16px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: 25px 0; overflow: visible; }
-    #progressFill { height: 100%; background: #ffe082; width: 0%; border-radius: 10px; transition: width 0.1s; }
-    #cardThumb { position: absolute; top: -30px; width: 45px; height: 30px; background: #fff; border: 2px solid #ff9800; border-radius: 4px; color: #000; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; font-weight: bold; transform: translateX(-50%); transition: left 0.1s; }
-
-    /* Modal de Resultados */
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; padding-top: 30px; }
-    .modal-contenido { background: #1a333d; margin: auto; padding: 25px; border-radius: 15px; width: 90%; max-width: 850px; border: 2px solid #ffe082; position: relative; }
-    .cerrar { position: absolute; right: 20px; top: 10px; font-size: 35px; cursor: pointer; color: #ffe082; }
-    #listaQSLs { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
-    .qsl-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,224,130,0.3); width: 100%; max-width: 350px; }
-    .qsl-card img { width: 100%; border-radius: 8px; border: 2px solid #fff; }
-    
-    .descargar-btn { display: inline-block; margin-top: 10px; padding: 10px 20px; background: #2e7d32; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold; }
-    
-    footer { margin-top: 50px; padding: 20px; font-size: 0.9rem; }
-  </style>
+  <title>QSL Caribe – Amanecer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <div class="container">
-    <h1>🌴 QSL Caribeño 🌊</h1>
-    <p>Introduce tu indicativo (Ej: CO7ADV)</p>
+  <header class="hero">
+    <h1>🌅 QSL Caribe — Amanecer</h1>
+    <p class="sub">Hermandad en cada tarjeta</p>
+  </header>
 
-    <input type="text" id="indicativo" placeholder="INDICATIVO" onkeyup="if(event.key==='Enter') buscarQSL()">
-    <button id="buscarBtn" onclick="buscarQSL()">BUSCAR QSL</button>
+  <section class="buscador">
+    <input id="indicativo" type="text" placeholder="CO7ADV" autocomplete="off">
+    <button id="buscarBtn">Buscar QSL</button>
+  </section>
 
-    <div id="loaderContainer" class="loader-wrap">
-      <div class="progress-bar">
-        <div id="cardThumb" style="left:0%;">QSL</div>
-        <div id="progressFill"></div>
-      </div>
-      <p id="progressText">Escaneando servidor...</p>
+  <section id="loader" class="loader oculto">
+    <div class="barra">
+      <div id="barraFill"></div>
+      <div id="cartaThumb">QSL</div>
     </div>
+    <p id="loaderText">Escaneando archivos…</p>
+  </section>
 
-    <div id="mensajeError" style="margin-top:20px; color:#ffe082; font-weight:bold;"></div>
+  <section id="resultado" class="resultado oculto">
+    <h2>Tarjetas encontradas</h2>
+    <div id="lista"></div>
+    <button id="descargarTodo" class="btn-descargar">Descargar Todo</button>
+  </section>
 
-    <footer>
-      — CL7ADV — Buenos DXs 2026<br>
-      Motor: Radio Club Santa Cruz Del Sur
-      <br><br>
-      <a href="https://info.flagcounter.com/qvMz" target="_blank">
-        <img src="https://s01.flagcounter.com/count2/qvMz/bg_57A8DE/txt_000000/border_F55B0F/columns_5/maxflags_20/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0">
-      </a>
-    </footer>
-  </div>
+  <footer>
+    <p>CL7ADV — Amanecer Caribeño 2026</p>
+  </footer>
 
-  <div id="ventanaQSL" class="modal">
-    <div class="modal-contenido">
-      <span class="cerrar" onclick="cerrarVentana()">&times;</span>
-      <h2 style="color:#ffe082;">Tarjetas Encontradas</h2>
-      <div id="listaQSLs"></div>
-      <br>
-      <button class="descargar-btn" id="dlAll" style="background:#ff9800;">⬇️ DESCARGAR TODO</button>
-    </div>
-  </div>
-
-  <script>
-    let encontradas = [];
-
-    function cerrarVentana() { document.getElementById('ventanaQSL').style.display = "none"; }
-
-    function buscarQSL() {
-      const input = document.getElementById('indicativo').value.trim();
-      if (!input) return;
-
-      const loader = document.getElementById('loaderContainer');
-      const errorDiv = document.getElementById('mensajeError');
-      const fill = document.getElementById('progressFill');
-      const thumb = document.getElementById('cardThumb');
-      
-      // Reset
-      encontradas = [];
-      loader.style.display = 'flex';
-      errorDiv.textContent = "";
-      fill.style.width = "0%";
-      thumb.style.left = "0%";
-
-      // Generar lista de nombres posibles (Mayúsculas y Minúsculas)
-      const bases = [input.toUpperCase(), input.toLowerCase()];
-      const exts = ['jpg', 'png', 'jpeg', 'JPG', 'PNG'];
-      let listaPruebas = [];
-
-      bases.forEach(b => {
-        exts.forEach(e => {
-          listaPruebas.push(`${b}.${e}`); // Base: CO7ADV.jpg
-          for(let i=1; i<=15; i++) {
-            listaPruebas.push(`${b}-${i}.${e}`); // Con guion: CO7ADV-1.jpg
-          }
-        });
-      });
-
-      let procesados = 0;
-      const total = listaPruebas.length;
-
-      listaPruebas.forEach(archivo => {
-        const ruta = `img/${archivo}`;
-        const img = new Image();
-        
-        img.onload = function() {
-          if (!encontradas.includes(ruta)) encontradas.push(ruta);
-          verificarFin();
-        };
-
-        img.onerror = function() {
-          verificarFin();
-        };
-
-        img.src = ruta;
-      });
-
-      function verificarFin() {
-        procesados++;
-        const pct = Math.round((procesados / total) * 100);
-        fill.style.width = pct + "%";
-        thumb.style.left = pct + "%";
-
-        if (procesados === total) {
-          loader.style.display = 'none';
-          if (encontradas.length > 0) {
-            mostrarResultados();
-          } else {
-            errorDiv.textContent = "❌ No se encontró nada para " + input.toUpperCase() + ". Revisa si el nombre en 'img/' es correcto.";
-          }
-        }
-      }
-    }
-
-    function mostrarResultados() {
-      const lista = document.getElementById('listaQSLs');
-      lista.innerHTML = "";
-      encontradas.forEach(url => {
-        const nombre = url.split('/').pop();
-        lista.innerHTML += `
-          <div class="qsl-card">
-            <img src="${url}">
-            <p style="font-size:0.8rem">${nombre}</p>
-            <a href="${url}" download="${nombre}" class="descargar-btn">💾 Descargar</a>
-          </div>`;
-      });
-      document.getElementById('ventanaQSL').style.display = "block";
-    }
-
-    document.getElementById('dlAll').onclick = function() {
-      encontradas.forEach(url => {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = url.split('/').pop();
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      });
-    };
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
+body {
+  margin: 0;
+  font-family: "Trebuchet MS", sans-serif;
+  background: linear-gradient(to bottom, #ffb74d, #ff8a65, #0277bd);
+  color: #fff;
+  text-align: center;
+}
+
+/* Hero */
+.hero {
+  padding: 40px 20px;
+  text-shadow: 0 0 10px #000;
+}
+
+.sub {
+  margin-top: -10px;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Buscador */
+.buscador {
+  margin-top: 20px;
+}
+
+#indicativo {
+  padding: 12px;
+  width: 220px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+
+#buscarBtn {
+  padding: 12px 25px;
+  margin-left: 10px;
+  background: #ff9800;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#buscarBtn:hover {
+  background: #f57c00;
+  transform: scale(1.05);
+}
+
+/* Loader */
+.loader {
+  margin-top: 30px;
+}
+
+.oculto {
+  display: none;
+}
+
+.barra {
+  width: 80%;
+  max-width: 400px;
+  height: 16px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  margin: 20px auto;
+  position: relative;
+}
+
+#barraFill {
+  height: 100%;
+  width: 0%;
+  background: #ffe082;
+  border-radius: 10px;
+  transition: width 0.1s;
+}
+
+#cartaThumb {
+  position: absolute;
+  top: -30px;
+  left: 0%;
+  width: 45px;
+  height: 30px;
+  background: white;
+  border: 2px solid #ff9800;
+  border-radius: 4px;
+  color: black;
+  font-size: 0.7rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+  transition: left 0.1s;
+}
+
+/* Resultados */
+.resultado {
+  margin-top: 40px;
+}
+
+#lista {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.qsl {
+  background: rgba(255,255,255,0.1);
+  padding: 10px;
+  border-radius: 10px;
+  width: 300px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.qsl img {
+  width: 100%;
+  border-radius: 8px;
+  border: 2px solid #fff;
+}
+
+.btn-descargar {
+  margin-top: 20px;
+  padding: 12px 25px;
+  background: #2e7d32;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+const input = document.getElementById("indicativo");
+const btn = document.getElementById("buscarBtn");
+const loader = document.getElementById("loader");
+const fill = document.getElementById("barraFill");
+const thumb = document.getElementById("cartaThumb");
+const lista = document.getElementById("lista");
+const resultado = document.getElementById("resultado");
+const btnTodo = document.getElementById("descargarTodo");
+
+btn.onclick = buscar;
+
+function buscar() {
+  const call = input.value.trim().toUpperCase();
+  if (!call) return;
+
+  loader.classList.remove("oculto");
+  resultado.classList.add("oculto");
+  lista.innerHTML = "";
+  fill.style.width = "0%";
+  thumb.style.left = "0%";
+
+  const exts = ["jpg", "png", "jpeg"];
+  const pruebas = [];
+
+  exts.forEach(ext => {
+    pruebas.push(`${call}.${ext}`);
+    for (let i = 1; i <= 15; i++) {
+      pruebas.push(`${call}-${i}.${ext}`);
+    }
+  });
+
+  let procesados = 0;
+  const total = pruebas.length;
+  const encontradas = [];
+
+  pruebas.forEach(nombre => {
+    const ruta = `img/${nombre}`;
+
+    fetch(ruta, { method: "HEAD" })
+      .then(res => {
+        if (res.ok) encontradas.push(ruta);
+        avanzar();
+      })
+      .catch(() => avanzar());
+  });
+
+  function avanzar() {
+    procesados++;
+    const pct = Math.round((procesados / total) * 100);
+    fill.style.width = pct + "%";
+    thumb.style.left = pct + "%";
+
+    if (procesados === total) {
+      loader.classList.add("oculto");
+      mostrar(encontradas);
+    }
+  }
+}
+
+function mostrar(arr) {
+  if (arr.length === 0) {
+    lista.innerHTML = `<p>No se encontraron QSLs.</p>`;
+  } else {
+    arr.forEach(url => {
+      const nombre = url.split("/").pop();
+      lista.innerHTML += `
+        <div class="qsl">
+          <img src="${url}">
+          <p>${nombre}</p>
+          <a href="${url}" download class="btn-descargar">Descargar</a>
+        </div>
+      `;
+    });
+  }
+
+  resultado.classList.remove("oculto");
+
+  btnTodo.onclick = () => {
+    arr.forEach(url => {
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = url.split("/").pop();
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+  };
+}
