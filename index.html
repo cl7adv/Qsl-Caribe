@@ -2,197 +2,204 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Buscador QSL Caribeño - CL7ADV</title>
+    <title>Estación Digital ZMR - CL7ADV</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
         :root {
-            --primary: #00bcd4;
-            --accent: #ff9800;
-            --gold: #ffe082;
-            --neon: #00ff99;
-            --glass: rgba(14, 36, 49, 0.96);
+            --primary: #00eaff; /* Celeste Neón */
+            --accent: #ff00ff;  /* Rosa Neón */
+            --cuba-red: #d40000;
+            --cuba-blue: #002a8f;
+            --glass: rgba(10, 25, 35, 0.95);
         }
 
         body { 
             margin: 0; font-family: 'Segoe UI', sans-serif; 
-            background: radial-gradient(circle at center, #00acc1, #013d3e); 
-            background-attachment: fixed; color: #fff; 
-            display: flex; align-items: center; justify-content: center; min-height: 100vh;
+            background: #000 url('https://i.postimg.cc/k47vQh5X/qsl-caribena-neon-noche-final.jpg') no-repeat center center fixed;
+            background-size: cover; color: #fff;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
 
-        .container { 
-            max-width: 650px; width: 90%; padding: 40px; 
-            background: var(--glass); border-radius: 30px; 
-            box-shadow: 0 30px 70px rgba(0,0,0,0.8); 
-            border: 1px solid rgba(0, 255, 153, 0.3); text-align: center;
+        /* Menú de Ventanas */
+        .nav-tabs {
+            margin-top: 20px; display: flex; gap: 10px; z-index: 10;
         }
 
-        h1 { font-size: 2.2rem; margin-bottom: 5px; text-shadow: 0 0 15px var(--neon); }
-        .subtitle { color: var(--gold); margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 2px; }
-
-        .search-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
-
-        #indicativo { 
-            padding: 15px; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.1); 
-            border-radius: 12px; width: 220px; background: #000;
-            color: var(--neon); font-weight: bold; text-transform: uppercase;
-            text-align: center; letter-spacing: 2px;
+        .tab-btn {
+            padding: 12px 25px; border: 2px solid var(--primary); background: var(--glass);
+            color: var(--primary); cursor: pointer; border-radius: 10px 10px 0 0;
+            font-weight: bold; transition: 0.3s; text-transform: uppercase;
         }
 
-        #buscarBtn { 
-            padding: 15px 30px; font-size: 1rem; 
-            background: linear-gradient(145deg, #ffb74d, #f57c00); 
-            color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; 
-            box-shadow: 0 5px 0 #b35900; transition: 0.1s;
+        .tab-btn.active {
+            background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary);
         }
 
-        #buscarBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35900; }
-
-        /* Barra de Carga con Carta */
-        .progress-container {
-            width: 100%; max-width: 400px; height: 10px; 
-            background: rgba(255,255,255,0.1); border-radius: 20px;
-            margin: 50px auto 20px; position: relative; display: none;
+        /* Contenedor Principal */
+        .main-panel {
+            width: 90%; max-width: 700px; background: var(--glass);
+            border: 2px solid var(--primary); border-radius: 0 20px 20px 20px;
+            padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px); position: relative;
         }
 
-        .progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 20px; transition: 0.2s; }
+        .view { display: none; text-align: center; animation: fadeIn 0.5s; }
+        .view.active { display: block; }
 
-        .card-icon {
-            position: absolute; top: -35px; left: 0%;
-            width: 45px; height: 30px; background: #fff;
-            border: 2px solid var(--gold); border-radius: 5px;
-            color: #333; font-weight: bold; font-size: 10px;
-            display: flex; align-items: center; justify-content: center;
-            transform: translateX(-50%); transition: 0.2s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-        .card-icon::after { content: "✉️"; font-size: 16px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .status-text { height: 40px; color: var(--neon); font-weight: bold; margin-top: 10px; }
+        /* Estilos Buscador */
+        h1 { font-size: 1.8rem; text-shadow: 0 0 10px var(--primary); margin-bottom: 5px; }
+        .subtitle { color: #ff9800; font-size: 0.8rem; margin-bottom: 25px; letter-spacing: 2px; }
 
-        .error-msg {
-            background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444;
-            color: #ffbaba; padding: 15px; border-radius: 12px;
-            margin-top: 20px; animation: shake 0.5s; transition: opacity 1s;
+        input {
+            padding: 15px; width: 60%; border-radius: 10px; border: 2px solid #333;
+            background: #000; color: var(--primary); font-size: 1.2rem; text-align: center;
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+        .btn-action {
+            padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: bold; margin-top: 10px; background: var(--primary); color: #000;
         }
 
-        .fade-out { opacity: 0; }
+        /* Estilos Morse */
+        .visualizer { width: 100%; height: 80px; background: #000; margin: 15px 0; border-radius: 5px; border: 1px solid var(--accent); }
+        .morse-output { 
+            font-size: 2rem; color: var(--accent); min-height: 80px; 
+            background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border: 1px solid #333;
+        }
+
+        /* Barra de Carga */
+        .progress-container { width: 80%; height: 8px; background: #222; margin: 20px auto; border-radius: 10px; display: none; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; box-shadow: 0 0 10px var(--primary); }
+
+        footer { margin-top: 30px; font-size: 0.8rem; opacity: 0.6; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🌴 QSL Caribeña 🌊</h1>
-        <p class="subtitle">CL7ADV - SANTA CRUZ DEL SUR</p>
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('qsl-view', this)">📁 Buscador QSL</button>
+        <button class="tab-btn" onclick="switchTab('morse-view', this)">📡 Escucha Morse</button>
+    </div>
 
-        <div class="search-group">
-            <input type="text" id="indicativo" placeholder="CALLSIGN" maxlength="10">
-            <button id="buscarBtn" onclick="buscarQSL()">BUSCAR QSL</button>
+    <div class="main-panel">
+        
+        <div id="qsl-view" class="view active">
+            <h1>🌴 QSL CARIBEÑA</h1>
+            <p class="subtitle">RADIO CLUB SANTA CRUZ DEL SUR - CUBA</p>
+            
+            <input type="text" id="callsign" placeholder="INDICATIVO" maxlength="10">
+            <br>
+            <button class="btn-action" onclick="buscarQSL()">SINTONIZAR QSL</button>
+
+            <div class="progress-container" id="pContainer">
+                <div class="progress-fill" id="pFill"></div>
+            </div>
+            <div id="qslStatus" style="margin-top:10px; color:var(--primary); font-weight:bold;"></div>
+            <div id="qslResult"></div>
         </div>
 
-        <div id="pContainer" class="progress-container">
-            <div id="card" class="card-icon">QSL</div>
-            <div id="fill" class="progress-fill"></div>
+        <div id="morse-view" class="view">
+            <h1>📻 DECODIFICADOR CW</h1>
+            <p class="subtitle">SINTONÍA POR MICRÓFONO (AMATEUR RADIO)</p>
+            
+            <button class="btn-action" id="startMic" style="background:var(--accent)">ACTIVAR ESCUCHA</button>
+            <canvas id="visualizer" class="visualizer"></canvas>
+            
+            <div id="morseCode" style="color:var(--primary); font-size:1.2rem; height:20px;"></div>
+            <div class="morse-output" id="textOutput">...</div>
+            
+            <button class="btn-action" onclick="document.getElementById('textOutput').innerText='...'" style="background:#444; color:#fff; font-size:0.7rem;">BORRAR TEXTO</button>
         </div>
 
-        <div id="status" class="status-text"></div>
-        <div id="resultado"></div>
-
-        <footer style="margin-top:40px; font-size:0.8rem; opacity:0.7;">
-            73's Cordiales - Alfred - 2026
+        <footer>
+            CL7ADV &bull; Alfred &bull; Santa Cruz del Sur &bull; 2026
         </footer>
     </div>
 
     <script>
-        // Función para generar sonido de estática de radio
-        function playRadioSound() {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const bufferSize = 2 * audioCtx.sampleRate;
-            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const output = noiseBuffer.getChannelData(0);
-            
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = Math.random() * 2 - 1; // Ruido blanco
-            }
-
-            const whiteNoise = audioCtx.createBufferSource();
-            whiteNoise.buffer = noiseBuffer;
-
-            const gainNode = audioCtx.createGain();
-            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // Volumen bajo
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
-
-            whiteNoise.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            whiteNoise.start();
-            whiteNoise.stop(audioCtx.currentTime + 1.5);
+        // --- LÓGICA DE NAVEGACIÓN ---
+        function switchTab(viewId, btn) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            btn.classList.add('active');
         }
 
+        // --- LÓGICA BUSCADOR QSL ---
         function buscarQSL() {
-            const input = document.getElementById('indicativo');
-            const call = input.value.trim().toUpperCase();
-            const pContainer = document.getElementById('pContainer');
-            const card = document.getElementById('card');
-            const fill = document.getElementById('fill');
-            const status = document.getElementById('status');
-            const res = document.getElementById('resultado');
+            const call = document.getElementById('callsign').value.trim().toUpperCase();
+            if(!call) return;
 
-            if (!call) return;
+            const pFill = document.getElementById('pFill');
+            const pBox = document.getElementById('pContainer');
+            const status = document.getElementById('qslStatus');
+            const res = document.getElementById('qslResult');
 
-            // Iniciar Audio y Visuales
-            playRadioSound();
             res.innerHTML = "";
-            pContainer.style.display = "block";
+            pBox.style.display = "block";
             status.innerText = "SINTONIZANDO SEÑAL...";
-            
-            let progreso = 0;
-            const anim = setInterval(() => {
-                progreso += 2;
-                fill.style.width = progreso + "%";
-                card.style.left = progreso + "%";
-                
-                if(progreso == 40) status.innerText = "BUSCANDO EN LOGS...";
-                if(progreso == 80) status.innerText = "FILTRANDO INDICATIVO...";
 
-                if (progreso >= 100) {
+            let p = 0;
+            const anim = setInterval(() => {
+                p += 5;
+                pFill.style.width = p + "%";
+                if(p == 50) status.innerText = "BUSCANDO EN BASE DE DATOS...";
+                if(p >= 100) {
                     clearInterval(anim);
-                    finalizarBusqueda(call);
+                    status.innerText = "";
+                    pBox.style.display = "none";
+                    res.innerHTML = `<div style="color:#ff6b6b; border:1px solid #ff6b6b; padding:10px; margin-top:20px; border-radius:10px;">⚠️ QSL NO ENCONTRADA PARA ${call}</div>`;
+                    setTimeout(() => { res.innerHTML = ""; }, 10000); // 10s Reset
                 }
-            }, 30);
+            }, 50);
         }
 
-        function finalizarBusqueda(call) {
-            const res = document.getElementById('resultado');
-            const status = document.getElementById('status');
-            const pContainer = document.getElementById('pContainer');
-            const input = document.getElementById('indicativo');
+        // --- LÓGICA DECODIFICADOR MORSE ---
+        const morseDoc = {'.-':'A','-...':'B','-.-.':'C','-..':'D','.':'E','..-.':'F','--.':'G','....':'H','..':'I','.---':'J','-.-':'K','.-..':'L','--':'M','-.':'N','---':'O','.--.':'P','--.-':'Q','.-.':'R','...':'S','-':'T','..-':'U','...-':'V','.--':'W','-..-':'X','-.--':'Y','--..':'Z','-----':'0','.----':'1','..---':'2','...--':'3','....-':'4','.....':'5','-....':'6','--...':'7','---..':'8','----.':'9'};
+        
+        let audioCtx, analyser, currentMorse = "", startTime = 0, silenceTime = Date.now();
+        const startBtn = document.getElementById('startMic');
 
-            status.innerText = "";
-            pContainer.style.display = "none";
-            
-            res.innerHTML = `
-                <div class="error-msg" id="msg">
-                    ❌ LA QSL PARA ${call} NO HA SIDO SUBIDA AÚN
-                </div>
-            `;
+        startBtn.onclick = async () => {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const source = audioCtx.createMediaStreamSource(stream);
+            analyser = audioCtx.createAnalyser();
+            source.connect(analyser);
+            startBtn.innerText = "🎙️ ESCUCHANDO...";
+            startBtn.disabled = true;
+            processAudio();
+        };
 
-            // Auto-reinicio en 6 segundos con desvanecimiento
-            setTimeout(() => {
-                const msg = document.getElementById('msg');
-                if(msg) {
-                    msg.classList.add('fade-out');
-                    setTimeout(() => {
-                        res.innerHTML = "";
-                        input.value = "";
-                    }, 1000);
+        function processAudio() {
+            const data = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(data);
+            const vol = data.reduce((a, b) => a + b) / data.length;
+            const now = Date.now();
+
+            if (vol > 45) { // Umbral de sonido
+                if (startTime === 0) startTime = now;
+                silenceTime = 0;
+            } else {
+                if (startTime !== 0) {
+                    let d = now - startTime;
+                    currentMorse += (d < 250) ? "." : "-";
+                    document.getElementById('morseCode').innerText = currentMorse;
+                    startTime = 0;
+                    silenceTime = now;
                 }
-            }, 6000);
+                if (silenceTime !== 0 && now - silenceTime > 800 && currentMorse !== "") {
+                    let char = morseDoc[currentMorse] || "?";
+                    const out = document.getElementById('textOutput');
+                    if(out.innerText === "...") out.innerText = "";
+                    out.innerText += char;
+                    currentMorse = "";
+                    document.getElementById('morseCode').innerText = "";
+                }
+            }
+            requestAnimationFrame(processAudio);
         }
     </script>
 </body>
