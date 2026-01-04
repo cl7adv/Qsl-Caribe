@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v28.2 - CL7ADV</title>
+    <title>QSL ELITE v29.5 - CL7ADV</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         :root {
             --bg-deep: #020408; --panel-bg: #0d1117; --neon-cyan: #00f2ff;
             --neon-pink: #ff007b; --text-main: #e6edf3; --border-color: #30363d;
+            --accent-new: #ccff00;
         }
 
         #orientation-warning {
@@ -49,6 +50,11 @@
             flex-shrink: 0;
         }
 
+        .tag-new {
+            background: var(--accent-new); color: #000; font-size: 10px; 
+            padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-left: 10px;
+        }
+
         .app-container { display: flex; flex: 1; overflow: hidden; }
 
         .sidebar {
@@ -75,28 +81,44 @@
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
         .btn {
-            width: 100%; padding: 14px; border-radius: 8px; border: none; font-weight: 800;
-            cursor: pointer; text-transform: uppercase; margin-top: 8px; transition: 0.2s;
+            width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 800;
+            cursor: pointer; text-transform: uppercase; margin-top: 8px; transition: 0.2s; font-size: 0.7rem;
         }
 
         .btn-primary { background: var(--neon-cyan); color: #000; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2); }
         .btn-dark { background: #21262d; color: #fff; border: 1px solid var(--border-color); }
         
-        .mobile-spacer { height: 50px; width: 100%; flex-shrink: 0; }
+        .btn-help { 
+            background: var(--accent-new); color: #000; border-radius: 50%; width: 45px; height: 45px; 
+            font-size: 24px; border: none; cursor: pointer; position: fixed; bottom: 20px; right: 20px; 
+            z-index: 1000; font-weight: bold; box-shadow: 0 0 15px var(--accent-new);
+        }
+
+        .help-panel {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #161b22; border: 2px solid var(--accent-new); padding: 25px; border-radius: 15px;
+            z-index: 1001; max-width: 450px; width: 85%; box-shadow: 0 0 40px rgba(0,0,0,0.9);
+        }
+
+        .help-panel h3 { color: var(--accent-new); margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .help-panel ul { font-size: 0.85rem; line-height: 1.6; color: #ccc; }
+        .overlay-dim { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
+
+        .mobile-spacer { height: 70px; width: 100%; flex-shrink: 0; }
 
         .preview-area { flex: 1; background: #000; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; }
-        canvas { cursor: move; max-width: 98%; max-height: 98%; border: 1px solid #333; }
+        canvas { cursor: move; max-width: 98%; max-height: 98%; border: 1px solid #333; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
         
         #indicator {
-            position: absolute; bottom: 10px; left: 10px; font-size: 10px;
-            color: var(--neon-cyan); background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 4px;
+            position: absolute; bottom: 15px; left: 15px; font-size: 11px;
+            color: var(--neon-cyan); background: rgba(0,0,0,0.8); padding: 6px 12px; border-radius: 4px; border: 1px solid var(--border-color);
         }
     </style>
 </head>
 <body onload="initApp()">
 
 <div id="orientation-warning">
-    <div style="font-size: 50px;">🔄</div>
+    <div style="font-size: 60px;">🔄</div>
     <h2>MODO HORIZONTAL OBLIGATORIO</h2>
     <p>GIRA TU TELÉFONO PARA EDITAR LA QSL</p>
 </div>
@@ -104,26 +126,29 @@
 <div id="intro-overlay">
     <div style="color:white; letter-spacing: 5px; font-size: 14px;">RADIO CLUB SANTA CRUZ DEL SUR</div>
     <div class="cl7adv-pulse">CL7ADV</div>
-    <div style="color:var(--neon-pink); margin-top:10px; font-family: monospace;">CARGANDO RECURSOS...</div>
+    <div style="color:var(--accent-new); margin-top:10px; font-family: monospace; font-weight: bold;">VERSION 29.5 <span class="tag-new">DB MEGA UPDATE</span></div>
 </div>
 
 <header>
-    <div style="font-weight: 900; color: var(--neon-cyan);">QSL ELITE <span style="font-weight:100; color:#fff;">| CL7ADV</span></div>
-    <div id="clock" style="font-family: monospace; color: var(--neon-cyan);">00:00:00 UTC</div>
+    <div style="font-weight: 900; color: var(--neon-cyan);">QSL ELITE <span style="font-weight:100; color:#fff;">| CL7ADV</span> <span class="tag-new">v29.5</span></div>
+    <div id="clock" style="font-family: monospace; color: var(--neon-cyan); font-weight: bold; font-size: 1.2rem; text-shadow: 0 0 10px rgba(0,242,255,0.5);">00:00:00 UTC</div>
 </header>
 
 <div class="app-container">
     <div class="sidebar">
         <div class="control-section">
-            <div class="section-title">FONDO DE ESTACIÓN</div>
+            <div class="section-title">MULTIMEDIA Y LOGOS</div>
+            <label style="font-size:9px;">FONDO DE PANTALLA</label>
             <input type="file" id="bgInp" accept="image/*">
-            <button class="btn btn-dark" onclick="resetBg()">BORRAR FONDO</button>
+            <label style="font-size:9px;">SUBIR LOGOS (VARIA SELECCIÓN)</label>
+            <input type="file" id="logoInp" accept="image/*" multiple>
+            <button class="btn btn-dark" onclick="resetLogos()">BORRAR TODOS LOS LOGOS</button>
         </div>
 
         <div class="control-section">
-            <div class="section-title">MI INDICATIVO Y PAÍS</div>
-            <input type="text" id="myCall" value="CL7ADV">
-            <input type="text" id="myQth" value="CUBA">
+            <div class="section-title">MI ESTACIÓN</div>
+            <input type="text" id="myCall" value="CL7ADV" placeholder="MI CALL">
+            <input type="text" id="myQth" value="CUBA" placeholder="MI PAÍS">
             <div class="row">
                 <div><label style="font-size:9px;">TAMAÑO CALL</label><input type="range" id="sizeCall" min="50" max="450" value="240"></div>
                 <div><label style="font-size:9px;">TAMAÑO QTH</label><input type="range" id="sizeQth" min="20" max="200" value="90"></div>
@@ -131,44 +156,45 @@
         </div>
 
         <div class="control-section">
-            <div class="section-title">CARGAR LOG ADIF</div>
+            <div class="section-title">IMPORTAR LOG ADIF</div>
             <input type="file" id="adiInp" accept=".adi,.adif">
             <div class="row">
-                <button class="btn btn-dark" onclick="nav(-1)">ATRÁS</button>
-                <button class="btn btn-dark" onclick="nav(1)">SIG.</button>
+                <button class="btn btn-dark" onclick="nav(-1)">ANTERIOR</button>
+                <button class="btn btn-dark" onclick="nav(1)">SIGUIENTE</button>
             </div>
         </div>
 
         <div class="control-section">
-            <div class="section-title">DISEÑO Y COLORES</div>
-            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-                <input type="color" id="col1" value="#ff007b">
-                <input type="color" id="col2" value="#00f2ff">
-                <input type="color" id="col3" value="#0d1117">
-                <input type="color" id="col4" value="#00f2ff">
-                <input type="color" id="col5" value="#ffffff">
-                <input type="color" id="col6" value="#00f2ff">
-            </div>
-            <label style="font-size:9px;">OPACIDAD CAJA</label>
-            <input type="range" id="boxAlpha" min="0" max="100" value="90">
-        </div>
-
-        <div class="control-section">
-            <div class="section-title">DATOS DEL QSO</div>
-            <input type="text" id="qCall" placeholder="STATION">
+            <div class="section-title">DETALLES DEL QSO</div>
+            <input type="text" id="qCall" placeholder="STATION CALL">
             <div class="row">
                 <input type="text" id="qDate" placeholder="FECHA">
-                <input type="text" id="qTime" placeholder="HORA">
+                <input type="text" id="qTime" placeholder="HORA UTC">
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px;">
                 <input type="text" id="qBand" placeholder="BANDA">
                 <input type="text" id="qMode" placeholder="MODO">
                 <input type="text" id="qRst" placeholder="RST">
             </div>
+            <input type="text" id="qComment" placeholder="MENSAJE / COMENTARIOS FINALES..." maxlength="70">
         </div>
 
-        <button class="btn btn-primary" onclick="exportJpg()">GUARDAR IMAGEN JPG</button>
-        <button class="btn btn-dark" id="zipBtn" style="display:none;" onclick="exportZip()">DESCARGAR TODO EL ZIP</button>
+        <div class="control-section">
+            <div class="section-title">PERSONALIZACIÓN VISUAL</div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
+                <input type="color" id="col1" value="#ff007b" title="Color Indicativo">
+                <input type="color" id="col2" value="#00f2ff" title="Color País">
+                <input type="color" id="col3" value="#0d1117" title="Fondo Caja">
+                <input type="color" id="col4" value="#00f2ff" title="Borde/Etiquetas">
+                <input type="color" id="col5" value="#ffffff" title="Texto Datos">
+                <input type="color" id="col6" value="#00f2ff" title="Títulos Datos">
+            </div>
+            <label style="font-size:9px;">TRANSPARENCIA CAJA QSO</label>
+            <input type="range" id="boxAlpha" min="0" max="100" value="90">
+        </div>
+
+        <button class="btn btn-primary" onclick="exportJpg()">DESCARGAR IMAGEN JPG</button>
+        <button class="btn btn-dark" id="zipBtn" style="display:none;" onclick="exportZip()">DESCARGAR LOTE (.ZIP)</button>
         <div class="mobile-spacer"></div>
     </div>
 
@@ -178,31 +204,40 @@
     </div>
 </div>
 
+<button class="btn-help" onclick="toggleHelp()">?</button>
+<div class="overlay-dim" id="overlay" onclick="toggleHelp()"></div>
+<div class="help-panel" id="helpPanel">
+    <h3>QSL ELITE v29.5 <span class="tag-new">UPDATE</span></h3>
+    <ul>
+        <li><b>Base de Datos Global:</b> Reconocimiento automático de todos los países hispanos y los 40 más activos del mundo.</li>
+        <li><b>Gestión de Logos:</b> Sube múltiples logos y arrástralos libremente por la pantalla.</li>
+        <li><b>Cuadro QSO Elite:</b> Nueva casilla de comentarios larga y distribución optimizada de columnas.</li>
+        <li><b>Reloj UTC Realtime:</b> Sincronizado para el logueo preciso.</li>
+        <li><b>Layout Inteligente:</b> Más espacio para Call, Fecha y Hora; Banda/Modo/RST compactos a la derecha.</li>
+    </ul>
+    <button class="btn btn-primary" onclick="toggleHelp()">ENTENDIDO</button>
+</div>
+
 <script>
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
-let bg = new Image(), log = [], idx = 0;
+let bg = new Image(), log = [], idx = 0, logos = [];
 
 let elements = {
     myCall: { x: 80, y: 260, dragging: false },
     myQth: { x: 95, y: 380, dragging: false },
-    qsoBox: { x: 80, y: 800, w: 1640, h: 210, dragging: false }
+    qsoBox: { x: 80, y: 780, w: 1640, h: 280, dragging: false }
 };
 
-let offset = { x: 0, y: 0 };
+let offset = { x: 0, y: 0 }, activeLogoIdx = -1;
 
 const DB = {
-    'CL':'CUBA','CM':'CUBA','CO':'CUBA','T4':'CUBA','EA':'ESPAÑA','EB':'ESPAÑA','EC':'ESPAÑA','AM':'ESPAÑA',
-    'XE':'MÉXICO','XF':'MÉXICO','LU':'ARGENTINA','LW':'ARGENTINA','CE':'CHILE','XR':'CHILE','HK':'COLOMBIA',
-    'HJ':'COLOMBIA','YV':'VENEZUELA','4M':'VENEZUELA','OA':'PERÚ','ZP':'PARAGUAY','CP':'BOLIVIA','HC':'ECUADOR',
-    'TG':'GUATEMALA','HR':'HONDURAS','YS':'EL SALVADOR','YN':'NICARAGUA','TI':'COSTA RICA','HP':'PANAMÁ',
-    'HI':'REP. DOMINICANA','KP4':'PUERTO RICO','CX':'URUGUAY','K':'USA','W':'USA','N':'USA','AA':'USA','PY':'BRASIL',
-    'G':'INGLATERRA','F':'FRANCIA','I':'ITALIA','DL':'ALEMANIA','JA':'JAPÓN','VK':'AUSTRALIA','ZL':'NUEVA ZELANDA',
-    'BY':'CHINA','UR':'UCRANIA','SP':'POLONIA','OK':'REP. CHECA','OH':'FINLANDIA','SM':'SUECIA','PA':'PAÍSES BAJOS',
-    'VU':'INDIA','UA':'RUSIA','YO':'RUMANÍA','OE':'AUSTRIA','HB':'SUIZA'
+    // --- HISPANOS ---
+    'CL':'CUBA','CM':'CUBA','CO':'CUBA','T4':'CUBA','EA':'ESPAÑA','EB':'ESPAÑA','EC':'ESPAÑA','AM':'ESPAÑA','XE':'MÉXICO','XF':'MÉXICO','LU':'ARGENTINA','LW':'ARGENTINA','CE':'CHILE','XR':'CHILE','HK':'COLOMBIA','HJ':'COLOMBIA','YV':'VENEZUELA','4M':'VENEZUELA','OA':'PERÚ','ZP':'PARAGUAY','CP':'BOLIVIA','HC':'ECUADOR','TG':'GUATEMALA','HR':'HONDURAS','YS':'EL SALVADOR','YN':'NICARAGUA','TI':'COSTA RICA','HP':'PANAMÁ','HI':'REP. DOMINICANA','KP4':'PUERTO RICO','WP4':'PUERTO RICO','CX':'URUGUAY','C9':'GUINEA ECUAT.',
+    // --- TOP 40 MUNDIAL ---
+    'K':'USA','W':'USA','N':'USA','AA':'USA','PY':'BRASIL','PP':'BRASIL','G':'INGLATERRA','M':'INGLATERRA','F':'FRANCIA','I':'ITALIA','DL':'ALEMANIA','JA':'JAPÓN','VK':'AUSTRALIA','ZL':'NUEVA ZELANDA','BY':'CHINA','UA':'RUSIA','UR':'UCRANIA','SP':'POLONIA','OK':'REP. CHECA','OH':'FINLANDIA','SM':'SUECIA','PA':'PAÍSES BAJOS','VU':'INDIA','YO':'RUMANÍA','OE':'AUSTRIA','HB':'SUIZA','VE':'CANADÁ','LA':'NORUEGA','OZ':'DINAMARCA','ON':'BÉLGICA','E7':'BOSNIA','S5':'ESLOVENIA','HA':'HUNGRÍA','LZ':'BULGARIA','SV':'GRECIA','CT':'PORTUGAL','4X':'ISRAEL','ZS':'SUDÁFRICA','HL':'COREA SUR','YB':'INDONESIA','DU':'FILIPINAS'
 };
 
 function initApp() {
-    // Carga de imagen de playa predeterminada
     bg.crossOrigin = "anonymous";
     bg.src = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=80";
     bg.onload = render;
@@ -211,11 +246,21 @@ function initApp() {
         document.getElementById('intro-overlay').style.opacity = 0;
         setTimeout(() => document.getElementById('intro-overlay').style.display = 'none', 1000);
     }, 2500);
+
     setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toISOString().substr(11, 8) + " UTC";
+        const now = new Date();
+        document.getElementById('clock').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + 
+                                                     now.getUTCMinutes().toString().padStart(2,'0') + ":" + 
+                                                     now.getUTCSeconds().toString().padStart(2,'0') + " UTC";
     }, 1000);
     setupEvents();
-    render();
+}
+
+function toggleHelp() {
+    const p = document.getElementById('helpPanel'), o = document.getElementById('overlay');
+    const isVis = p.style.display === 'block';
+    p.style.display = isVis ? 'none' : 'block';
+    o.style.display = isVis ? 'none' : 'block';
 }
 
 function setupEvents() {
@@ -228,7 +273,13 @@ function setupEvents() {
     };
 
     const start = (e) => {
-        const p = getPos(e);
+        const p = getPos(e); activeLogoIdx = -1;
+        for(let i = logos.length-1; i >= 0; i--) {
+            let l = logos[i];
+            if(p.x > l.x && p.x < l.x + l.w && p.y > l.y && p.y < l.y + l.h) {
+                activeLogoIdx = i; offset.x = p.x - l.x; offset.y = p.y - l.y; return;
+            }
+        }
         if (p.x > elements.myCall.x && p.x < elements.myCall.x + 800 && p.y > elements.myCall.y - 200 && p.y < elements.myCall.y) elements.myCall.dragging = true;
         else if (p.x > elements.qsoBox.x && p.x < elements.qsoBox.x + elements.qsoBox.w && p.y > elements.qsoBox.y && p.y < elements.qsoBox.y + elements.qsoBox.h) elements.qsoBox.dragging = true;
         else if (p.x > elements.myQth.x && p.x < elements.myQth.x + 500 && p.y > elements.myQth.y - 80 && p.y < elements.myQth.y) elements.myQth.dragging = true;
@@ -236,29 +287,50 @@ function setupEvents() {
     };
 
     const move = (e) => {
-        if (!elements.myCall.dragging && !elements.qsoBox.dragging && !elements.myQth.dragging) return;
+        if (activeLogoIdx === -1 && !elements.myCall.dragging && !elements.qsoBox.dragging && !elements.myQth.dragging) return;
         if(e.cancelable) e.preventDefault();
         const p = getPos(e);
-        const dx = p.x - offset.x, dy = p.y - offset.y;
-        if (elements.myCall.dragging) { elements.myCall.x += dx; elements.myCall.y += dy; }
-        if (elements.myQth.dragging) { elements.myQth.x += dx; elements.myQth.y += dy; }
-        if (elements.qsoBox.dragging) { elements.qsoBox.x += dx; elements.qsoBox.y += dy; }
-        offset.x = p.x; offset.y = p.y;
+        if(activeLogoIdx !== -1) {
+            logos[activeLogoIdx].x = p.x - offset.x; logos[activeLogoIdx].y = p.y - offset.y;
+        } else {
+            const dx = p.x - offset.x, dy = p.y - offset.y;
+            if (elements.myCall.dragging) { elements.myCall.x += dx; elements.myCall.y += dy; }
+            if (elements.myQth.dragging) { elements.myQth.x += dx; elements.myQth.y += dy; }
+            if (elements.qsoBox.dragging) { elements.qsoBox.x += dx; elements.qsoBox.y += dy; }
+            offset.x = p.x; offset.y = p.y;
+        }
         render();
     };
 
-    const stop = () => { elements.myCall.dragging = false; elements.myQth.dragging = false; elements.qsoBox.dragging = false; };
+    const stop = () => { elements.myCall.dragging = false; elements.myQth.dragging = false; elements.qsoBox.dragging = false; activeLogoIdx = -1; };
 
     cv.addEventListener('mousedown', start); window.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
     cv.addEventListener('touchstart', start, {passive: false}); window.addEventListener('touchmove', move, { passive: false }); window.addEventListener('touchend', stop);
-
     document.querySelectorAll('input').forEach(i => i.oninput = render);
-    document.getElementById('myCall').oninput = (e) => {
+    
+    document.getElementById('qCall').oninput = (e) => {
         const c = e.target.value.toUpperCase(); e.target.value = c;
-        document.getElementById('myQth').value = DB[c.substring(0,3)] || DB[c.substring(0,2)] || DB[c.substring(0,1)] || "DESCONOCIDO";
+        // Solo autodetecta si el usuario está escribiendo manualmente el corresponsal
+        if(!log.length) {
+            const country = DB[c.substring(0,3)] || DB[c.substring(0,2)] || DB[c.substring(0,1)];
+            if(country) document.getElementById('qComment').value = "Greetings to " + country + "!";
+        }
         render();
     };
 }
+
+document.getElementById('logoInp').onchange = (e) => {
+    Array.from(e.target.files).forEach(file => {
+        const r = new FileReader();
+        r.onload = (ev) => {
+            const img = new Image(); img.src = ev.target.result;
+            img.onload = () => { logos.push({ img, x: 1500, y: 50, w: 200, h: 200 }); render(); };
+        };
+        r.readAsDataURL(file);
+    });
+};
+
+function resetLogos() { logos = []; render(); }
 
 document.getElementById('adiInp').onchange = (e) => {
     const reader = new FileReader();
@@ -266,7 +338,7 @@ document.getElementById('adiInp').onchange = (e) => {
         log = ev.target.result.split(/<eor>/i).map(c => {
             if(c.length < 10) return null;
             const f = (t) => { const m = c.match(new RegExp(`<${t}:\\d+>([^<]*)`, "i")); return m ? m[1].trim() : ""; };
-            return { call: f('CALL'), date: f('QSO_DATE'), time: f('TIME_ON'), band: f('BAND'), mode: f('MODE'), rst: f('RST_SENT') };
+            return { call: f('CALL'), date: f('QSO_DATE'), time: f('TIME_ON'), band: f('BAND'), mode: f('MODE'), rst: f('RST_SENT'), comment: f('COMMENT') };
         }).filter(x => x && x.call);
         if(log.length) { idx = 0; document.getElementById('zipBtn').style.display = 'block'; sync(); }
     };
@@ -281,6 +353,7 @@ function sync() {
     document.getElementById('qRst').value = q.rst;
     document.getElementById('qDate').value = q.date.replace(/(\d{4})(\d{2})(\d{2})/, '$3/$2/$1');
     document.getElementById('qTime').value = q.time.substring(0,2)+":"+q.time.substring(2,4);
+    document.getElementById('qComment').value = q.comment || "TNX QSO! 73s";
     document.getElementById('indicator').innerText = `QSO: ${idx+1} / ${log.length}`;
     render();
 }
@@ -290,36 +363,47 @@ function nav(d) { if(log.length) { idx = (idx+d+log.length)%log.length; sync(); 
 function render() {
     ctx.clearRect(0,0,1800,1100); ctx.fillStyle = "#000"; ctx.fillRect(0,0,1800,1100);
     if(bg.complete && bg.naturalWidth !== 0) ctx.drawImage(bg, 0, 0, 1800, 1100);
+    logos.forEach(l => ctx.drawImage(l.img, l.x, l.y, l.w, l.h));
+
     ctx.save();
     ctx.fillStyle = document.getElementById('col1').value;
     ctx.font = `900 ${document.getElementById('sizeCall').value}px sans-serif`;
-    ctx.shadowBlur = 15; ctx.shadowColor = "black";
+    ctx.shadowBlur = 20; ctx.shadowColor = "rgba(0,0,0,0.7)";
     ctx.fillText(document.getElementById('myCall').value || "CL7ADV", elements.myCall.x, elements.myCall.y);
     ctx.fillStyle = document.getElementById('col2').value;
     ctx.font = `bold ${document.getElementById('sizeQth').value}px sans-serif`;
     ctx.fillText(document.getElementById('myQth').value || "CUBA", elements.myQth.x, elements.myQth.y);
     ctx.restore();
+
     ctx.save();
     ctx.globalAlpha = document.getElementById('boxAlpha').value / 100;
     ctx.fillStyle = document.getElementById('col3').value;
     ctx.beginPath(); ctx.roundRect(elements.qsoBox.x, elements.qsoBox.y, elements.qsoBox.w, elements.qsoBox.h, 25); ctx.fill();
     ctx.globalAlpha = 1; ctx.strokeStyle = document.getElementById('col4').value;
     ctx.lineWidth = 6; ctx.stroke();
-    const d = [
-        {l: "CORRESPONSAL", v: document.getElementById('qCall').value},
-        {l: "FECHA", v: document.getElementById('qDate').value},
-        {l: "HORA", v: document.getElementById('qTime').value},
-        {l: "BANDA", v: document.getElementById('qBand').value},
-        {l: "MODO", v: document.getElementById('qMode').value},
-        {l: "RST", v: document.getElementById('qRst').value}
+    
+    // Layout solicitado: Corresponsal, Fecha, Hora (Espaciosos) | Banda, Modo, RST (Compactos derecha)
+    const columns = [
+        {l: "CORRESPONSAL", v: document.getElementById('qCall').value, x: 50, fs: 50},
+        {l: "FECHA", v: document.getElementById('qDate').value, x: 480, fs: 50},
+        {l: "HORA", v: document.getElementById('qTime').value, x: 790, fs: 50},
+        {l: "BANDA", v: document.getElementById('qBand').value, x: 1100, fs: 45},
+        {l: "MODO", v: document.getElementById('qMode').value, x: 1290, fs: 45},
+        {l: "RST", v: document.getElementById('qRst').value, x: 1480, fs: 45}
     ];
-    d.forEach((item, i) => {
-        let px = elements.qsoBox.x + 50 + (i * 265);
-        ctx.fillStyle = document.getElementById('col6').value; ctx.font = "800 22px sans-serif";
-        ctx.fillText(item.l, px, elements.qsoBox.y + 65);
-        ctx.fillStyle = document.getElementById('col5').value; ctx.font = "bold 55px monospace";
-        ctx.fillText(item.v || "---", px, elements.qsoBox.y + 145);
+
+    columns.forEach((item) => {
+        ctx.fillStyle = document.getElementById('col6').value; ctx.font = "800 20px sans-serif";
+        ctx.fillText(item.l, elements.qsoBox.x + item.x, elements.qsoBox.y + 60);
+        ctx.fillStyle = document.getElementById('col5').value; ctx.font = `bold ${item.fs}px monospace`;
+        ctx.fillText(item.v || "---", elements.qsoBox.x + item.x, elements.qsoBox.y + 130);
     });
+
+    const commY = elements.qsoBox.y + 210;
+    ctx.fillStyle = document.getElementById('col4').value; ctx.font = "900 18px sans-serif";
+    ctx.fillText("COMENTARIOS Y NOTAS ADICIONALES", elements.qsoBox.x + 50, commY);
+    ctx.fillStyle = document.getElementById('col5').value; ctx.font = "italic 42px sans-serif";
+    ctx.fillText(document.getElementById('qComment').value || "TNX QSO! Best 73s", elements.qsoBox.x + 50, commY + 50);
     ctx.restore();
 }
 
@@ -328,21 +412,20 @@ document.getElementById('bgInp').onchange = (e) => {
     r.readAsDataURL(e.target.files[0]);
 };
 
-function resetBg() { bg = new Image(); render(); }
-
 function exportJpg() {
     const a = document.createElement('a'); a.download = `QSL_${document.getElementById('qCall').value}.jpg`;
-    a.href = cv.toDataURL('image/jpeg', 0.9); a.click();
+    a.href = cv.toDataURL('image/jpeg', 0.92); a.click();
 }
 
 async function exportZip() {
-    const z = new JSZip();
+    const z = new JSZip(); const originalIdx = idx;
     for(let i=0; i<log.length; i++) {
         idx = i; sync();
-        const img = cv.toDataURL('image/jpeg', 0.7).split(',')[1];
+        const img = cv.toDataURL('image/jpeg', 0.8).split(',')[1];
         z.file(`${log[i].call}.jpg`, img, {base64: true});
     }
-    saveAs(await z.generateAsync({type:"blob"}), "LOG_EXPORT.zip");
+    idx = originalIdx; sync();
+    saveAs(await z.generateAsync({type:"blob"}), "LOG_EXPORT_CL7ADV.zip");
 }
 </script>
 </body>
