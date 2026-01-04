@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v28.0 - MOBILE OPTIMIZED - CL7ADV</title>
+    <title>QSL ELITE v28.2 - CL7ADV</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
@@ -12,7 +12,6 @@
             --neon-pink: #ff007b; --text-main: #e6edf3; --border-color: #30363d;
         }
 
-        /* AVISO DE ORIENTACIÓN MÓVIL */
         #orientation-warning {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 10000; color: var(--neon-cyan);
@@ -24,7 +23,6 @@
             #orientation-warning { display: flex; }
         }
 
-        /* PANTALLA DE CARGA */
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; display: flex; flex-direction: column;
@@ -53,15 +51,12 @@
 
         .app-container { display: flex; flex: 1; overflow: hidden; }
 
-        /* SIDEBAR OPTIMIZADA PARA NO TENER ZONAS MUERTAS */
         .sidebar {
             width: 400px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
             padding: 15px; overflow-y: auto; box-sizing: border-box;
-            display: flex; flex-direction: column;
-            height: 100%;
+            display: flex; flex-direction: column; height: 100%;
         }
 
-        /* Scrollbar Neón */
         .sidebar::-webkit-scrollbar { width: 6px; }
         .sidebar::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 10px; }
 
@@ -72,7 +67,7 @@
 
         .section-title { color: var(--neon-pink); font-size: 0.7rem; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; }
 
-        input, select {
+        input {
             width: 100%; background: #010409; border: 1px solid var(--border-color);
             border-radius: 4px; padding: 8px; color: #fff; margin-bottom: 5px; font-size: 0.8rem;
         }
@@ -87,7 +82,6 @@
         .btn-primary { background: var(--neon-cyan); color: #000; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2); }
         .btn-dark { background: #21262d; color: #fff; border: 1px solid var(--border-color); }
         
-        /* ESPACIADOR FINAL PARA EVITAR ZONA MUERTA EN MÓVILES */
         .mobile-spacer { height: 50px; width: 100%; flex-shrink: 0; }
 
         .preview-area { flex: 1; background: #000; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; }
@@ -110,7 +104,7 @@
 <div id="intro-overlay">
     <div style="color:white; letter-spacing: 5px; font-size: 14px;">RADIO CLUB SANTA CRUZ DEL SUR</div>
     <div class="cl7adv-pulse">CL7ADV</div>
-    <div style="color:var(--neon-pink); margin-top:10px; font-family: monospace;">FIX: MOBILE UI v28.1</div>
+    <div style="color:var(--neon-pink); margin-top:10px; font-family: monospace;">CARGANDO RECURSOS...</div>
 </div>
 
 <header>
@@ -175,7 +169,6 @@
 
         <button class="btn btn-primary" onclick="exportJpg()">GUARDAR IMAGEN JPG</button>
         <button class="btn btn-dark" id="zipBtn" style="display:none;" onclick="exportZip()">DESCARGAR TODO EL ZIP</button>
-        
         <div class="mobile-spacer"></div>
     </div>
 
@@ -209,6 +202,11 @@ const DB = {
 };
 
 function initApp() {
+    // Carga de imagen predeterminada de internet
+    bg.crossOrigin = "anonymous";
+    bg.src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1800&q=80";
+    bg.onload = render;
+
     setTimeout(() => {
         document.getElementById('intro-overlay').style.opacity = 0;
         setTimeout(() => document.getElementById('intro-overlay').style.display = 'none', 1000);
@@ -291,7 +289,7 @@ function nav(d) { if(log.length) { idx = (idx+d+log.length)%log.length; sync(); 
 
 function render() {
     ctx.clearRect(0,0,1800,1100); ctx.fillStyle = "#000"; ctx.fillRect(0,0,1800,1100);
-    if(bg.src) ctx.drawImage(bg, 0, 0, 1800, 1100);
+    if(bg.complete && bg.naturalWidth !== 0) ctx.drawImage(bg, 0, 0, 1800, 1100);
     ctx.save();
     ctx.fillStyle = document.getElementById('col1').value;
     ctx.font = `900 ${document.getElementById('sizeCall').value}px sans-serif`;
