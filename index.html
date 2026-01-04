@@ -2,205 +2,310 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Estación Digital ZMR - CL7ADV</title>
+    <title>Buscador QSL Caribeño - CL7ADV</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
         :root {
-            --neon-blue: #00eaff;
-            --neon-pink: #ff00ff;
-            --cuba-red: #d40000;
-            --glass: rgba(5, 15, 25, 0.9);
+            --primary: #00bcd4;
+            --primary-dark: #009688;
+            --accent: #ff9800;
+            --gold: #ffe082;
+            --dark-bg: #0e2431;
         }
 
         body { 
-            margin: 0; font-family: 'Segoe UI', sans-serif; 
-            background: #000 url('https://i.postimg.cc/k47vQh5X/qsl-caribena-neon-noche-final.jpg') no-repeat center center fixed;
-            background-size: cover; color: #fff;
-            display: flex; align-items: center; justify-content: center; min-height: 100vh;
-            overflow: hidden;
+            margin: 0; 
+            font-family: "Trebuchet MS", Arial, sans-serif; 
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark)); 
+            background-attachment: fixed;
+            color: #fff; 
+            text-align: center; 
+            min-height: 100vh;
         }
 
-        /* Pantalla de Encendido */
-        #power-on {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        .container { 
+            max-width: 800px; 
+            margin: 40px auto; 
+            padding: 30px; 
+            background: rgba(14, 36, 49, 0.85); 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
+            border: 1px solid var(--primary);
         }
 
-        .power-btn {
-            padding: 20px 40px; font-size: 1.5rem; border: 3px solid var(--neon-blue);
-            background: none; color: var(--neon-blue); cursor: pointer; border-radius: 50px;
-            box-shadow: 0 0 20px var(--neon-blue); font-weight: bold; transition: 0.3s;
-        }
-        .power-btn:hover { background: var(--neon-blue); color: #000; }
+        h1 { font-size: 2.2rem; margin-bottom: 10px; text-shadow: 0 0 10px var(--gold); }
+        p.subtitle { margin-bottom: 25px; opacity: 0.9; }
 
-        /* Contenedor Principal */
-        .main-panel {
-            width: 90%; max-width: 650px; background: var(--glass);
-            border: 2px solid var(--neon-blue); border-radius: 20px;
-            padding: 30px; box-shadow: 0 0 40px rgba(0, 234, 255, 0.3);
-            backdrop-filter: blur(10px); display: none; text-align: center;
+        .search-box {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
         }
 
-        .nav-tabs { display: flex; gap: 5px; justify-content: center; margin-bottom: 20px; }
-        .tab-btn {
-            background: rgba(255,255,255,0.1); border: 1px solid var(--neon-blue);
-            color: #fff; padding: 10px 20px; cursor: pointer; border-radius: 5px;
+        #indicativo { 
+            padding: 15px; 
+            font-size: 1.1rem; 
+            border: none; 
+            border-radius: 10px; 
+            width: 250px; 
+            text-transform: uppercase;
+            font-weight: bold;
+            color: var(--dark-bg);
         }
-        .tab-btn.active { background: var(--neon-blue); color: #000; font-weight: bold; }
 
-        .view { display: none; }
-        .view.active { display: block; animation: fadeIn 0.5s; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Elementos UI */
-        h1 { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); margin: 0; }
-        input { 
-            padding: 15px; width: 70%; border-radius: 10px; border: 2px solid var(--neon-pink); 
-            background: #000; color: var(--neon-blue); font-size: 1.2rem; text-align: center; margin: 20px 0;
+        #buscarBtn { 
+            padding: 15px 25px; 
+            font-size: 1rem; 
+            background: var(--accent); 
+            color: #fff; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: 0.3s; 
+            text-transform: uppercase;
         }
-        .action-btn {
-            padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer;
-            font-weight: bold; background: var(--cuba-red); color: #fff; box-shadow: 0 4px 0 #8b0000;
-        }
-        .action-btn:active { transform: translateY(4px); box-shadow: none; }
 
-        /* Visualizador y Salida Morse */
-        .morse-display { 
-            font-size: 2.5rem; color: var(--neon-pink); min-height: 80px; 
-            background: #000; border-radius: 10px; border: 1px solid #333; margin: 15px 0; padding: 10px;
-        }
-        canvas { width: 100%; height: 60px; background: #000; border-radius: 5px; }
+        #buscarBtn:hover { background: #f57c00; transform: scale(1.05); }
 
-        footer { margin-top: 30px; font-size: 0.8rem; opacity: 0.5; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        /* Loader y Animación de Carta */
+        .loader-wrap { 
+            display: none; 
+            margin: 20px auto; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+
+        .progress-bar-container {
+            position: relative;
+            width: 300px;
+            height: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin-top: 35px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gold);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .card-icon {
+            position: absolute;
+            top: -30px;
+            width: 50px;
+            height: 35px;
+            background: #fff;
+            color: var(--dark-bg);
+            border-radius: 5px;
+            border: 2px solid var(--gold);
+            font-weight: bold;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateX(-50%);
+            transition: left 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .card-icon::after {
+            content: "✉️";
+            font-size: 14px;
+        }
+
+        /* Resultados y Modal */
+        .qsl-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .qsl-img { 
+            max-width: 100%; 
+            border-radius: 10px; 
+            border: 3px solid var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .btn-download {
+            display: inline-block;
+            padding: 12px 20px;
+            background: #4caf50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-download:hover { background: #388e3c; }
+
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; top: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.9); 
+            overflow-y: auto;
+        }
+
+        .modal-content { 
+            background: var(--dark-bg); 
+            margin: 5% auto; 
+            padding: 30px; 
+            border-radius: 20px; 
+            width: 90%; 
+            max-width: 850px; 
+            border: 2px solid var(--gold);
+        }
+
+        .close-btn { color: #ff4444; float: right; font-size: 30px; font-weight: bold; cursor: pointer; }
+
+        footer { margin-top: 40px; color: var(--gold); font-weight: bold; font-size: 0.9rem; }
+
+        @media (max-width: 500px) {
+            .search-box { flex-direction: column; align-items: center; }
+            #indicativo { width: 90%; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="power-on">
-        <h2 style="color:var(--neon-blue)">ESTACIÓN ZMR</h2>
-        <button class="power-btn" onclick="startStation()">ENCENDER EQUIPO</button>
-        <p style="color:#555; margin-top:20px;">Santa Cruz del Sur, Cuba</p>
-    </div>
+    <div class="container">
+        <h1>🌴 Buscador QSL Caribeño 🌊</h1>
+        <p class="subtitle">Ingresa tu indicativo para descargar tus tarjetas confirmadas.</p>
 
-    <div class="main-panel" id="ui">
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('qsl-v', this)">📁 BUSCADOR QSL</button>
-            <button class="tab-btn" onclick="switchTab('morse-v', this)">📡 DECODIFICADOR CW</button>
+        <div class="search-box">
+            <input type="text" id="indicativo" placeholder="EJ: CL7ADV" maxlength="10">
+            <button id="buscarBtn" onclick="iniciarBusqueda()">BUSCAR QSL</button>
         </div>
 
-        <div id="qsl-v" class="view active">
-            <h1>🌴 QSL CARIBEÑA</h1>
-            <input type="text" id="callsign" placeholder="INDICATIVO">
-            <br>
-            <button class="action-btn" onclick="buscarQSL()">SINTONIZAR ARCHIVO</button>
-            <div id="qslStatus" style="margin-top:20px; color:var(--neon-blue);"></div>
+        <div id="loader" class="loader-wrap">
+            <div class="progress-bar-container">
+                <div id="cardIcon" class="card-icon" style="left: 0%;">QSL</div>
+                <div id="barFill" class="progress-fill"></div>
+            </div>
+            <p id="statusText" style="margin-top: 15px; color: var(--gold);">Explorando archivos...</p>
         </div>
 
-        <div id="morse-v" class="view">
-            <h1>📻 RADIO ESCUCHA CW</h1>
-            <canvas id="visualizer"></canvas>
-            <div id="dots-n-dashes" style="color:var(--neon-blue); height: 20px;"></div>
-            <div class="morse-display" id="morseText">...</div>
-            <button onclick="document.getElementById('morseText').innerText='...'" style="background:#333; color:#fff; border:none; padding:5px 15px; border-radius:5px; cursor:pointer;">LIMPIAR</button>
-        </div>
+        <div id="resultadoFinal"></div>
 
         <footer>
-            CL7ADV &bull; Alfred &bull; ZMR CUBA &bull; 2026
+            — CL7ADV — Radio Club Santa Cruz del Sur<br>
+            Buenos DXs en este 2026
         </footer>
     </div>
 
+    <div id="modalQSL" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="cerrarModal()">&times;</span>
+            <h2 id="tituloModal" style="color: var(--gold);"></h2>
+            <div id="contenedorQSLs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                </div>
+        </div>
+    </div>
+
     <script>
-        let audioCtx, analyser, isMicActive = false;
-        const morseMap = {'.-':'A','-...':'B','-.-.':'C','-..':'D','.':'E','..-.':'F','--.':'G','....':'H','..':'I','.---':'J','-.-':'K','.-..':'L','--':'M','-.':'N','---':'O','.--.':'P','--.-':'Q','.-.':'R','...':'S','-':'T','..-':'U','...-':'V','.--':'W','-..-':'X','-.--':'Y','--..':'Z','-----':'0','.----':'1','..---':'2','...--':'3','....-':'4','.....':'5','-....':'6','--...':'7','---..':'8','----.':'9'};
+        function iniciarBusqueda() {
+            const indicativo = document.getElementById('indicativo').value.trim().toUpperCase();
+            const loader = document.getElementById('loader');
+            const bar = document.getElementById('barFill');
+            const icon = document.getElementById('cardIcon');
+            const status = document.getElementById('statusText');
+            const res = document.getElementById('resultadoFinal');
 
-        // Encender la estación y habilitar audio
-        function startStation() {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            document.getElementById('power-on').style.display = 'none';
-            document.getElementById('ui').style.display = 'block';
-            playStatic();
-        }
-
-        function switchTab(id, btn) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            btn.classList.add('active');
-            if(id === 'morse-v' && !isMicActive) initMorseMic();
-        }
-
-        // Sonido de Estática
-        function playStatic() {
-            if(!audioCtx) return;
-            const src = audioCtx.createBufferSource();
-            const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 1, audioCtx.sampleRate);
-            const data = buf.getChannelData(0);
-            for (let i = 0; i < buf.length; i++) data[i] = Math.random() * 2 - 1;
-            src.buffer = buf;
-            const g = audioCtx.createGain();
-            g.gain.setValueAtTime(0.02, audioCtx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
-            src.connect(g); g.connect(audioCtx.destination);
-            src.start();
-        }
-
-        // Lógica Buscador
-        function buscarQSL() {
-            playStatic();
-            const call = document.getElementById('callsign').value.toUpperCase();
-            const status = document.getElementById('qslStatus');
-            if(!call) return;
-            status.innerText = "⏳ BUSCANDO EN LOGS DE SANTA CRUZ...";
-            setTimeout(() => {
-                status.innerHTML = `<span style="color:var(--neon-pink)">❌ QSL NO DISPONIBLE PARA ${call}</span><br><small>Reintento en 10s...</small>`;
-                setTimeout(() => { 
-                    status.innerText = ""; 
-                    document.getElementById('callsign').value = "";
-                }, 10000);
-            }, 2000);
-        }
-
-        // Lógica Decodificador Morse
-        let currentMorse = "", startTime = 0, silenceTime = Date.now();
-        async function initMorseMic() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                const source = audioCtx.createMediaStreamSource(stream);
-                analyser = audioCtx.createAnalyser();
-                source.connect(analyser);
-                isMicActive = true;
-                processMorse();
-            } catch(e) { alert("Micrófono no disponible"); }
-        }
-
-        function processMorse() {
-            const data = new Uint8Array(analyser.frequencyBinCount);
-            analyser.getByteFrequencyData(data);
-            const vol = data.reduce((a, b) => a + b) / data.length;
-            const now = Date.now();
-
-            if (vol > 40) {
-                if (startTime === 0) startTime = now;
-                silenceTime = 0;
-            } else {
-                if (startTime !== 0) {
-                    let d = now - startTime;
-                    currentMorse += (d < 250) ? "." : "-";
-                    document.getElementById('dots-n-dashes').innerText = currentMorse;
-                    startTime = 0;
-                    silenceTime = now;
-                }
-                if (silenceTime !== 0 && now - silenceTime > 800 && currentMorse !== "") {
-                    let char = morseMap[currentMorse] || "?";
-                    const out = document.getElementById('morseText');
-                    if(out.innerText === "...") out.innerText = "";
-                    out.innerText += char;
-                    currentMorse = "";
-                    document.getElementById('dots-n-dashes').innerText = "";
-                }
+            if (!indicativo) {
+                alert("Por favor, escribe un indicativo.");
+                return;
             }
-            requestAnimationFrame(processMorse);
+
+            // Reset
+            res.innerHTML = "";
+            loader.style.display = "flex";
+            let progreso = 0;
+            
+            // Simular escaneo de carpetas
+            const intervalo = setInterval(() => {
+                progreso += 5;
+                bar.style.width = progreso + "%";
+                icon.style.left = progreso + "%";
+                
+                if(progreso < 40) status.innerText = "Revisando base de datos...";
+                else if(progreso < 80) status.innerText = "Localizando archivos de " + indicativo + "...";
+                else status.innerText = "¡Casi listo!";
+
+                if (progreso >= 100) {
+                    clearInterval(intervalo);
+                    verificarArchivos(indicativo);
+                }
+            }, 80);
+        }
+
+        async function verificarArchivos(call) {
+            const loader = document.getElementById('loader');
+            const contenedor = document.getElementById('contenedorQSLs');
+            const titulo = document.getElementById('tituloModal');
+            
+            // Lista de posibles nombres (el normal y con números)
+            const posibles = [`img/${call}.jpg`];
+            for (let i = 1; i <= 20; i++) posibles.push(`img/${call}-${i}.jpg`);
+
+            let encontradas = [];
+            
+            // Comprobación real de imágenes
+            const promesas = posibles.map(ruta => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => { encontradas.push(ruta); resolve(); };
+                    img.onerror = () => resolve();
+                    img.src = ruta;
+                });
+            });
+
+            await Promise.all(promesas);
+
+            loader.style.display = "none";
+
+            if (encontradas.length > 0) {
+                titulo.innerText = `Se encontraron ${encontradas.length} QSLs para ${call}`;
+                contenedor.innerHTML = "";
+                
+                encontradas.forEach(ruta => {
+                    contenedor.innerHTML += `
+                        <div class="qsl-card">
+                            <img src="${ruta}" class="qsl-img">
+                            <a href="${ruta}" download class="btn-download">⬇️ DESCARGAR QSL</a>
+                        </div>
+                    `;
+                });
+                document.getElementById('modalQSL').style.display = "block";
+            } else {
+                document.getElementById('resultadoFinal').innerHTML = `
+                    <div style="padding: 20px; color: #ffe082; background: rgba(255,0,0,0.2); border-radius: 10px;">
+                        ❌ No se encontraron tarjetas para <strong>${call}</strong>.<br>
+                        Vuelve a intentarlo más tarde.
+                    </div>
+                `;
+            }
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalQSL').style.display = "none";
+        }
+
+        // Cerrar si hace click fuera del cuadro blanco
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalQSL');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
         }
     </script>
 </body>
