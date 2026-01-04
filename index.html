@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL ELITE v28.0 - INTERACTIVE GLOBAL - CL7ADV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QSL ELITE v28.0 - MOBILE OPTIMIZED - CL7ADV</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
@@ -12,6 +12,7 @@
             --neon-pink: #ff007b; --text-main: #e6edf3; --border-color: #30363d;
         }
 
+        /* AVISO DE ORIENTACIÓN MÓVIL */
         #orientation-warning {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 10000; color: var(--neon-cyan);
@@ -23,6 +24,7 @@
             #orientation-warning { display: flex; }
         }
 
+        /* PANTALLA DE CARGA */
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; display: flex; flex-direction: column;
@@ -46,21 +48,26 @@
         header {
             background: #161b22; border-bottom: 2px solid var(--neon-cyan);
             padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0;
         }
 
         .app-container { display: flex; flex: 1; overflow: hidden; }
 
+        /* SIDEBAR OPTIMIZADA PARA NO TENER ZONAS MUERTAS */
         .sidebar {
             width: 400px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
             padding: 15px; overflow-y: auto; box-sizing: border-box;
+            display: flex; flex-direction: column;
+            height: 100%;
         }
 
-        .sidebar::-webkit-scrollbar { width: 4px; }
-        .sidebar::-webkit-scrollbar-thumb { background: var(--neon-cyan); }
+        /* Scrollbar Neón */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 10px; }
 
         .control-section {
             background: rgba(255,255,255,0.02); border: 1px solid var(--border-color);
-            border-radius: 8px; padding: 12px; margin-bottom: 12px;
+            border-radius: 8px; padding: 12px; margin-bottom: 12px; flex-shrink: 0;
         }
 
         .section-title { color: var(--neon-pink); font-size: 0.7rem; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; }
@@ -73,16 +80,18 @@
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
         .btn {
-            width: 100%; padding: 10px; border-radius: 6px; border: none; font-weight: 800;
-            cursor: pointer; text-transform: uppercase; margin-top: 5px; transition: 0.2s;
+            width: 100%; padding: 14px; border-radius: 8px; border: none; font-weight: 800;
+            cursor: pointer; text-transform: uppercase; margin-top: 8px; transition: 0.2s;
         }
 
-        .btn-primary { background: var(--neon-cyan); color: #000; }
+        .btn-primary { background: var(--neon-cyan); color: #000; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2); }
         .btn-dark { background: #21262d; color: #fff; border: 1px solid var(--border-color); }
-        .btn:hover { filter: brightness(1.2); }
+        
+        /* ESPACIADOR FINAL PARA EVITAR ZONA MUERTA EN MÓVILES */
+        .mobile-spacer { height: 50px; width: 100%; flex-shrink: 0; }
 
-        .preview-area { flex: 1; background: #000; display: flex; justify-content: center; align-items: center; position: relative; }
-        canvas { cursor: move; max-width: 95%; max-height: 95%; border: 1px solid #333; }
+        .preview-area { flex: 1; background: #000; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; }
+        canvas { cursor: move; max-width: 98%; max-height: 98%; border: 1px solid #333; }
         
         #indicator {
             position: absolute; bottom: 10px; left: 10px; font-size: 10px;
@@ -94,14 +103,14 @@
 
 <div id="orientation-warning">
     <div style="font-size: 50px;">🔄</div>
-    <h2>GIRA EL MÓVIL</h2>
-    <p>USA ESTA APP EN MODO HORIZONTAL</p>
+    <h2>MODO HORIZONTAL OBLIGATORIO</h2>
+    <p>GIRA TU TELÉFONO PARA EDITAR LA QSL</p>
 </div>
 
 <div id="intro-overlay">
     <div style="color:white; letter-spacing: 5px; font-size: 14px;">RADIO CLUB SANTA CRUZ DEL SUR</div>
     <div class="cl7adv-pulse">CL7ADV</div>
-    <div style="color:var(--neon-pink); margin-top:10px; font-family: monospace;">MOTOR GLOBAL v28.0</div>
+    <div style="color:var(--neon-pink); margin-top:10px; font-family: monospace;">FIX: MOBILE UI v28.1</div>
 </div>
 
 <header>
@@ -114,13 +123,13 @@
         <div class="control-section">
             <div class="section-title">FONDO DE ESTACIÓN</div>
             <input type="file" id="bgInp" accept="image/*">
-            <button class="btn btn-dark" onclick="resetBg()">LIMPIAR IMAGEN</button>
+            <button class="btn btn-dark" onclick="resetBg()">BORRAR FONDO</button>
         </div>
 
         <div class="control-section">
             <div class="section-title">MI INDICATIVO Y PAÍS</div>
-            <input type="text" id="myCall" value="CL7ADV" placeholder="TU CALL">
-            <input type="text" id="myQth" value="CUBA" placeholder="TU PAÍS">
+            <input type="text" id="myCall" value="CL7ADV">
+            <input type="text" id="myQth" value="CUBA">
             <div class="row">
                 <div><label style="font-size:9px;">TAMAÑO CALL</label><input type="range" id="sizeCall" min="50" max="450" value="240"></div>
                 <div><label style="font-size:9px;">TAMAÑO QTH</label><input type="range" id="sizeQth" min="20" max="200" value="90"></div>
@@ -128,16 +137,16 @@
         </div>
 
         <div class="control-section">
-            <div class="section-title">CARGAR LOG (.ADI)</div>
+            <div class="section-title">CARGAR LOG ADIF</div>
             <input type="file" id="adiInp" accept=".adi,.adif">
             <div class="row">
-                <button class="btn btn-dark" onclick="nav(-1)">ANT.</button>
+                <button class="btn btn-dark" onclick="nav(-1)">ATRÁS</button>
                 <button class="btn btn-dark" onclick="nav(1)">SIG.</button>
             </div>
         </div>
 
         <div class="control-section">
-            <div class="section-title">PALETA DE COLORES</div>
+            <div class="section-title">DISEÑO Y COLORES</div>
             <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
                 <input type="color" id="col1" value="#ff007b">
                 <input type="color" id="col2" value="#00f2ff">
@@ -146,30 +155,32 @@
                 <input type="color" id="col5" value="#ffffff">
                 <input type="color" id="col6" value="#00f2ff">
             </div>
-            <label style="font-size:9px;">OPACIDAD DEL CUADRO</label>
+            <label style="font-size:9px;">OPACIDAD CAJA</label>
             <input type="range" id="boxAlpha" min="0" max="100" value="90">
         </div>
 
         <div class="control-section">
-            <div class="section-title">DATOS DEL CORRESPONSAL</div>
+            <div class="section-title">DATOS DEL QSO</div>
             <input type="text" id="qCall" placeholder="STATION">
             <div class="row">
                 <input type="text" id="qDate" placeholder="FECHA">
                 <input type="text" id="qTime" placeholder="HORA">
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px;">
-                <input type="text" id="qBand" placeholder="BAND">
-                <input type="text" id="qMode" placeholder="MODE">
+                <input type="text" id="qBand" placeholder="BANDA">
+                <input type="text" id="qMode" placeholder="MODO">
                 <input type="text" id="qRst" placeholder="RST">
             </div>
         </div>
 
-        <button class="btn btn-primary" onclick="exportJpg()">GUARDAR QSL</button>
-        <button class="btn btn-dark" id="zipBtn" style="display:none; margin-top:5px;" onclick="exportZip()">EXPORTAR ZIP COMPLETO</button>
+        <button class="btn btn-primary" onclick="exportJpg()">GUARDAR IMAGEN JPG</button>
+        <button class="btn btn-dark" id="zipBtn" style="display:none;" onclick="exportZip()">DESCARGAR TODO EL ZIP</button>
+        
+        <div class="mobile-spacer"></div>
     </div>
 
     <div class="preview-area">
-        <div id="indicator">STANDBY</div>
+        <div id="indicator">READY</div>
         <canvas id="cv" width="1800" height="1100"></canvas>
     </div>
 </div>
@@ -178,7 +189,6 @@
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 let bg = new Image(), log = [], idx = 0;
 
-// SISTEMA DRAG & DROP
 let elements = {
     myCall: { x: 80, y: 260, dragging: false },
     myQth: { x: 95, y: 380, dragging: false },
@@ -187,25 +197,15 @@ let elements = {
 
 let offset = { x: 0, y: 0 };
 
-// BASE DE DATOS MASIVA DE PAÍSES (HISPANOS + 30 MUNDIALES)
 const DB = {
-    'CL':'CUBA','CM':'CUBA','CO':'CUBA','T4':'CUBA',
-    'EA':'ESPAÑA','EB':'ESPAÑA','EC':'ESPAÑA','AM':'ESPAÑA',
-    'XE':'MÉXICO','XF':'MÉXICO','6D':'MÉXICO',
-    'LU':'ARGENTINA','LW':'ARGENTINA','AY':'ARGENTINA',
-    'CE':'CHILE','XR':'CHILE','HK':'COLOMBIA','HJ':'COLOMBIA',
-    'YV':'VENEZUELA','4M':'VENEZUELA','OA':'PERÚ','OB':'PERÚ',
-    'ZP':'PARAGUAY','CP':'BOLIVIA','HC':'ECUADOR','TG':'GUATEMALA',
-    'HR':'HONDURAS','YS':'EL SALVADOR','YN':'NICARAGUA','TI':'COSTA RICA',
-    'HP':'PANAMÁ','HI':'REP. DOMINICANA','KP4':'PUERTO RICO','WP4':'PUERTO RICO',
-    'CX':'URUGUAY','CV':'URUGUAY',
-    'K':'USA','W':'USA','N':'USA','AA':'USA','PY':'BRASIL','PP':'BRASIL',
-    'G':'INGLATERRA','M':'INGLATERRA','F':'FRANCIA','I':'ITALIA','DL':'ALEMANIA',
-    'JA':'JAPÓN','VK':'AUSTRALIA','ZL':'NUEVA ZELANDA','BY':'CHINA','UR':'UCRANIA',
-    'LY':'LITUANIA','SP':'POLONIA','OK':'REP. CHECA','OM':'ESLOVAQUIA','HA':'HUNGRÍA',
-    'S5':'ESLOVENIA','OH':'FINLANDIA','SM':'SUECIA','LA':'NORUEGA','OZ':'DINAMARCA',
-    'PA':'PAÍSES BAJOS','ON':'BÉLGICA','HB':'SUIZA','OE':'AUSTRIA','SV':'GRECIA',
-    'CT':'PORTUGAL','VU':'INDIA','UA':'RUSIA','E7':'BOSNIA','YO':'RUMANÍA'
+    'CL':'CUBA','CM':'CUBA','CO':'CUBA','T4':'CUBA','EA':'ESPAÑA','EB':'ESPAÑA','EC':'ESPAÑA','AM':'ESPAÑA',
+    'XE':'MÉXICO','XF':'MÉXICO','LU':'ARGENTINA','LW':'ARGENTINA','CE':'CHILE','XR':'CHILE','HK':'COLOMBIA',
+    'HJ':'COLOMBIA','YV':'VENEZUELA','4M':'VENEZUELA','OA':'PERÚ','ZP':'PARAGUAY','CP':'BOLIVIA','HC':'ECUADOR',
+    'TG':'GUATEMALA','HR':'HONDURAS','YS':'EL SALVADOR','YN':'NICARAGUA','TI':'COSTA RICA','HP':'PANAMÁ',
+    'HI':'REP. DOMINICANA','KP4':'PUERTO RICO','CX':'URUGUAY','K':'USA','W':'USA','N':'USA','AA':'USA','PY':'BRASIL',
+    'G':'INGLATERRA','F':'FRANCIA','I':'ITALIA','DL':'ALEMANIA','JA':'JAPÓN','VK':'AUSTRALIA','ZL':'NUEVA ZELANDA',
+    'BY':'CHINA','UR':'UCRANIA','SP':'POLONIA','OK':'REP. CHECA','OH':'FINLANDIA','SM':'SUECIA','PA':'PAÍSES BAJOS',
+    'VU':'INDIA','UA':'RUSIA','YO':'RUMANÍA','OE':'AUSTRIA','HB':'SUIZA'
 };
 
 function initApp() {
@@ -216,15 +216,17 @@ function initApp() {
     setInterval(() => {
         document.getElementById('clock').innerText = new Date().toISOString().substr(11, 8) + " UTC";
     }, 1000);
-    setupInteractivity();
+    setupEvents();
     render();
 }
 
-function setupInteractivity() {
+function setupEvents() {
     const getPos = (e) => {
         const rect = cv.getBoundingClientRect();
         const sx = cv.width / rect.width, sy = cv.height / rect.height;
-        return { x: ((e.clientX || e.touches[0].clientX) - rect.left) * sx, y: ((e.clientY || e.touches[0].clientY) - rect.top) * sy };
+        const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+        const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+        return { x: (clientX - rect.left) * sx, y: (clientY - rect.top) * sy };
     };
 
     const start = (e) => {
@@ -250,7 +252,7 @@ function setupInteractivity() {
     const stop = () => { elements.myCall.dragging = false; elements.myQth.dragging = false; elements.qsoBox.dragging = false; };
 
     cv.addEventListener('mousedown', start); window.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
-    cv.addEventListener('touchstart', start); window.addEventListener('touchmove', move, { passive: false }); window.addEventListener('touchend', stop);
+    cv.addEventListener('touchstart', start, {passive: false}); window.addEventListener('touchmove', move, { passive: false }); window.addEventListener('touchend', stop);
 
     document.querySelectorAll('input').forEach(i => i.oninput = render);
     document.getElementById('myCall').oninput = (e) => {
@@ -281,7 +283,7 @@ function sync() {
     document.getElementById('qRst').value = q.rst;
     document.getElementById('qDate').value = q.date.replace(/(\d{4})(\d{2})(\d{2})/, '$3/$2/$1');
     document.getElementById('qTime').value = q.time.substring(0,2)+":"+q.time.substring(2,4);
-    document.getElementById('indicator').innerText = `CONTACTO: ${idx+1} / ${log.length}`;
+    document.getElementById('indicator').innerText = `QSO: ${idx+1} / ${log.length}`;
     render();
 }
 
@@ -290,25 +292,21 @@ function nav(d) { if(log.length) { idx = (idx+d+log.length)%log.length; sync(); 
 function render() {
     ctx.clearRect(0,0,1800,1100); ctx.fillStyle = "#000"; ctx.fillRect(0,0,1800,1100);
     if(bg.src) ctx.drawImage(bg, 0, 0, 1800, 1100);
-
     ctx.save();
     ctx.fillStyle = document.getElementById('col1').value;
     ctx.font = `900 ${document.getElementById('sizeCall').value}px sans-serif`;
     ctx.shadowBlur = 15; ctx.shadowColor = "black";
     ctx.fillText(document.getElementById('myCall').value || "CL7ADV", elements.myCall.x, elements.myCall.y);
-    
     ctx.fillStyle = document.getElementById('col2').value;
     ctx.font = `bold ${document.getElementById('sizeQth').value}px sans-serif`;
     ctx.fillText(document.getElementById('myQth').value || "CUBA", elements.myQth.x, elements.myQth.y);
     ctx.restore();
-
     ctx.save();
     ctx.globalAlpha = document.getElementById('boxAlpha').value / 100;
     ctx.fillStyle = document.getElementById('col3').value;
     ctx.beginPath(); ctx.roundRect(elements.qsoBox.x, elements.qsoBox.y, elements.qsoBox.w, elements.qsoBox.h, 25); ctx.fill();
     ctx.globalAlpha = 1; ctx.strokeStyle = document.getElementById('col4').value;
     ctx.lineWidth = 6; ctx.stroke();
-
     const d = [
         {l: "CORRESPONSAL", v: document.getElementById('qCall').value},
         {l: "FECHA", v: document.getElementById('qDate').value},
@@ -317,7 +315,6 @@ function render() {
         {l: "MODO", v: document.getElementById('qMode').value},
         {l: "RST", v: document.getElementById('qRst').value}
     ];
-
     d.forEach((item, i) => {
         let px = elements.qsoBox.x + 50 + (i * 265);
         ctx.fillStyle = document.getElementById('col6').value; ctx.font = "800 22px sans-serif";
@@ -347,7 +344,7 @@ async function exportZip() {
         const img = cv.toDataURL('image/jpeg', 0.7).split(',')[1];
         z.file(`${log[i].call}.jpg`, img, {base64: true});
     }
-    saveAs(await z.generateAsync({type:"blob"}), "LOG_CL7ADV_GLOBAL.zip");
+    saveAs(await z.generateAsync({type:"blob"}), "LOG_EXPORT.zip");
 }
 </script>
 </body>
