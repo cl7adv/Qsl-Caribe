@@ -1,66 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>QSL Caribe – Amanecer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
-</head>
+<meta charset="UTF-8">
+<title>QSL Finder Ultra Lite</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<body>
-
-  <header class="hero">
-    <h1>🌅 QSL Caribe — Amanecer</h1>
-    <p class="sub">Hermandad en cada tarjeta</p>
-  </header>
-
-  <section class="buscador">
-    <input id="indicativo" type="text" placeholder="CO7ADV" autocomplete="off">
-    <button id="buscarBtn">Buscar QSL</button>
-  </section>
-
-  <section id="loader" class="loader oculto">
-    <div class="barra">
-      <div id="barraFill"></div>
-      <div id="cartaThumb">QSL</div>
-    </div>
-    <p id="loaderText">Escaneando archivos…</p>
-  </section>
-
-  <section id="resultado" class="resultado oculto">
-    <h2>Tarjetas encontradas</h2>
-    <div id="lista"></div>
-    <button id="descargarTodo" class="btn-descargar">Descargar Todo</button>
-  </section>
-
-  <footer>
-    <p>CL7ADV — Amanecer Caribeño 2026</p>
-  </footer>
-
-  <script src="app.js"></script>
-</body>
-</html>
+<style>
 body {
   margin: 0;
-  font-family: "Trebuchet MS", sans-serif;
-  background: linear-gradient(to bottom, #ffb74d, #ff8a65, #0277bd);
+  font-family: Arial, sans-serif;
+  background: #0d47a1;
   color: #fff;
   text-align: center;
 }
 
-/* Hero */
-.hero {
-  padding: 40px 20px;
-  text-shadow: 0 0 10px #000;
+header {
+  padding: 30px;
 }
 
-.sub {
-  margin-top: -10px;
-  font-size: 1.1rem;
-  opacity: 0.9;
-}
-
-/* Buscador */
 .buscador {
   margin-top: 20px;
 }
@@ -68,30 +25,23 @@ body {
 #indicativo {
   padding: 12px;
   width: 220px;
-  border-radius: 8px;
+  border-radius: 6px;
   border: none;
   font-size: 1.1rem;
   text-transform: uppercase;
 }
 
 #buscarBtn {
-  padding: 12px 25px;
+  padding: 12px 20px;
   margin-left: 10px;
   background: #ff9800;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   color: #fff;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.3s;
 }
 
-#buscarBtn:hover {
-  background: #f57c00;
-  transform: scale(1.05);
-}
-
-/* Loader */
 .loader {
   margin-top: 30px;
 }
@@ -103,11 +53,10 @@ body {
 .barra {
   width: 80%;
   max-width: 400px;
-  height: 16px;
+  height: 12px;
   background: rgba(255,255,255,0.3);
   border-radius: 10px;
   margin: 20px auto;
-  position: relative;
 }
 
 #barraFill {
@@ -118,26 +67,6 @@ body {
   transition: width 0.1s;
 }
 
-#cartaThumb {
-  position: absolute;
-  top: -30px;
-  left: 0%;
-  width: 45px;
-  height: 30px;
-  background: white;
-  border: 2px solid #ff9800;
-  border-radius: 4px;
-  color: black;
-  font-size: 0.7rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: translateX(-50%);
-  transition: left 0.1s;
-}
-
-/* Resultados */
 .resultado {
   margin-top: 40px;
 }
@@ -173,11 +102,43 @@ body {
   font-weight: bold;
   cursor: pointer;
 }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🔎 QSL Finder Ultra Lite</h1>
+  <p>Busca tus tarjetas QSL por indicativo</p>
+</header>
+
+<section class="buscador">
+  <input id="indicativo" type="text" placeholder="CO7ADV" autocomplete="off">
+  <button id="buscarBtn">Buscar</button>
+</section>
+
+<section id="loader" class="loader oculto">
+  <div class="barra">
+    <div id="barraFill"></div>
+  </div>
+  <p>Buscando archivos…</p>
+</section>
+
+<section id="resultado" class="resultado oculto">
+  <h2>Resultados</h2>
+  <div id="lista"></div>
+  <button id="descargarTodo" class="btn-descargar">Descargar Todo</button>
+</section>
+
+<footer>
+  <p>CL7ADV — QSL Finder Ultra Lite</p>
+</footer>
+
+<script>
 const input = document.getElementById("indicativo");
 const btn = document.getElementById("buscarBtn");
 const loader = document.getElementById("loader");
 const fill = document.getElementById("barraFill");
-const thumb = document.getElementById("cartaThumb");
 const lista = document.getElementById("lista");
 const resultado = document.getElementById("resultado");
 const btnTodo = document.getElementById("descargarTodo");
@@ -192,7 +153,6 @@ function buscar() {
   resultado.classList.add("oculto");
   lista.innerHTML = "";
   fill.style.width = "0%";
-  thumb.style.left = "0%";
 
   const exts = ["jpg", "png", "jpeg"];
   const pruebas = [];
@@ -223,7 +183,6 @@ function buscar() {
     procesados++;
     const pct = Math.round((procesados / total) * 100);
     fill.style.width = pct + "%";
-    thumb.style.left = pct + "%";
 
     if (procesados === total) {
       loader.classList.add("oculto");
@@ -261,3 +220,7 @@ function mostrar(arr) {
     });
   };
 }
+</script>
+
+</body>
+</html>
