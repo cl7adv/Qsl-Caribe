@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v29.5 - CL7ADV</title>
+    <title>QSL ELITE v30.0 - CL7ADV</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
@@ -126,11 +126,11 @@
 <div id="intro-overlay">
     <div style="color:white; letter-spacing: 5px; font-size: 14px;">RADIO CLUB SANTA CRUZ DEL SUR</div>
     <div class="cl7adv-pulse">CL7ADV</div>
-    <div style="color:var(--accent-new); margin-top:10px; font-family: monospace; font-weight: bold;">VERSION 29.5 <span class="tag-new">DB MEGA UPDATE</span></div>
+    <div style="color:var(--accent-new); margin-top:10px; font-family: monospace; font-weight: bold;">VERSION 30.0 <span class="tag-new">SMART LOG AUTO-DETECT</span></div>
 </div>
 
 <header>
-    <div style="font-weight: 900; color: var(--neon-cyan);">QSL ELITE <span style="font-weight:100; color:#fff;">| CL7ADV</span> <span class="tag-new">v29.5</span></div>
+    <div style="font-weight: 900; color: var(--neon-cyan);">QSL ELITE <span style="font-weight:100; color:#fff;">| CL7ADV</span> <span class="tag-new">v30.0</span></div>
     <div id="clock" style="font-family: monospace; color: var(--neon-cyan); font-weight: bold; font-size: 1.2rem; text-shadow: 0 0 10px rgba(0,242,255,0.5);">00:00:00 UTC</div>
 </header>
 
@@ -207,13 +207,10 @@
 <button class="btn-help" onclick="toggleHelp()">?</button>
 <div class="overlay-dim" id="overlay" onclick="toggleHelp()"></div>
 <div class="help-panel" id="helpPanel">
-    <h3>QSL ELITE v29.5 <span class="tag-new">UPDATE</span></h3>
+    <h3>QSL ELITE v30.0 <span class="tag-new">ULTRA</span></h3>
     <ul>
-        <li><b>Base de Datos Global:</b> Reconocimiento automático de todos los países hispanos y los 40 más activos del mundo.</li>
-        <li><b>Gestión de Logos:</b> Sube múltiples logos y arrástralos libremente por la pantalla.</li>
-        <li><b>Cuadro QSO Elite:</b> Nueva casilla de comentarios larga y distribución optimizada de columnas.</li>
-        <li><b>Reloj UTC Realtime:</b> Sincronizado para el logueo preciso.</li>
-        <li><b>Layout Inteligente:</b> Más espacio para Call, Fecha y Hora; Banda/Modo/RST compactos a la derecha.</li>
+        <li><b>Auto-Detección:</b> Ahora el sistema detecta tu indicativo (STATION_CALLSIGN) directamente desde el ADIF.</li>
+        <li><b>Digital Voice:</b> Los modos de voz digital se abrevian automáticamente a "DV".</li>.</li>
     </ul>
     <button class="btn btn-primary" onclick="toggleHelp()">ENTENDIDO</button>
 </div>
@@ -231,9 +228,7 @@ let elements = {
 let offset = { x: 0, y: 0 }, activeLogoIdx = -1;
 
 const DB = {
-    // --- HISPANOS ---
     'CL':'CUBA','CM':'CUBA','CO':'CUBA','T4':'CUBA','EA':'ESPAÑA','EB':'ESPAÑA','EC':'ESPAÑA','AM':'ESPAÑA','XE':'MÉXICO','XF':'MÉXICO','LU':'ARGENTINA','LW':'ARGENTINA','CE':'CHILE','XR':'CHILE','HK':'COLOMBIA','HJ':'COLOMBIA','YV':'VENEZUELA','4M':'VENEZUELA','OA':'PERÚ','ZP':'PARAGUAY','CP':'BOLIVIA','HC':'ECUADOR','TG':'GUATEMALA','HR':'HONDURAS','YS':'EL SALVADOR','YN':'NICARAGUA','TI':'COSTA RICA','HP':'PANAMÁ','HI':'REP. DOMINICANA','KP4':'PUERTO RICO','WP4':'PUERTO RICO','CX':'URUGUAY','C9':'GUINEA ECUAT.',
-    // --- TOP 40 MUNDIAL ---
     'K':'USA','W':'USA','N':'USA','AA':'USA','PY':'BRASIL','PP':'BRASIL','G':'INGLATERRA','M':'INGLATERRA','F':'FRANCIA','I':'ITALIA','DL':'ALEMANIA','JA':'JAPÓN','VK':'AUSTRALIA','ZL':'NUEVA ZELANDA','BY':'CHINA','UA':'RUSIA','UR':'UCRANIA','SP':'POLONIA','OK':'REP. CHECA','OH':'FINLANDIA','SM':'SUECIA','PA':'PAÍSES BAJOS','VU':'INDIA','YO':'RUMANÍA','OE':'AUSTRIA','HB':'SUIZA','VE':'CANADÁ','LA':'NORUEGA','OZ':'DINAMARCA','ON':'BÉLGICA','E7':'BOSNIA','S5':'ESLOVENIA','HA':'HUNGRÍA','LZ':'BULGARIA','SV':'GRECIA','CT':'PORTUGAL','4X':'ISRAEL','ZS':'SUDÁFRICA','HL':'COREA SUR','YB':'INDONESIA','DU':'FILIPINAS'
 };
 
@@ -310,7 +305,6 @@ function setupEvents() {
     
     document.getElementById('qCall').oninput = (e) => {
         const c = e.target.value.toUpperCase(); e.target.value = c;
-        // Solo autodetecta si el usuario está escribiendo manualmente el corresponsal
         if(!log.length) {
             const country = DB[c.substring(0,3)] || DB[c.substring(0,2)] || DB[c.substring(0,1)];
             if(country) document.getElementById('qComment').value = "Greetings to " + country + "!";
@@ -335,11 +329,29 @@ function resetLogos() { logos = []; render(); }
 document.getElementById('adiInp').onchange = (e) => {
     const reader = new FileReader();
     reader.onload = (ev) => {
+        let detectedMyCall = "";
         log = ev.target.result.split(/<eor>/i).map(c => {
             if(c.length < 10) return null;
             const f = (t) => { const m = c.match(new RegExp(`<${t}:\\d+>([^<]*)`, "i")); return m ? m[1].trim() : ""; };
-            return { call: f('CALL'), date: f('QSO_DATE'), time: f('TIME_ON'), band: f('BAND'), mode: f('MODE'), rst: f('RST_SENT'), comment: f('COMMENT') };
+            
+            // Intento detectar mi indicativo desde el archivo
+            if(!detectedMyCall) {
+                detectedMyCall = f('STATION_CALLSIGN') || f('OPERATOR');
+            }
+
+            let mode = f('MODE');
+            // Mapeo automático de DIGITAL VOICE a DV
+            if(mode.toUpperCase() === "DIGITALVOICE" || mode.toUpperCase() === "DIGITAL VOICE") {
+                mode = "DV";
+            }
+
+            return { call: f('CALL'), date: f('QSO_DATE'), time: f('TIME_ON'), band: f('BAND'), mode: mode, rst: f('RST_SENT'), comment: f('COMMENT') };
         }).filter(x => x && x.call);
+
+        if(detectedMyCall) {
+            document.getElementById('myCall').value = detectedMyCall.toUpperCase();
+        }
+
         if(log.length) { idx = 0; document.getElementById('zipBtn').style.display = 'block'; sync(); }
     };
     reader.readAsText(e.target.files[0]);
@@ -382,7 +394,6 @@ function render() {
     ctx.globalAlpha = 1; ctx.strokeStyle = document.getElementById('col4').value;
     ctx.lineWidth = 6; ctx.stroke();
     
-    // Layout solicitado: Corresponsal, Fecha, Hora (Espaciosos) | Banda, Modo, RST (Compactos derecha)
     const columns = [
         {l: "CORRESPONSAL", v: document.getElementById('qCall').value, x: 50, fs: 50},
         {l: "FECHA", v: document.getElementById('qDate').value, x: 480, fs: 50},
