@@ -186,7 +186,7 @@
                 <input type="text" id="qMode" value="" placeholder="MODO">
                 <input type="text" id="qRst" value="" placeholder="RST">
             </div>
-            <input type="text" id="qComment" value="" placeholder="COMENTARIO O SALUDO">
+            <input type="text" id="qComment" value="" placeholder="COMENTARIO O SALUDO (PARA TODOS)">
         </div>
 
         <div class="control-section">
@@ -340,16 +340,15 @@ function drawQsoBox(box) {
     const colBorder = document.getElementById('col4').value;
     const colBg = document.getElementById('col3').value;
     const alpha = parseInt(document.getElementById('boxAlpha').value) / 100;
+    const commentText = document.getElementById('qComment').value;
     
-    // Proporciones base
     const scaleFactor = Math.min(box.w / 1640, box.h / 280);
-    const spacing = box.w / 6; // Ancho exacto de cada celda
+    const spacing = box.w / 6; 
     const titleSize = Math.max(10, 24 * scaleFactor);
     let baseDataSize = Math.max(18, 58 * scaleFactor);
 
     ctx.save();
     
-    // --- EFECTOS DE ESTILO ---
     if (style === 'neon') { 
         ctx.shadowBlur = 30; 
         ctx.shadowColor = colBorder; 
@@ -358,7 +357,6 @@ function drawQsoBox(box) {
         ctx.shadowColor = "#ff4500";
     }
 
-    // Fondo y Borde Principal
     ctx.globalAlpha = alpha; 
     ctx.fillStyle = colBg;
     ctx.beginPath(); 
@@ -370,26 +368,12 @@ function drawQsoBox(box) {
     ctx.strokeStyle = (style === 'fenix') ? "#ff8c00" : colBorder; 
     ctx.stroke();
 
-    const midY = box.y + (box.h * 0.35);
+    const line1Y = box.y + (box.h * 0.35); 
+    const line2Y = box.y + (box.h * 0.75); 
 
-    // --- REJILLA Y LÍNEAS (Autoajustadas al ancho) ---
-    if (style === 'clasico') {
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = colBorder;
-        ctx.globalAlpha = 0.5;
-        for (let i = 1; i < 6; i++) {
-            ctx.beginPath();
-            ctx.moveTo(box.x + (spacing * i), box.y);
-            ctx.lineTo(box.x + (spacing * i), box.y + box.h);
-            ctx.stroke();
-        }
-    }
-
-    // Línea horizontal
-    ctx.globalAlpha = 1;
     ctx.beginPath(); 
-    ctx.moveTo(box.x, midY); 
-    ctx.lineTo(box.x + box.w, midY); 
+    ctx.moveTo(box.x, line1Y); ctx.lineTo(box.x + box.w, line1Y); 
+    ctx.moveTo(box.x, line2Y); ctx.lineTo(box.x + box.w, line2Y); 
     ctx.stroke();
 
     const labels = ["CALL", "DATE", "TIME UTC", "BAND", "MODE", "RST"];
@@ -404,33 +388,32 @@ function drawQsoBox(box) {
 
     labels.forEach((l, i) => {
         const xCenter = box.x + (spacing * i) + (spacing / 2);
-        const maxWidth = spacing * 0.85; // Margen de seguridad del 15%
+        const maxWidth = spacing * 0.85;
 
-        // Dibujar Título (Label)
         ctx.fillStyle = document.getElementById('col6').value;
         ctx.font = `bold ${titleSize}px sans-serif`; 
         ctx.textAlign = "center";
         ctx.fillText(l, xCenter, box.y + (box.h * 0.22));
         
-        // Dibujar Dato con AUTOAJUSTE (VAL)
         if(vals[i]) {
             let currentSize = baseDataSize;
             ctx.font = `900 ${currentSize}px monospace`;
-            
-            // Reducción dinámica si el texto excede el ancho de la celda
             while (ctx.measureText(vals[i]).width > maxWidth && currentSize > 10) {
                 currentSize -= 2;
                 ctx.font = `900 ${currentSize}px monospace`;
             }
-
             ctx.fillStyle = document.getElementById('col5').value;
-            if(style === 'fenix') { ctx.shadowBlur = 5; ctx.shadowColor = "black"; }
-            
-            // Centrado vertical dinámico
-            ctx.fillText(vals[i], xCenter, box.y + (box.h * 0.75));
-            ctx.shadowBlur = 0;
+            ctx.fillText(vals[i], xCenter, box.y + (box.h * 0.62));
         }
     });
+
+    if(commentText) {
+        ctx.fillStyle = document.getElementById('col5').value;
+        let commSize = Math.max(12, 26 * scaleFactor);
+        ctx.font = `italic 700 ${commSize}px sans-serif`;
+        ctx.textAlign = "left";
+        ctx.fillText(`MSG: ${commentText.toUpperCase()}`, box.x + 25, box.y + (box.h * 0.90));
+    }
     ctx.restore();
 }
 
@@ -455,6 +438,8 @@ function sync() {
     document.getElementById('qBand').value = q.band;
     document.getElementById('qMode').value = q.mode;
     document.getElementById('qRst').value = q.rst;
+    // Si el log ya tiene comentario lo usa, si no, usa el que esté en el input actualmente
+    document.getElementById('qComment').value = q.comment || document.getElementById('qComment').value;
     document.getElementById('qDate').value = q.date.replace(/(\d{4})(\d{2})(\d{2})/, '$3/$2/$1');
     document.getElementById('qTime').value = q.time.substring(0,2)+":"+q.time.substring(2,4);
     if(q.myCall) document.getElementById('myCall').value = q.myCall;
@@ -494,9 +479,17 @@ function setupEvents() {
     window.addEventListener('mouseup', () => { draggingElement = null; activeLogoIdx = -1; });
     cv.addEventListener('touchstart', start, {passive: false});
     window.addEventListener('touchmove', move, { passive: false });
+
+    // --- NUEVA LÓGICA DE ACTUALIZACIÓN EN TIEMPO REAL ---
     document.querySelectorAll('input, select').forEach(i => { i.oninput = () => {
         if(i.id === 'boxW') elements.qsoBox.w = parseInt(i.value);
         if(i.id === 'boxH') elements.qsoBox.h = parseInt(i.value);
+        
+        // Si el usuario cambia el comentario manualmente, se aplica a TODOS los contactos cargados
+        if(i.id === 'qComment' && log.length > 0) {
+            log.forEach(contact => contact.comment = i.value);
+        }
+        
         render();
     };});
 }
@@ -517,10 +510,16 @@ document.getElementById('logoInp').onchange = (e) => {
 async function downloadAllZip() {
     if (log.length === 0) return;
     const btn = document.getElementById('btnZip');
+    const originalComment = document.getElementById('qComment').value; // Guardar el comentario actual
+    
     btn.disabled = true; btn.innerText = "GENERANDO...";
     const zip = new JSZip();
     for (let i = 0; i < log.length; i++) {
-        idx = i; sync(); render();
+        idx = i; 
+        // Forzamos el comentario global en cada paso de la sincronización
+        log[i].comment = originalComment;
+        sync(); 
+        render();
         const blob = await new Promise(resolve => cv.toBlob(resolve, 'image/jpeg', 0.8));
         zip.file(`QSL_${log[i].call}.jpg`, blob);
     }
