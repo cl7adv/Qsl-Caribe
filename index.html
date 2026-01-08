@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v30.0 - CL7ADV</title>
+    <title>QSL ELITE v31.5 - Edición Manual y Masiva</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         :root {
             --bg-deep: #020408; --panel-bg: #0d1117; --neon-cyan: #00f2ff;
             --neon-pink: #ff007b; --text-main: #e6edf3; --border-color: #30363d;
-            --accent-new: #ccff00;
+            --accent-new: #ccff00; --fire-orange: #ff4500; --warning-yellow: #f1c40f;
         }
 
         #orientation-warning {
@@ -58,7 +58,7 @@
         .app-container { display: flex; flex: 1; overflow: hidden; }
 
         .sidebar {
-            width: 400px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
+            width: 420px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
             padding: 15px; overflow-y: auto; box-sizing: border-box;
             display: flex; flex-direction: column; height: 100%;
         }
@@ -73,45 +73,46 @@
 
         .section-title { color: var(--neon-pink); font-size: 0.7rem; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; }
 
-        input {
+        input, select, textarea {
             width: 100%; background: #010409; border: 1px solid var(--border-color);
             border-radius: 4px; padding: 8px; color: #fff; margin-bottom: 5px; font-size: 0.8rem;
+            box-sizing: border-box;
         }
 
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
         .btn {
-            width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 800;
-            cursor: pointer; text-transform: uppercase; margin-top: 8px; transition: 0.2s; font-size: 0.7rem;
+            width: 100%; padding: 10px; border-radius: 8px; border: none; font-weight: 800;
+            cursor: pointer; text-transform: uppercase; margin-top: 5px; transition: 0.2s; font-size: 0.7rem;
         }
 
         .btn-primary { background: var(--neon-cyan); color: #000; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2); }
+        .btn-zip { background: #f1c40f; color: #000; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3); }
         .btn-dark { background: #21262d; color: #fff; border: 1px solid var(--border-color); }
-        
-        .btn-help { 
-            background: var(--accent-new); color: #000; border-radius: 50%; width: 45px; height: 45px; 
-            font-size: 24px; border: none; cursor: pointer; position: fixed; bottom: 20px; right: 20px; 
-            z-index: 1000; font-weight: bold; box-shadow: 0 0 15px var(--accent-new);
-        }
-
-        .help-panel {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #161b22; border: 2px solid var(--accent-new); padding: 25px; border-radius: 15px;
-            z-index: 1001; max-width: 450px; width: 85%; box-shadow: 0 0 40px rgba(0,0,0,0.9);
-        }
-
-        .help-panel h3 { color: var(--accent-new); margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .help-panel ul { font-size: 0.85rem; line-height: 1.6; color: #ccc; }
-        .overlay-dim { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
-
-        .mobile-spacer { height: 70px; width: 100%; flex-shrink: 0; }
+        .btn-qrz { background: #f39c12; color: #000; }
+        .btn-warning { background: var(--warning-yellow); color: #000; font-size: 0.8rem; border: 2px solid #000; }
 
         .preview-area { flex: 1; background: #000; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; }
-        canvas { cursor: move; max-width: 98%; max-height: 98%; border: 1px solid #333; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        canvas { cursor: crosshair; max-width: 98%; max-height: 98%; border: 1px solid #333; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
         
         #indicator {
             position: absolute; bottom: 15px; left: 15px; font-size: 11px;
             color: var(--neon-cyan); background: rgba(0,0,0,0.8); padding: 6px 12px; border-radius: 4px; border: 1px solid var(--border-color);
+        }
+
+        .author-credits {
+            margin-top: auto; padding: 15px; text-align: center; border-top: 1px solid var(--border-color);
+            font-size: 10px; color: #888; letter-spacing: 1px;
+        }
+
+        #updateModal {
+            display:none; position: fixed; top:0; left:0; width:100%; height:100%; 
+            background:rgba(0,0,0,0.95); z-index:20000; justify-content:center; align-items:center; padding: 20px;
+        }
+        .modal-content {
+            background: var(--panel-bg); border: 2px solid var(--warning-yellow); padding: 30px; 
+            border-radius: 15px; max-width: 500px; text-align: center; position: relative;
+            box-shadow: 0 0 40px rgba(241, 196, 15, 0.2);
         }
     </style>
 </head>
@@ -124,31 +125,47 @@
 </div>
 
 <div id="intro-overlay">
-    <div style="color:white; letter-spacing: 5px; font-size: 14px;">RADIO CLUB SANTA CRUZ DEL SUR</div>
-    <div class="cl7adv-pulse">CL7ADV</div>
-    <div style="color:var(--accent-new); margin-top:10px; font-family: monospace; font-weight: bold;">VERSION 30.0 <span class="tag-new">SMART LOG AUTO-DETECT</span></div>
+    <div style="color:white; letter-spacing: 5px; font-size: 14px;">GENERADOR PROFESIONAL</div>
+    <div class="cl7adv-pulse">MI QSL ELITE</div>
+    <div style="color:var(--accent-new); margin-top:10px; font-family: monospace; font-weight: bold;">VERSIÓN 31.5 <span class="tag-new">CLEAN START</span></div>
 </div>
 
 <header>
-    <div style="font-weight: 900; color: var(--neon-cyan);">QSL ELITE <span style="font-weight:100; color:#fff;">| CL7ADV</span> <span class="tag-new">v30.0</span></div>
-    <div id="clock" style="font-family: monospace; color: var(--neon-cyan); font-weight: bold; font-size: 1.2rem; text-shadow: 0 0 10px rgba(0,242,255,0.5);">00:00:00 UTC</div>
+    <div style="font-weight: 900; color: var(--neon-cyan);">QSL ELITE <span style="font-weight:100; color:#fff;">| CL7ADV PRO</span> <span class="tag-new">v31.5</span></div>
+    <div id="clock" style="font-family: monospace; color: var(--neon-cyan); font-weight: bold; font-size: 1.2rem;">00:00:00 UTC</div>
 </header>
 
 <div class="app-container">
     <div class="sidebar">
-        <div class="control-section">
-            <div class="section-title">MULTIMEDIA Y LOGOS</div>
-            <label style="font-size:9px;">FONDO DE PANTALLA</label>
-            <input type="file" id="bgInp" accept="image/*">
-            <label style="font-size:9px;">SUBIR LOGOS (VARIA SELECCIÓN)</label>
-            <input type="file" id="logoInp" accept="image/*" multiple>
-            <button class="btn btn-dark" onclick="resetLogos()">BORRAR TODOS LOS LOGOS</button>
+        <div class="control-section" style="border-color: var(--warning-yellow); background: rgba(241, 196, 15, 0.05);">
+            <button class="btn btn-warning" onclick="openUpdateModal()">ℹ️ INFORMACIÓN Y CONSEJOS</button>
         </div>
 
         <div class="control-section">
-            <div class="section-title">MI ESTACIÓN</div>
-            <input type="text" id="myCall" value="CL7ADV" placeholder="MI CALL">
-            <input type="text" id="myQth" value="CUBA" placeholder="MI PAÍS">
+            <div class="section-title">MARCO DE TARJETA</div>
+            <div class="row">
+                <div><label style="font-size:9px;">COLOR MARCO</label><input type="color" id="frameCol" value="#ffffff"></div>
+                <div><label style="font-size:9px;">GROSOR</label><input type="range" id="frameSize" min="0" max="100" value="15"></div>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <div class="section-title">FONDO Y LOGOS</div>
+            <label style="font-size:9px;">CAMBIAR FONDO</label>
+            <input type="file" id="bgInp" accept="image/*">
+            <label style="font-size:9px;">SUBIR LOGOS</label>
+            <input type="file" id="logoInp" accept="image/*" multiple>
+            <button class="btn btn-dark" onclick="resetLogos()">BORRAR LOGOS</button>
+        </div>
+
+        <div class="control-section">
+            <div class="section-title">ESTACIÓN (TU IDENTIDAD)</div>
+            <input type="text" id="myCall" value="" placeholder="ESCRIBE TU INDICATIVO">
+            <input type="text" id="myQth" value="" placeholder="ESCRIBE TU PAÍS / UBICACIÓN">
+            <div class="row">
+                <div><label style="font-size:9px;">COLOR BORDE</label><input type="color" id="callStrokeCol" value="#000000"></div>
+                <div><label style="font-size:9px;">GROSOR BORDE</label><input type="range" id="callStrokeSize" min="0" max="30" value="10"></div>
+            </div>
             <div class="row">
                 <div><label style="font-size:9px;">TAMAÑO CALL</label><input type="range" id="sizeCall" min="50" max="450" value="240"></div>
                 <div><label style="font-size:9px;">TAMAÑO QTH</label><input type="range" id="sizeQth" min="20" max="200" value="90"></div>
@@ -156,208 +173,283 @@
         </div>
 
         <div class="control-section">
+            <div class="section-title">DATOS DEL COMUNICADO (QSO)</div>
+            <div class="row">
+                <input type="text" id="qCall" value="" placeholder="CALL DX">
+                <input type="text" id="qDate" value="" placeholder="FECHA">
+            </div>
+            <div class="row">
+                <input type="text" id="qTime" value="" placeholder="HORA UTC">
+                <input type="text" id="qBand" value="" placeholder="BANDA">
+            </div>
+            <div class="row">
+                <input type="text" id="qMode" value="" placeholder="MODO">
+                <input type="text" id="qRst" value="" placeholder="RST">
+            </div>
+            <input type="text" id="qComment" value="" placeholder="COMENTARIO O SALUDO">
+        </div>
+
+        <div class="control-section">
             <div class="section-title">IMPORTAR LOG ADIF</div>
             <input type="file" id="adiInp" accept=".adi,.adif">
             <div class="row">
-                <button class="btn btn-dark" onclick="nav(-1)">ANTERIOR</button>
-                <button class="btn btn-dark" onclick="nav(1)">SIGUIENTE</button>
+                <button class="btn btn-dark" onclick="nav(-1)">ANT.</button>
+                <button class="btn btn-dark" onclick="nav(1)">SIG.</button>
+                <button class="btn btn-qrz" onclick="lookupQRZ()">VER EN QRZ</button>
             </div>
         </div>
 
         <div class="control-section">
-            <div class="section-title">DETALLES DEL QSO</div>
-            <input type="text" id="qCall" placeholder="STATION CALL">
-            <div class="row">
-                <input type="text" id="qDate" placeholder="FECHA">
-                <input type="text" id="qTime" placeholder="HORA UTC">
+            <div class="section-title">ESTILO DE TABLA</div>
+            <select id="boxStyle" onchange="render()">
+                <option value="clasico">ESTILO CLÁSICO</option>
+                <option value="neon">ESTILO NEÓN MODERNO</option>
+                <option value="fenix">ESTILO FÉNIX 🔥</option>
+            </select>
+            <div class="row" style="margin-top:5px;">
+                <div><label style="font-size:9px;">ANCHO</label><input type="range" id="boxW" min="400" max="1750" value="1640"></div>
+                <div><label style="font-size:9px;">ALTO</label><input type="range" id="boxH" min="150" max="600" value="280"></div>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px;">
-                <input type="text" id="qBand" placeholder="BANDA">
-                <input type="text" id="qMode" placeholder="MODO">
-                <input type="text" id="qRst" placeholder="RST">
-            </div>
-            <input type="text" id="qComment" placeholder="MENSAJE / COMENTARIOS FINALES..." maxlength="70">
         </div>
 
         <div class="control-section">
-            <div class="section-title">PERSONALIZACIÓN VISUAL</div>
+            <div class="section-title">COLORES DE TABLA</div>
             <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
                 <input type="color" id="col1" value="#ff007b" title="Color Indicativo">
                 <input type="color" id="col2" value="#00f2ff" title="Color País">
-                <input type="color" id="col3" value="#0d1117" title="Fondo Caja">
-                <input type="color" id="col4" value="#00f2ff" title="Borde/Etiquetas">
-                <input type="color" id="col5" value="#ffffff" title="Texto Datos">
-                <input type="color" id="col6" value="#00f2ff" title="Títulos Datos">
+                <input type="color" id="col3" value="#0d1117" title="Fondo Tabla">
+                <input type="color" id="col4" value="#00f2ff" title="Bordes">
+                <input type="color" id="col5" value="#ffffff" title="Datos Texto">
+                <input type="color" id="col6" value="#00f2ff" title="Títulos">
             </div>
-            <label style="font-size:9px;">TRANSPARENCIA CAJA QSO</label>
+            <label style="font-size:9px; margin-top:5px; display:block;">OPACIDAD TABLA</label>
             <input type="range" id="boxAlpha" min="0" max="100" value="90">
         </div>
 
-        <button class="btn btn-primary" onclick="exportJpg()">DESCARGAR IMAGEN JPG</button>
-        <button class="btn btn-dark" id="zipBtn" style="display:none;" onclick="exportZip()">DESCARGAR LOTE (.ZIP)</button>
-        <div class="mobile-spacer"></div>
+        <button class="btn btn-primary" onclick="exportJpg()">DESCARGAR ESTA QSL (JPG)</button>
+        <button class="btn btn-zip" id="btnZip" onclick="downloadAllZip()" style="display:none;">DESCARGAR PACK ADIF (.ZIP)</button>
+        
+        <div class="author-credits">
+            DESARROLLADO POR <strong>CL7ADV</strong> © 2026<br>
+            73 PARA LA COMUNIDAD DE RADIOAFICIONADOS
+        </div>
+        <div style="height:20px;"></div>
     </div>
 
     <div class="preview-area">
-        <div id="indicator">READY</div>
+        <div id="indicator">ESTADO: INICIO LIMPIO</div>
         <canvas id="cv" width="1800" height="1100"></canvas>
     </div>
 </div>
 
-<button class="btn-help" onclick="toggleHelp()">?</button>
-<div class="overlay-dim" id="overlay" onclick="toggleHelp()"></div>
-<div class="help-panel" id="helpPanel">
-    <h3>QSL ELITE v30.0 <span class="tag-new">ULTRA</span></h3>
-    <ul>
-        <li><b>Auto-Detección:</b> Ahora el sistema detecta tu indicativo (STATION_CALLSIGN) directamente desde el ADIF.</li>
-        <li><b>Digital Voice:</b> Los modos de voz digital se abrevian automáticamente a "DV".</li>.</li>
-    </ul>
-    <button class="btn btn-primary" onclick="toggleHelp()">ENTENDIDO</button>
+<div id="updateModal">
+    <div class="modal-content">
+        <h2 style="color:var(--warning-yellow); margin-top:0;">CONSEJOS DE OPERACIÓN</h2>
+        <div style="background:rgba(0,0,0,0.5); padding:15px; border-radius:8px; border-left:4px solid var(--warning-yellow); text-align:left; margin:15px 0;">
+            <div id="radioTip" style="font-style:italic; margin-top:5px; font-size:0.9rem;"></div>
+        </div>
+        <p style="font-size: 0.8rem; color: #888;">Este programa permite crear QSLs personalizadas de forma rápida. Al cargar un ADIF, se detectará automáticamente el operador.</p>
+        <button class="btn btn-primary" onclick="closeUpdateModal()">CERRAR</button>
+    </div>
 </div>
 
 <script>
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 let bg = new Image(), log = [], idx = 0, logos = [];
+let elements = { myCall: { x: 80, y: 260 }, myQth: { x: 95, y: 380 }, qsoBox: { x: 80, y: 780, w: 1640, h: 280 } };
+let offset = { x: 0, y: 0 }, activeLogoIdx = -1, draggingElement = null;
 
-let elements = {
-    myCall: { x: 80, y: 260, dragging: false },
-    myQth: { x: 95, y: 380, dragging: false },
-    qsoBox: { x: 80, y: 780, w: 1640, h: 280, dragging: false }
-};
+const consejosRadio = [
+    "Escucha siempre antes de transmitir.", "Usa código fonético internacional.", "La antena es el alma de la estación.",
+    "Mínima potencia necesaria siempre.", "Reporte RST honesto ayuda más.", "Respeta el plan de bandas.",
+    "UTC es la hora universal del radioaficionado.", "Limpia tus conectores de antena.", "Aprender CW abre nuevos horizontes."
+];
 
-let offset = { x: 0, y: 0 }, activeLogoIdx = -1;
-
-const DB = {
-    'CL':'CUBA','CM':'CUBA','CO':'CUBA','T4':'CUBA','EA':'ESPAÑA','EB':'ESPAÑA','EC':'ESPAÑA','AM':'ESPAÑA','XE':'MÉXICO','XF':'MÉXICO','LU':'ARGENTINA','LW':'ARGENTINA','CE':'CHILE','XR':'CHILE','HK':'COLOMBIA','HJ':'COLOMBIA','YV':'VENEZUELA','4M':'VENEZUELA','OA':'PERÚ','ZP':'PARAGUAY','CP':'BOLIVIA','HC':'ECUADOR','TG':'GUATEMALA','HR':'HONDURAS','YS':'EL SALVADOR','YN':'NICARAGUA','TI':'COSTA RICA','HP':'PANAMÁ','HI':'REP. DOMINICANA','KP4':'PUERTO RICO','WP4':'PUERTO RICO','CX':'URUGUAY','C9':'GUINEA ECUAT.',
-    'K':'USA','W':'USA','N':'USA','AA':'USA','PY':'BRASIL','PP':'BRASIL','G':'INGLATERRA','M':'INGLATERRA','F':'FRANCIA','I':'ITALIA','DL':'ALEMANIA','JA':'JAPÓN','VK':'AUSTRALIA','ZL':'NUEVA ZELANDA','BY':'CHINA','UA':'RUSIA','UR':'UCRANIA','SP':'POLONIA','OK':'REP. CHECA','OH':'FINLANDIA','SM':'SUECIA','PA':'PAÍSES BAJOS','VU':'INDIA','YO':'RUMANÍA','OE':'AUSTRIA','HB':'SUIZA','VE':'CANADÁ','LA':'NORUEGA','OZ':'DINAMARCA','ON':'BÉLGICA','E7':'BOSNIA','S5':'ESLOVENIA','HA':'HUNGRÍA','LZ':'BULGARIA','SV':'GRECIA','CT':'PORTUGAL','4X':'ISRAEL','ZS':'SUDÁFRICA','HL':'COREA SUR','YB':'INDONESIA','DU':'FILIPINAS'
-};
+function openUpdateModal() {
+    document.getElementById('radioTip').innerText = `"${consejosRadio[Math.floor(Math.random() * consejosRadio.length)]}"`;
+    document.getElementById('updateModal').style.display = 'flex';
+}
+function closeUpdateModal() { document.getElementById('updateModal').style.display = 'none'; }
 
 function initApp() {
     bg.crossOrigin = "anonymous";
-    bg.src = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=80";
+    bg.src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1800&q=80";
     bg.onload = render;
-
     setTimeout(() => {
         document.getElementById('intro-overlay').style.opacity = 0;
         setTimeout(() => document.getElementById('intro-overlay').style.display = 'none', 1000);
-    }, 2500);
-
-    setInterval(() => {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + 
-                                                     now.getUTCMinutes().toString().padStart(2,'0') + ":" + 
-                                                     now.getUTCSeconds().toString().padStart(2,'0') + " UTC";
-    }, 1000);
+    }, 2000);
+    setInterval(updateClock, 1000);
     setupEvents();
 }
 
-function toggleHelp() {
-    const p = document.getElementById('helpPanel'), o = document.getElementById('overlay');
-    const isVis = p.style.display === 'block';
-    p.style.display = isVis ? 'none' : 'block';
-    o.style.display = isVis ? 'none' : 'block';
+function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + 
+                                                 now.getUTCMinutes().toString().padStart(2,'0') + ":" + 
+                                                 now.getUTCSeconds().toString().padStart(2,'0') + " UTC";
 }
 
-function setupEvents() {
-    const getPos = (e) => {
-        const rect = cv.getBoundingClientRect();
-        const sx = cv.width / rect.width, sy = cv.height / rect.height;
-        const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-        const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
-        return { x: (clientX - rect.left) * sx, y: (clientY - rect.top) * sy };
-    };
-
-    const start = (e) => {
-        const p = getPos(e); activeLogoIdx = -1;
-        for(let i = logos.length-1; i >= 0; i--) {
-            let l = logos[i];
-            if(p.x > l.x && p.x < l.x + l.w && p.y > l.y && p.y < l.y + l.h) {
-                activeLogoIdx = i; offset.x = p.x - l.x; offset.y = p.y - l.y; return;
-            }
-        }
-        if (p.x > elements.myCall.x && p.x < elements.myCall.x + 800 && p.y > elements.myCall.y - 200 && p.y < elements.myCall.y) elements.myCall.dragging = true;
-        else if (p.x > elements.qsoBox.x && p.x < elements.qsoBox.x + elements.qsoBox.w && p.y > elements.qsoBox.y && p.y < elements.qsoBox.y + elements.qsoBox.h) elements.qsoBox.dragging = true;
-        else if (p.x > elements.myQth.x && p.x < elements.myQth.x + 500 && p.y > elements.myQth.y - 80 && p.y < elements.myQth.y) elements.myQth.dragging = true;
-        offset.x = p.x; offset.y = p.y;
-    };
-
-    const move = (e) => {
-        if (activeLogoIdx === -1 && !elements.myCall.dragging && !elements.qsoBox.dragging && !elements.myQth.dragging) return;
-        if(e.cancelable) e.preventDefault();
-        const p = getPos(e);
-        if(activeLogoIdx !== -1) {
-            logos[activeLogoIdx].x = p.x - offset.x; logos[activeLogoIdx].y = p.y - offset.y;
-        } else {
-            const dx = p.x - offset.x, dy = p.y - offset.y;
-            if (elements.myCall.dragging) { elements.myCall.x += dx; elements.myCall.y += dy; }
-            if (elements.myQth.dragging) { elements.myQth.x += dx; elements.myQth.y += dy; }
-            if (elements.qsoBox.dragging) { elements.qsoBox.x += dx; elements.qsoBox.y += dy; }
-            offset.x = p.x; offset.y = p.y;
-        }
-        render();
-    };
-
-    const stop = () => { elements.myCall.dragging = false; elements.myQth.dragging = false; elements.qsoBox.dragging = false; activeLogoIdx = -1; };
-
-    cv.addEventListener('mousedown', start); window.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
-    cv.addEventListener('touchstart', start, {passive: false}); window.addEventListener('touchmove', move, { passive: false }); window.addEventListener('touchend', stop);
-    document.querySelectorAll('input').forEach(i => i.oninput = render);
+function render() {
+    ctx.clearRect(0,0,1800,1100);
+    if(bg.complete) ctx.drawImage(bg, 0, 0, 1800, 1100);
     
-    document.getElementById('qCall').oninput = (e) => {
-        const c = e.target.value.toUpperCase(); e.target.value = c;
-        if(!log.length) {
-            const country = DB[c.substring(0,3)] || DB[c.substring(0,2)] || DB[c.substring(0,1)];
-            if(country) document.getElementById('qComment').value = "Greetings to " + country + "!";
+    const fSize = parseInt(document.getElementById('frameSize').value);
+    if(fSize > 0) {
+        ctx.strokeStyle = document.getElementById('frameCol').value;
+        ctx.lineWidth = fSize;
+        ctx.strokeRect(fSize/2, fSize/2, 1800-fSize, 1100-fSize);
+    }
+
+    logos.forEach(l => ctx.drawImage(l.img, l.x, l.y, l.w, l.h));
+
+    ctx.save();
+    const myCall = document.getElementById('myCall').value;
+    const myQth = document.getElementById('myQth').value;
+    const sSize = parseInt(document.getElementById('callStrokeSize').value);
+    const sCol = document.getElementById('callStrokeCol').value;
+
+    ctx.textAlign = "left";
+    
+    if(myCall) {
+        ctx.font = `900 ${document.getElementById('sizeCall').value}px sans-serif`;
+        if(sSize > 0) {
+            ctx.strokeStyle = sCol; ctx.lineWidth = sSize; ctx.lineJoin = "round";
+            ctx.strokeText(myCall, elements.myCall.x, elements.myCall.y);
         }
-        render();
-    };
+        ctx.fillStyle = document.getElementById('col1').value;
+        ctx.fillText(myCall, elements.myCall.x, elements.myCall.y);
+    }
+
+    if(myQth) {
+        ctx.font = `bold ${document.getElementById('sizeQth').value}px sans-serif`;
+        if(sSize > 0) {
+            ctx.strokeStyle = sCol; ctx.lineWidth = sSize * 0.6;
+            ctx.strokeText(myQth, elements.myQth.x, elements.myQth.y);
+        }
+        ctx.fillStyle = document.getElementById('col2').value;
+        ctx.fillText(myQth, elements.myQth.x, elements.myQth.y);
+    }
+    ctx.restore();
+
+    drawQsoBox(elements.qsoBox);
 }
 
-document.getElementById('logoInp').onchange = (e) => {
-    Array.from(e.target.files).forEach(file => {
-        const r = new FileReader();
-        r.onload = (ev) => {
-            const img = new Image(); img.src = ev.target.result;
-            img.onload = () => { logos.push({ img, x: 1500, y: 50, w: 200, h: 200 }); render(); };
-        };
-        r.readAsDataURL(file);
-    });
-};
+function drawQsoBox(box) {
+    const style = document.getElementById('boxStyle').value;
+    const colBorder = document.getElementById('col4').value;
+    const colBg = document.getElementById('col3').value;
+    const alpha = parseInt(document.getElementById('boxAlpha').value) / 100;
+    
+    // Proporciones base
+    const scaleFactor = Math.min(box.w / 1640, box.h / 280);
+    const spacing = box.w / 6; // Ancho exacto de cada celda
+    const titleSize = Math.max(10, 24 * scaleFactor);
+    let baseDataSize = Math.max(18, 58 * scaleFactor);
 
-function resetLogos() { logos = []; render(); }
+    ctx.save();
+    
+    // --- EFECTOS DE ESTILO ---
+    if (style === 'neon') { 
+        ctx.shadowBlur = 30; 
+        ctx.shadowColor = colBorder; 
+    } else if (style === 'fenix') {
+        ctx.shadowBlur = 40;
+        ctx.shadowColor = "#ff4500";
+    }
+
+    // Fondo y Borde Principal
+    ctx.globalAlpha = alpha; 
+    ctx.fillStyle = colBg;
+    ctx.beginPath(); 
+    ctx.roundRect(box.x, box.y, box.w, box.h, 15); 
+    ctx.fill();
+
+    ctx.globalAlpha = 1; 
+    ctx.lineWidth = (style === 'fenix') ? 6 : 4; 
+    ctx.strokeStyle = (style === 'fenix') ? "#ff8c00" : colBorder; 
+    ctx.stroke();
+
+    const midY = box.y + (box.h * 0.35);
+
+    // --- REJILLA Y LÍNEAS (Autoajustadas al ancho) ---
+    if (style === 'clasico') {
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = colBorder;
+        ctx.globalAlpha = 0.5;
+        for (let i = 1; i < 6; i++) {
+            ctx.beginPath();
+            ctx.moveTo(box.x + (spacing * i), box.y);
+            ctx.lineTo(box.x + (spacing * i), box.y + box.h);
+            ctx.stroke();
+        }
+    }
+
+    // Línea horizontal
+    ctx.globalAlpha = 1;
+    ctx.beginPath(); 
+    ctx.moveTo(box.x, midY); 
+    ctx.lineTo(box.x + box.w, midY); 
+    ctx.stroke();
+
+    const labels = ["CALL", "DATE", "TIME UTC", "BAND", "MODE", "RST"];
+    const vals = [
+        document.getElementById('qCall').value,
+        document.getElementById('qDate').value,
+        document.getElementById('qTime').value,
+        document.getElementById('qBand').value,
+        document.getElementById('qMode').value,
+        document.getElementById('qRst').value
+    ];
+
+    labels.forEach((l, i) => {
+        const xCenter = box.x + (spacing * i) + (spacing / 2);
+        const maxWidth = spacing * 0.85; // Margen de seguridad del 15%
+
+        // Dibujar Título (Label)
+        ctx.fillStyle = document.getElementById('col6').value;
+        ctx.font = `bold ${titleSize}px sans-serif`; 
+        ctx.textAlign = "center";
+        ctx.fillText(l, xCenter, box.y + (box.h * 0.22));
+        
+        // Dibujar Dato con AUTOAJUSTE (VAL)
+        if(vals[i]) {
+            let currentSize = baseDataSize;
+            ctx.font = `900 ${currentSize}px monospace`;
+            
+            // Reducción dinámica si el texto excede el ancho de la celda
+            while (ctx.measureText(vals[i]).width > maxWidth && currentSize > 10) {
+                currentSize -= 2;
+                ctx.font = `900 ${currentSize}px monospace`;
+            }
+
+            ctx.fillStyle = document.getElementById('col5').value;
+            if(style === 'fenix') { ctx.shadowBlur = 5; ctx.shadowColor = "black"; }
+            
+            // Centrado vertical dinámico
+            ctx.fillText(vals[i], xCenter, box.y + (box.h * 0.75));
+            ctx.shadowBlur = 0;
+        }
+    });
+    ctx.restore();
+}
 
 document.getElementById('adiInp').onchange = (e) => {
     const reader = new FileReader();
     reader.onload = (ev) => {
-        let detectedMyCall = "";
         log = ev.target.result.split(/<eor>/i).map(c => {
             if(c.length < 10) return null;
             const f = (t) => { const m = c.match(new RegExp(`<${t}:\\d+>([^<]*)`, "i")); return m ? m[1].trim() : ""; };
-            
-            // Intento detectar mi indicativo desde el archivo
-            if(!detectedMyCall) {
-                detectedMyCall = f('STATION_CALLSIGN') || f('OPERATOR');
-            }
-
-            let mode = f('MODE');
-            // Mapeo automático de DIGITAL VOICE a DV
-            if(mode.toUpperCase() === "DIGITALVOICE" || mode.toUpperCase() === "DIGITAL VOICE") {
-                mode = "DV";
-            }
-
-            return { call: f('CALL'), date: f('QSO_DATE'), time: f('TIME_ON'), band: f('BAND'), mode: mode, rst: f('RST_SENT'), comment: f('COMMENT') };
+            let station = f('STATION_CALLSIGN') || f('OPERATOR') || "";
+            return { call: f('CALL'), date: f('QSO_DATE'), time: f('TIME_ON'), band: f('BAND'), mode: f('MODE'), rst: f('RST_SENT'), comment: f('COMMENT'), myCall: station };
         }).filter(x => x && x.call);
-
-        if(detectedMyCall) {
-            document.getElementById('myCall').value = detectedMyCall.toUpperCase();
-        }
-
-        if(log.length) { idx = 0; document.getElementById('zipBtn').style.display = 'block'; sync(); }
+        if(log.length) { idx = 0; sync(); document.getElementById('btnZip').style.display = 'block'; }
     };
     reader.readAsText(e.target.files[0]);
 };
 
 function sync() {
+    if(!log[idx]) return;
     const q = log[idx];
     document.getElementById('qCall').value = q.call;
     document.getElementById('qBand').value = q.band;
@@ -365,78 +457,76 @@ function sync() {
     document.getElementById('qRst').value = q.rst;
     document.getElementById('qDate').value = q.date.replace(/(\d{4})(\d{2})(\d{2})/, '$3/$2/$1');
     document.getElementById('qTime').value = q.time.substring(0,2)+":"+q.time.substring(2,4);
-    document.getElementById('qComment').value = q.comment || "TNX QSO! 73s";
-    document.getElementById('indicator').innerText = `QSO: ${idx+1} / ${log.length}`;
+    if(q.myCall) document.getElementById('myCall').value = q.myCall;
+    document.getElementById('indicator').innerText = `QSO ${idx+1}/${log.length}`;
     render();
 }
 
-function nav(d) { if(log.length) { idx = (idx+d+log.length)%log.length; sync(); } }
-
-function render() {
-    ctx.clearRect(0,0,1800,1100); ctx.fillStyle = "#000"; ctx.fillRect(0,0,1800,1100);
-    if(bg.complete && bg.naturalWidth !== 0) ctx.drawImage(bg, 0, 0, 1800, 1100);
-    logos.forEach(l => ctx.drawImage(l.img, l.x, l.y, l.w, l.h));
-
-    ctx.save();
-    ctx.fillStyle = document.getElementById('col1').value;
-    ctx.font = `900 ${document.getElementById('sizeCall').value}px sans-serif`;
-    ctx.shadowBlur = 20; ctx.shadowColor = "rgba(0,0,0,0.7)";
-    ctx.fillText(document.getElementById('myCall').value || "CL7ADV", elements.myCall.x, elements.myCall.y);
-    ctx.fillStyle = document.getElementById('col2').value;
-    ctx.font = `bold ${document.getElementById('sizeQth').value}px sans-serif`;
-    ctx.fillText(document.getElementById('myQth').value || "CUBA", elements.myQth.x, elements.myQth.y);
-    ctx.restore();
-
-    ctx.save();
-    ctx.globalAlpha = document.getElementById('boxAlpha').value / 100;
-    ctx.fillStyle = document.getElementById('col3').value;
-    ctx.beginPath(); ctx.roundRect(elements.qsoBox.x, elements.qsoBox.y, elements.qsoBox.w, elements.qsoBox.h, 25); ctx.fill();
-    ctx.globalAlpha = 1; ctx.strokeStyle = document.getElementById('col4').value;
-    ctx.lineWidth = 6; ctx.stroke();
-    
-    const columns = [
-        {l: "CORRESPONSAL", v: document.getElementById('qCall').value, x: 50, fs: 50},
-        {l: "FECHA", v: document.getElementById('qDate').value, x: 480, fs: 50},
-        {l: "HORA", v: document.getElementById('qTime').value, x: 790, fs: 50},
-        {l: "BANDA", v: document.getElementById('qBand').value, x: 1100, fs: 45},
-        {l: "MODO", v: document.getElementById('qMode').value, x: 1290, fs: 45},
-        {l: "RST", v: document.getElementById('qRst').value, x: 1480, fs: 45}
-    ];
-
-    columns.forEach((item) => {
-        ctx.fillStyle = document.getElementById('col6').value; ctx.font = "800 20px sans-serif";
-        ctx.fillText(item.l, elements.qsoBox.x + item.x, elements.qsoBox.y + 60);
-        ctx.fillStyle = document.getElementById('col5').value; ctx.font = `bold ${item.fs}px monospace`;
-        ctx.fillText(item.v || "---", elements.qsoBox.x + item.x, elements.qsoBox.y + 130);
-    });
-
-    const commY = elements.qsoBox.y + 210;
-    ctx.fillStyle = document.getElementById('col4').value; ctx.font = "900 18px sans-serif";
-    ctx.fillText("COMENTARIOS Y NOTAS ADICIONALES", elements.qsoBox.x + 50, commY);
-    ctx.fillStyle = document.getElementById('col5').value; ctx.font = "italic 42px sans-serif";
-    ctx.fillText(document.getElementById('qComment').value || "TNX QSO! Best 73s", elements.qsoBox.x + 50, commY + 50);
-    ctx.restore();
+function setupEvents() {
+    const getPos = (e) => {
+        const rect = cv.getBoundingClientRect();
+        const sx = cv.width / rect.width, sy = cv.height / rect.height;
+        const cX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+        const cY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+        return { x: (cX - rect.left) * sx, y: (cY - rect.top) * sy };
+    };
+    const start = (e) => {
+        const p = getPos(e); activeLogoIdx = -1; draggingElement = null;
+        for(let i = logos.length-1; i >= 0; i--) {
+            let l = logos[i]; if(p.x > l.x && p.x < l.x + l.w && p.y > l.y && p.y < l.y + l.h) { activeLogoIdx = i; offset.x = p.x - l.x; offset.y = p.y - l.y; return; }
+        }
+        for (let key in elements) {
+            let el = elements[key];
+            let hit = el.w ? (p.x > el.x && p.x < el.x + el.w && p.y > el.y && p.y < el.y + el.h) : (p.x > el.x && p.x < el.x + 800 && p.y > el.y - 200 && p.y < el.y);
+            if (hit) { draggingElement = el; offset.x = p.x - el.x; offset.y = p.y - el.y; return; }
+        }
+    };
+    const move = (e) => {
+        if (!draggingElement && activeLogoIdx === -1) return;
+        if(e.cancelable) e.preventDefault();
+        const p = getPos(e);
+        if(activeLogoIdx !== -1) { logos[activeLogoIdx].x = p.x - offset.x; logos[activeLogoIdx].y = p.y - offset.y; } 
+        else if (draggingElement) { draggingElement.x = p.x - offset.x; draggingElement.y = p.y - offset.y; }
+        render();
+    };
+    cv.addEventListener('mousedown', start);
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', () => { draggingElement = null; activeLogoIdx = -1; });
+    cv.addEventListener('touchstart', start, {passive: false});
+    window.addEventListener('touchmove', move, { passive: false });
+    document.querySelectorAll('input, select').forEach(i => { i.oninput = () => {
+        if(i.id === 'boxW') elements.qsoBox.w = parseInt(i.value);
+        if(i.id === 'boxH') elements.qsoBox.h = parseInt(i.value);
+        render();
+    };});
 }
 
-document.getElementById('bgInp').onchange = (e) => {
-    const r = new FileReader(); r.onload = (ev) => { bg.src = ev.target.result; bg.onload = render; };
-    r.readAsDataURL(e.target.files[0]);
+function nav(d) { if(log.length) { idx = (idx+d+log.length)%log.length; sync(); } }
+function exportJpg() { const a = document.createElement('a'); a.download = `QSL_${document.getElementById('qCall').value || 'TEMP'}.jpg`; a.href = cv.toDataURL('image/jpeg', 0.9); a.click(); }
+function resetLogos() { logos = []; render(); }
+function lookupQRZ() { const call = document.getElementById('qCall').value; if(call) window.open(`https://www.qrz.com/db/${call}`, '_blank'); }
+document.getElementById('bgInp').onchange = (e) => { const r = new FileReader(); r.onload = (ev) => { bg.src = ev.target.result; }; r.readAsDataURL(e.target.files[0]); };
+document.getElementById('logoInp').onchange = (e) => {
+    Array.from(e.target.files).forEach(f => {
+        const r = new FileReader(); r.onload = (ev) => {
+            const i = new Image(); i.src = ev.target.result; i.onload = () => { logos.push({ img: i, x: 1500, y: 50, w: 200, h: 200 }); render(); };
+        }; r.readAsDataURL(f);
+    });
 };
 
-function exportJpg() {
-    const a = document.createElement('a'); a.download = `QSL_${document.getElementById('qCall').value}.jpg`;
-    a.href = cv.toDataURL('image/jpeg', 0.92); a.click();
-}
-
-async function exportZip() {
-    const z = new JSZip(); const originalIdx = idx;
-    for(let i=0; i<log.length; i++) {
-        idx = i; sync();
-        const img = cv.toDataURL('image/jpeg', 0.8).split(',')[1];
-        z.file(`${log[i].call}.jpg`, img, {base64: true});
+async function downloadAllZip() {
+    if (log.length === 0) return;
+    const btn = document.getElementById('btnZip');
+    btn.disabled = true; btn.innerText = "GENERANDO...";
+    const zip = new JSZip();
+    for (let i = 0; i < log.length; i++) {
+        idx = i; sync(); render();
+        const blob = await new Promise(resolve => cv.toBlob(resolve, 'image/jpeg', 0.8));
+        zip.file(`QSL_${log[i].call}.jpg`, blob);
     }
-    idx = originalIdx; sync();
-    saveAs(await z.generateAsync({type:"blob"}), "LOG_EXPORT_CL7ADV.zip");
+    const content = await zip.generateAsync({type:"blob"});
+    saveAs(content, `PACK_QSL.zip`);
+    btn.disabled = false; btn.innerText = "DESCARGAR PACK ADIF (.ZIP)";
 }
 </script>
 </body>
