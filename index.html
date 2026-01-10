@@ -141,12 +141,18 @@
     <div class="sidebar">
         
         <div class="control-section">
-            <div class="section-title">🖼️ IMAGEN Y BRILLO</div>
+            <div class="section-title">🖼️ IMAGEN Y MARCO QSL</div>
             <label>ENFOQUE (BLUR)</label>
             <input type="range" id="bgBlur" min="0" max="25" value="0" oninput="render()">
             <label>BRILLO DEL FONDO</label>
             <input type="range" id="bgBrightness" min="10" max="150" value="100" oninput="render()">
-            <label>CAMBIAR FONDO</label>
+            
+            <div class="row" style="margin-top:10px; border-top: 1px solid #333; padding-top:10px;">
+                <div><label>BORDE EXTERIOR PX</label><input type="range" id="outerBorderSize" min="0" max="60" value="0" oninput="render()"></div>
+                <div><label>COLOR BORDE QSL</label><input type="color" id="outerBorderColor" value="#ff9f1c" oninput="render()"></div>
+            </div>
+            
+            <label style="margin-top:10px;">CAMBIAR FONDO</label>
             <input type="file" id="bgInp" accept="image/*">
         </div>
 
@@ -159,7 +165,7 @@
             </select>
             <div class="row">
                 <div><label>REDONDEO</label><input type="range" id="boxRadius" min="0" max="60" value="10" oninput="render()"></div>
-                <div><label>BORDE PX</label><input type="range" id="borderSize" min="0" max="15" value="3" oninput="render()"></div>
+                <div><label>BORDE TABLA PX</label><input type="range" id="borderSize" min="0" max="15" value="3" oninput="render()"></div>
             </div>
             <div class="row">
                 <div><label>ANCHO</label><input type="range" id="boxW" min="800" max="1750" value="1680" oninput="updateBoxSize()"></div>
@@ -188,7 +194,7 @@
         </div>
 
         <div class="control-section">
-            <div class="section-title">📡 DATOS QSO (MANUAL/ADIF)</div>
+            <div class="section-title">📡 DATOS QSO</div>
             <div style="display: flex; gap: 8px; align-items: flex-end;">
                 <div style="flex: 1;">
                     <label>INDICATIVO DESTINATARIO</label>
@@ -217,13 +223,13 @@
         </div>
 
         <div class="control-section">
-            <div class="section-title">📦 ADIF & QR</div>
+            <div class="section-title">📦 ADIF & QR (OPERADOR)</div>
             <input type="file" id="adiInp" accept=".adi,.adif">
             <div class="row">
                 <button class="btn btn-dark" onclick="nav(-1)">ANT.</button>
                 <button class="btn btn-dark" onclick="nav(1)">SIG.</button>
             </div>
-            <label style="margin-top:10px;">EMAIL (QR)</label>
+            <label style="margin-top:10px;">EMAIL OPERADOR (PARA QR)</label>
             <input type="email" id="myEmail" value="cl7adv@qsl.com" oninput="render()">
             <div class="row">
                 <div><label>VER QR</label><select id="showQR" onchange="render()"><option value="yes">SÍ</option><option value="no">NO</option></select></div>
@@ -254,7 +260,7 @@
 <div id="updateModal">
     <div class="modal-content">
         <h2 style="color:var(--accent-main)">v35.9.6 ACTUALIZADA</h2>
-        <p style="font-size: 0.9rem; color: #aaa;">¡QR inteligente! Si el ADIF tiene el email del operador, se cargará automáticamente en el código QR.</p>
+        <p style="font-size: 0.9rem; color: #aaa;">¡Bordes de tarjeta y QR de Operador optimizados! Los datos del ADIF respetarán tu correo de estación.</p>
         <button class="btn btn-primary" onclick="document.getElementById('updateModal').style.display='none'">ENTRAR AL SHACK</button>
     </div>
 </div>
@@ -314,10 +320,21 @@ function render() {
     const blurVal = document.getElementById('bgBlur').value;
     const brightVal = document.getElementById('bgBrightness').value;
     
+    // Dibujo del fondo con filtros
     ctx.save();
     ctx.filter = `blur(${blurVal}px) brightness(${brightVal}%)`;
     if(bg.complete) ctx.drawImage(bg, 0, 0, 1800, 1100);
     ctx.restore();
+
+    // Dibujo de Borde Exterior de la Tarjeta
+    const outBSize = parseInt(document.getElementById('outerBorderSize').value);
+    if(outBSize > 0) {
+        ctx.save();
+        ctx.strokeStyle = document.getElementById('outerBorderColor').value;
+        ctx.lineWidth = outBSize * 2; // Multiplicamos para que se vea hacia adentro
+        ctx.strokeRect(0, 0, 1800, 1100);
+        ctx.restore();
+    }
 
     logos.forEach(l => ctx.drawImage(l.img, l.x, l.y, l.w, l.h));
 
@@ -578,9 +595,16 @@ document.getElementById('adiInp').onchange = (e) => {
     reader.onload = (ev) => {
         const raw = ev.target.result;
         
+        // Buscamos datos del OPERADOR para el QR (Station Callsign u Operator)
         const myCallMatch = raw.match(/<(STATION_CALLSIGN|OPERATOR):\d+>([^<]*)/i);
         if(myCallMatch && myCallMatch[2]) {
             document.getElementById('myCall').value = myCallMatch[2].trim().toUpperCase();
+        }
+
+        // Buscamos si hay un EMAIL general de estación/operador en la cabecera
+        const myEmailMatch = raw.match(/<(MY_EMAIL):\d+>([^<]*)/i);
+        if(myEmailMatch && myEmailMatch[2]) {
+            document.getElementById('myEmail').value = myEmailMatch[2].trim();
         }
 
         log = raw.split(/<eor>/i).map(c => {
@@ -594,8 +618,7 @@ document.getElementById('adiInp').onchange = (e) => {
                 freq: f('FREQ'),
                 mode: mapMode(f('MODE')), 
                 rst: f('RST_SENT') || "599",
-                comment: f('COMMENT'),
-                email: f('EMAIL') // Nuevo campo para extraer el email
+                comment: f('COMMENT')
             };
         }).filter(x => x && x.call);
         
@@ -619,10 +642,7 @@ function sync() {
     document.getElementById('qRst').value = q.rst;
     document.getElementById('qComment').value = q.comment;
     
-    // Si el ADIF tiene email, actualizar el campo email del QR
-    if(q.email) {
-        document.getElementById('myEmail').value = q.email;
-    }
+    // NOTA: No actualizamos 'myEmail' aquí para mantener el correo del OPERADOR fijo
 
     document.getElementById('indicator').innerText = `ADIF MODO: ${idx+1} / ${log.length}`;
     render();
