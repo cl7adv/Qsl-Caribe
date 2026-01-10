@@ -88,6 +88,7 @@
         .btn-primary { background: var(--accent-main); color: #000; }
         .btn-dark { background: #21262d; color: #fff; border: 1px solid var(--border-color); }
         .btn-icon { width: auto; padding: 8px 12px; margin-top: 0; margin-bottom: 6px; }
+        .btn-success { background: var(--accent-sec); color: #000; }
 
         .preview-area { flex: 1; background: #010409; display: flex; justify-content: center; align-items: center; position: relative; }
         
@@ -109,7 +110,7 @@
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: var(--accent-main); cursor: pointer; margin-top: -6px; }
         input[type=range]::-webkit-slider-runnable-track { height: 4px; background: #30363d; border-radius: 2px; }
 
-        #updateModal {
+        #updateModal, #loadingOverlay {
             display:none; position: fixed; top:0; left:0; width:100%; height:100%; 
             background:rgba(0,0,0,0.85); z-index:20000; justify-content:center; align-items:center; backdrop-filter: blur(5px);
         }
@@ -243,8 +244,10 @@
             <button class="btn btn-dark" onclick="logos=[];render()">BORRAR LOGOS</button>
         </div>
 
-        <button class="btn btn-primary" onclick="exportJpg()">EXPORTAR JPG</button>
-        <button class="btn btn-dark" id="btnZip" onclick="downloadAllZip()" style="display:none; background: var(--accent-sec); color:#000;">ZIP AUTOMÁTICO</button>
+        <div class="row">
+            <button class="btn btn-primary" onclick="exportJpg()">EXPORTAR JPG</button>
+            <button class="btn btn-success" id="btnZip" onclick="downloadAllZip()" style="display:none;">EXPORTAR TODO (ZIP)</button>
+        </div>
         
         <div style="text-align: center; font-size: 10px; color: #555; padding: 20px;">
             QSL ELITE v35.9.6 | RADIO SHACK EDITION-cl7adv.2026.
@@ -260,8 +263,16 @@
 <div id="updateModal">
     <div class="modal-content">
         <h2 style="color:var(--accent-main)">v35.9.6 ACTUALIZADA</h2>
-        <p style="font-size: 0.9rem; color: #aaa;">¡Bordes de tarjeta y QR de Operador optimizados! Los datos del ADIF respetarán tu correo de estación.</p>
+        <p style="font-size: 0.9rem; color: #aaa;">¡Bordes de tarjeta y Exportación Masiva ZIP integrada! Los datos del ADIF respetarán tu diseño actual.</p>
         <button class="btn btn-primary" onclick="document.getElementById('updateModal').style.display='none'">ENTRAR AL SHACK</button>
+    </div>
+</div>
+
+<div id="loadingOverlay">
+    <div class="modal-content" style="border-color: var(--accent-sec);">
+        <h2 style="color:var(--accent-sec)">PROCESANDO ZIP...</h2>
+        <p id="loadingMsg" style="font-size: 1.2rem; font-weight: bold;">0%</p>
+        <p style="font-size: 0.8rem; color: #888;">Por favor, no cierres la ventana.</p>
     </div>
 </div>
 
@@ -320,18 +331,16 @@ function render() {
     const blurVal = document.getElementById('bgBlur').value;
     const brightVal = document.getElementById('bgBrightness').value;
     
-    // Dibujo del fondo con filtros
     ctx.save();
     ctx.filter = `blur(${blurVal}px) brightness(${brightVal}%)`;
     if(bg.complete) ctx.drawImage(bg, 0, 0, 1800, 1100);
     ctx.restore();
 
-    // Dibujo de Borde Exterior de la Tarjeta
     const outBSize = parseInt(document.getElementById('outerBorderSize').value);
     if(outBSize > 0) {
         ctx.save();
         ctx.strokeStyle = document.getElementById('outerBorderColor').value;
-        ctx.lineWidth = outBSize * 2; // Multiplicamos para que se vea hacia adentro
+        ctx.lineWidth = outBSize * 2;
         ctx.strokeRect(0, 0, 1800, 1100);
         ctx.restore();
     }
@@ -549,6 +558,52 @@ function exportJpg() {
     a.href = cv.toDataURL('image/jpeg', 0.95); a.click(); 
 }
 
+// NUEVA FUNCIÓN: EXPORTACIÓN MASIVA ZIP
+async function downloadAllZip() {
+    if(!log.length) return;
+    
+    const zip = new JSZip();
+    const loading = document.getElementById('loadingOverlay');
+    const loadingMsg = document.getElementById('loadingMsg');
+    loading.style.display = 'flex';
+
+    for(let i = 0; i < log.length; i++) {
+        // Cambiamos el log internamente sin disparar mil renders pesados
+        idx = i;
+        const q = log[i];
+        
+        // Actualizamos campos del DOM para que 'render' tome los datos correctos
+        document.getElementById('qCall').value = q.call;
+        document.getElementById('qDate').value = q.date;
+        document.getElementById('qTime').value = q.time;
+        document.getElementById('qBand').value = q.band;
+        document.getElementById('qFreq').value = q.freq;
+        document.getElementById('qMode').value = q.mode;
+        document.getElementById('qRst').value = q.rst;
+        document.getElementById('qComment').value = q.comment;
+
+        render(); // Dibujamos la tarjeta actual
+
+        // Convertimos el canvas a blob para el ZIP
+        const blob = await new Promise(res => cv.toBlob(res, 'image/jpeg', 0.85));
+        const filename = `${i+1}_${q.call}_${q.band}.jpg`;
+        zip.file(filename, blob);
+
+        // Actualizamos UI de carga
+        const progress = Math.round(((i + 1) / log.length) * 100);
+        loadingMsg.innerText = progress + "%";
+        
+        // Pequeña pausa para no congelar el navegador totalmente
+        if(i % 5 === 0) await new Promise(r => setTimeout(r, 10));
+    }
+
+    const content = await zip.generateAsync({type:"blob"});
+    saveAs(content, `LOG_QSL_ELITE_${document.getElementById('myCall').value}.zip`);
+    
+    loading.style.display = 'none';
+    sync(); // Volvemos a sincronizar la vista con el registro actual
+}
+
 document.getElementById('bgInp').onchange = (e) => { 
     const r = new FileReader(); 
     r.onload = (ev) => { bg.src = ev.target.result; }; 
@@ -595,13 +650,11 @@ document.getElementById('adiInp').onchange = (e) => {
     reader.onload = (ev) => {
         const raw = ev.target.result;
         
-        // Buscamos datos del OPERADOR para el QR (Station Callsign u Operator)
         const myCallMatch = raw.match(/<(STATION_CALLSIGN|OPERATOR):\d+>([^<]*)/i);
         if(myCallMatch && myCallMatch[2]) {
             document.getElementById('myCall').value = myCallMatch[2].trim().toUpperCase();
         }
 
-        // Buscamos si hay un EMAIL general de estación/operador en la cabecera
         const myEmailMatch = raw.match(/<(MY_EMAIL):\d+>([^<]*)/i);
         if(myEmailMatch && myEmailMatch[2]) {
             document.getElementById('myEmail').value = myEmailMatch[2].trim();
@@ -642,8 +695,6 @@ function sync() {
     document.getElementById('qRst').value = q.rst;
     document.getElementById('qComment').value = q.comment;
     
-    // NOTA: No actualizamos 'myEmail' aquí para mantener el correo del OPERADOR fijo
-
     document.getElementById('indicator').innerText = `ADIF MODO: ${idx+1} / ${log.length}`;
     render();
 }
