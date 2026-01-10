@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v31.5 - Edición Manual y Masiva</title>
+    <title>QSL ELITE v35.9.6 - Radio Shack Optimized</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
         :root {
-            --bg-deep: #020408; --panel-bg: #0d1117; --neon-cyan: #00f2ff;
-            --neon-pink: #ff007b; --text-main: #e6edf3; --border-color: #30363d;
-            --accent-new: #ccff00; --fire-orange: #ff4500; --warning-yellow: #f1c40f;
+            --bg-deep: #0d1117; 
+            --panel-bg: #161b22; 
+            --accent-main: #ff9f1c; 
+            --accent-sec: #2ec4b6; 
+            --text-main: #f0f6fc; 
+            --border-color: #30363d;
+            --input-bg: #010409;
         }
 
         #orientation-warning {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000; color: var(--neon-cyan);
+            background: #0d1117; z-index: 10000; color: var(--accent-main);
             flex-direction: column; justify-content: center; align-items: center;
             text-align: center; font-family: sans-serif;
         }
@@ -26,259 +31,259 @@
 
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; transition: opacity 1s;
+            background: #0d1117; z-index: 9999; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; transition: opacity 0.8s;
         }
 
         .cl7adv-pulse {
-            font-size: 5rem; font-weight: 900; color: var(--neon-cyan);
-            text-shadow: 0 0 20px var(--neon-cyan);
-            animation: pulse 2s infinite alternate;
+            font-size: 3rem; font-weight: 900; color: var(--accent-main);
+            animation: pulse 2s infinite alternate; text-align: center;
         }
 
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+        @keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.05); opacity: 1; } }
 
         body {
-            font-family: 'Segoe UI', sans-serif; background: var(--bg-deep);
+            font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-deep);
             color: var(--text-main); margin: 0; display: flex; flex-direction: column;
             height: 100vh; overflow: hidden;
         }
 
         header {
-            background: #161b22; border-bottom: 2px solid var(--neon-cyan);
-            padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+            background: #161b22; border-bottom: 1px solid var(--border-color);
+            padding: 8px 20px; display: flex; justify-content: space-between; align-items: center;
             flex-shrink: 0;
-        }
-
-        .tag-new {
-            background: var(--accent-new); color: #000; font-size: 10px; 
-            padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-left: 10px;
         }
 
         .app-container { display: flex; flex: 1; overflow: hidden; }
 
         .sidebar {
-            width: 420px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
+            width: 380px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
             padding: 15px; overflow-y: auto; box-sizing: border-box;
-            display: flex; flex-direction: column; height: 100%;
+            display: flex; flex-direction: column;
         }
 
         .sidebar::-webkit-scrollbar { width: 6px; }
-        .sidebar::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 10px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
 
         .control-section {
             background: rgba(255,255,255,0.02); border: 1px solid var(--border-color);
-            border-radius: 8px; padding: 12px; margin-bottom: 12px; flex-shrink: 0;
+            border-radius: 12px; padding: 14px; margin-bottom: 15px;
         }
 
-        .section-title { color: var(--neon-pink); font-size: 0.7rem; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; }
+        .section-title { color: var(--accent-sec); font-size: 0.7rem; font-weight: 800; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(46, 196, 182, 0.2); padding-bottom: 4px; }
 
         input, select, textarea {
-            width: 100%; background: #010409; border: 1px solid var(--border-color);
-            border-radius: 4px; padding: 8px; color: #fff; margin-bottom: 5px; font-size: 0.8rem;
+            width: 100%; background: var(--input-bg); border: 1px solid var(--border-color);
+            border-radius: 6px; padding: 8px; color: #fff; margin-bottom: 6px; font-size: 0.8rem;
             box-sizing: border-box;
         }
 
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
         .btn {
-            width: 100%; padding: 10px; border-radius: 8px; border: none; font-weight: 800;
-            cursor: pointer; text-transform: uppercase; margin-top: 5px; transition: 0.2s; font-size: 0.7rem;
+            width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 700;
+            cursor: pointer; text-transform: uppercase; margin-top: 5px; transition: 0.3s; font-size: 0.7rem;
         }
 
-        .btn-primary { background: var(--neon-cyan); color: #000; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2); }
-        .btn-zip { background: #f1c40f; color: #000; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3); }
+        .btn-primary { background: var(--accent-main); color: #000; }
         .btn-dark { background: #21262d; color: #fff; border: 1px solid var(--border-color); }
-        .btn-qrz { background: #f39c12; color: #000; }
-        .btn-warning { background: var(--warning-yellow); color: #000; font-size: 0.8rem; border: 2px solid #000; }
+        .btn-icon { width: auto; padding: 8px 12px; margin-top: 0; margin-bottom: 6px; }
 
-        .preview-area { flex: 1; background: #000; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; }
-        canvas { cursor: crosshair; max-width: 98%; max-height: 98%; border: 1px solid #333; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        .preview-area { flex: 1; background: #010409; display: flex; justify-content: center; align-items: center; position: relative; }
+        
+        canvas#cv { 
+            max-width: 95%; max-height: 95%; border-radius: 4px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); background: #000;
+            cursor: crosshair;
+        }
         
         #indicator {
-            position: absolute; bottom: 15px; left: 15px; font-size: 11px;
-            color: var(--neon-cyan); background: rgba(0,0,0,0.8); padding: 6px 12px; border-radius: 4px; border: 1px solid var(--border-color);
+            position: absolute; top: 20px; left: 20px; font-size: 10px;
+            color: var(--accent-sec); background: rgba(0,0,0,0.7); padding: 5px 12px; 
+            border-radius: 20px; border: 1px solid var(--accent-sec);
         }
 
-        .author-credits {
-            margin-top: auto; padding: 15px; text-align: center; border-top: 1px solid var(--border-color);
-            font-size: 10px; color: #888; letter-spacing: 1px;
-        }
+        label { font-size: 10px; color: #8b949e; display: block; margin-bottom: 2px; font-weight: 600; }
+
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: var(--accent-main); cursor: pointer; margin-top: -6px; }
+        input[type=range]::-webkit-slider-runnable-track { height: 4px; background: #30363d; border-radius: 2px; }
 
         #updateModal {
             display:none; position: fixed; top:0; left:0; width:100%; height:100%; 
-            background:rgba(0,0,0,0.95); z-index:20000; justify-content:center; align-items:center; padding: 20px;
+            background:rgba(0,0,0,0.85); z-index:20000; justify-content:center; align-items:center; backdrop-filter: blur(5px);
         }
         .modal-content {
-            background: var(--panel-bg); border: 2px solid var(--warning-yellow); padding: 30px; 
-            border-radius: 15px; max-width: 500px; text-align: center; position: relative;
-            box-shadow: 0 0 40px rgba(241, 196, 15, 0.2);
+            background: var(--panel-bg); border: 1px solid var(--accent-main); padding: 40px; 
+            border-radius: 20px; max-width: 450px; text-align: center;
         }
     </style>
 </head>
 <body onload="initApp()">
 
 <div id="orientation-warning">
-    <div style="font-size: 60px;">🔄</div>
-    <h2>MODO HORIZONTAL OBLIGATORIO</h2>
-    <p>GIRA TU TELÉFONO PARA EDITAR LA QSL</p>
+    <div style="font-size: 50px;">🔄</div>
+    <h2>GIRA EL DISPOSITIVO</h2>
+    <p>Usa el modo horizontal para diseñar mejor.</p>
 </div>
 
 <div id="intro-overlay">
-    <div style="color:white; letter-spacing: 5px; font-size: 14px;">GENERADOR PROFESIONAL</div>
-    <div class="cl7adv-pulse">MI QSL ELITE</div>
-    <div style="color:var(--accent-new); margin-top:10px; font-family: monospace; font-weight: bold;">VERSIÓN 31.5 <span class="tag-new">CLEAN START</span></div>
+    <div class="cl7adv-pulse">QSL ELITE v35.9.6<br><span style="font-size: 1rem; color:#fff">RADIO SHACK OPTIMIZED</span></div>
+    <div style="color:#444; margin-top:10px; font-size: 12px; letter-spacing: 3px;">BY CL7ADV</div>
 </div>
 
 <header>
-    <div style="font-weight: 900; color: var(--neon-cyan);">QSL ELITE <span style="font-weight:100; color:#fff;">| CL7ADV PRO</span> <span class="tag-new">v31.5</span></div>
-    <div id="clock" style="font-family: monospace; color: var(--neon-cyan); font-weight: bold; font-size: 1.2rem;">00:00:00 UTC</div>
+    <div style="font-weight: 900; font-size: 1.1rem; letter-spacing: -0.5px;">QSL ELITE <span style="color:var(--accent-main)">PRO</span></div>
+    <div id="clock" style="font-family: monospace; font-size: 14px; color: var(--accent-sec);">00:00:00 UTC</div>
 </header>
 
 <div class="app-container">
     <div class="sidebar">
-        <div class="control-section" style="border-color: var(--warning-yellow); background: rgba(241, 196, 15, 0.05);">
-            <button class="btn btn-warning" onclick="openUpdateModal()">ℹ️ INFORMACIÓN Y CONSEJOS</button>
-        </div>
-
+        
         <div class="control-section">
-            <div class="section-title">MARCO DE TARJETA</div>
-            <div class="row">
-                <div><label style="font-size:9px;">COLOR MARCO</label><input type="color" id="frameCol" value="#ffffff"></div>
-                <div><label style="font-size:9px;">GROSOR</label><input type="range" id="frameSize" min="0" max="100" value="15"></div>
-            </div>
-        </div>
-
-        <div class="control-section">
-            <div class="section-title">FONDO Y LOGOS</div>
-            <label style="font-size:9px;">CAMBIAR FONDO</label>
+            <div class="section-title">🖼️ IMAGEN Y BRILLO</div>
+            <label>ENFOQUE (BLUR)</label>
+            <input type="range" id="bgBlur" min="0" max="25" value="0" oninput="render()">
+            <label>BRILLO DEL FONDO</label>
+            <input type="range" id="bgBrightness" min="10" max="150" value="100" oninput="render()">
+            <label>CAMBIAR FONDO</label>
             <input type="file" id="bgInp" accept="image/*">
-            <label style="font-size:9px;">SUBIR LOGOS</label>
-            <input type="file" id="logoInp" accept="image/*" multiple>
-            <button class="btn btn-dark" onclick="resetLogos()">BORRAR LOGOS</button>
         </div>
 
         <div class="control-section">
-            <div class="section-title">ESTACIÓN (TU IDENTIDAD)</div>
-            <input type="text" id="myCall" value="" placeholder="ESCRIBE TU INDICATIVO">
-            <input type="text" id="myQth" value="" placeholder="ESCRIBE TU PAÍS / UBICACIÓN">
+            <div class="section-title">📐 DISEÑO TABLA QSO</div>
+            <select id="boxStyle" onchange="render()">
+                <option value="clasico">📜 CLÁSICO (GRID)</option>
+                <option value="cristal">💎 CRISTAL GLASS</option>
+                <option value="cyber">🤖 CYBER TECH</option>
+            </select>
             <div class="row">
-                <div><label style="font-size:9px;">COLOR BORDE</label><input type="color" id="callStrokeCol" value="#000000"></div>
-                <div><label style="font-size:9px;">GROSOR BORDE</label><input type="range" id="callStrokeSize" min="0" max="30" value="10"></div>
+                <div><label>REDONDEO</label><input type="range" id="boxRadius" min="0" max="60" value="10" oninput="render()"></div>
+                <div><label>BORDE PX</label><input type="range" id="borderSize" min="0" max="15" value="3" oninput="render()"></div>
             </div>
             <div class="row">
-                <div><label style="font-size:9px;">TAMAÑO CALL</label><input type="range" id="sizeCall" min="50" max="450" value="240"></div>
-                <div><label style="font-size:9px;">TAMAÑO QTH</label><input type="range" id="sizeQth" min="20" max="200" value="90"></div>
+                <div><label>ANCHO</label><input type="range" id="boxW" min="800" max="1750" value="1680" oninput="updateBoxSize()"></div>
+                <div><label>ALTO</label><input type="range" id="boxH" min="200" max="550" value="350" oninput="updateBoxSize()"></div>
+            </div>
+            <label>OPACIDAD</label>
+            <input type="range" id="boxAlpha" min="0" max="100" value="95" oninput="render()">
+            <div class="row" style="margin-top:10px;">
+                <div><label>COLOR FONDO</label><input type="color" id="colBoxBg" value="#ffffff" oninput="render()"></div>
+                <div><label>COLOR BORDE</label><input type="color" id="colBoxBorder" value="#2ec4b6" oninput="render()"></div>
             </div>
         </div>
 
         <div class="control-section">
-            <div class="section-title">DATOS DEL COMUNICADO (QSO)</div>
+            <div class="section-title">👤 DATOS ESTACIÓN</div>
+            <input type="text" id="myCall" value="CL7ADV" placeholder="TU CALL" oninput="render()">
             <div class="row">
-                <input type="text" id="qCall" value="" placeholder="CALL DX">
-                <input type="text" id="qDate" value="" placeholder="FECHA">
+                <div><label>TAMAÑO</label><input type="range" id="callSize" min="50" max="400" value="200" oninput="render()"></div>
+                <div><label>COLOR CALL</label><input type="color" id="col1" value="#ffffff" oninput="render()"></div>
             </div>
+            <input type="text" id="myQth" value="CUBA" placeholder="TU PAÍS / QTH" oninput="render()">
             <div class="row">
-                <input type="text" id="qTime" value="" placeholder="HORA UTC">
-                <input type="text" id="qBand" value="" placeholder="BANDA">
+                <div><label>TAMAÑO QTH</label><input type="range" id="qthSize" min="20" max="150" value="80" oninput="render()"></div>
+                <div><label>COLOR PAÍS</label><input type="color" id="colQth" value="#ff9f1c" oninput="render()"></div>
             </div>
-            <div class="row">
-                <input type="text" id="qMode" value="" placeholder="MODO">
-                <input type="text" id="qRst" value="" placeholder="RST">
-            </div>
-            <input type="text" id="qComment" value="" placeholder="COMENTARIO O SALUDO (PARA TODOS)">
         </div>
 
         <div class="control-section">
-            <div class="section-title">IMPORTAR LOG ADIF</div>
+            <div class="section-title">📡 DATOS QSO (MANUAL/ADIF)</div>
+            <div style="display: flex; gap: 8px; align-items: flex-end;">
+                <div style="flex: 1;">
+                    <label>INDICATIVO DESTINATARIO</label>
+                    <input type="text" id="qCall" placeholder="CALLSIGN" oninput="render()" style="margin-bottom: 0;">
+                </div>
+                <button class="btn btn-dark btn-icon" onclick="openQRZ()" title="Ver en QRZ.com">👁️</button>
+            </div>
+            <div class="row" style="margin-top: 6px;">
+                <input type="text" id="qDate" placeholder="FECHA (DD/MM/AA)" oninput="render()">
+                <input type="text" id="qTime" placeholder="HORA (UTC)" oninput="render()">
+            </div>
+            <div class="row">
+                <input type="text" id="qBand" placeholder="BANDA" oninput="render()">
+                <input type="text" id="qFreq" placeholder="FRECUENCIA" oninput="render()">
+            </div>
+            <div class="row">
+                <input type="text" id="qMode" placeholder="MODO" oninput="render()">
+                <input type="text" id="qRst" placeholder="RST" oninput="render()">
+            </div>
+            <textarea id="qComment" placeholder="COMENTARIOS DEL QSO" rows="2" oninput="render()"></textarea>
+            
+            <div class="row">
+                <div><label>COLOR TÍTULOS QSO</label><input type="color" id="colTitles" value="#444444" oninput="render()"></div>
+                <div><label>COLOR DATOS QSO</label><input type="color" id="col5" value="#000000" oninput="render()"></div>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <div class="section-title">📦 ADIF & QR</div>
             <input type="file" id="adiInp" accept=".adi,.adif">
             <div class="row">
                 <button class="btn btn-dark" onclick="nav(-1)">ANT.</button>
                 <button class="btn btn-dark" onclick="nav(1)">SIG.</button>
-                <button class="btn btn-qrz" onclick="lookupQRZ()">VER EN QRZ</button>
+            </div>
+            <label style="margin-top:10px;">EMAIL (QR)</label>
+            <input type="email" id="myEmail" value="cl7adv@qsl.com" oninput="render()">
+            <div class="row">
+                <div><label>VER QR</label><select id="showQR" onchange="render()"><option value="yes">SÍ</option><option value="no">NO</option></select></div>
+                <div><label>QR TAMAÑO</label><input type="range" id="qrSize" min="50" max="400" value="180" oninput="render()"></div>
             </div>
         </div>
 
         <div class="control-section">
-            <div class="section-title">ESTILO DE TABLA</div>
-            <select id="boxStyle" onchange="render()">
-                <option value="clasico">ESTILO CLÁSICO</option>
-                <option value="neon">ESTILO NEÓN MODERNO</option>
-                <option value="fenix">ESTILO FÉNIX 🔥</option>
-            </select>
-            <div class="row" style="margin-top:5px;">
-                <div><label style="font-size:9px;">ANCHO</label><input type="range" id="boxW" min="400" max="1750" value="1640"></div>
-                <div><label style="font-size:9px;">ALTO</label><input type="range" id="boxH" min="150" max="600" value="280"></div>
-            </div>
+            <div class="section-title">🏷️ LOGOS</div>
+            <input type="file" id="logoInp" accept="image/*" multiple>
+            <button class="btn btn-dark" onclick="logos=[];render()">BORRAR LOGOS</button>
         </div>
 
-        <div class="control-section">
-            <div class="section-title">COLORES DE TABLA</div>
-            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-                <input type="color" id="col1" value="#ff007b" title="Color Indicativo">
-                <input type="color" id="col2" value="#00f2ff" title="Color País">
-                <input type="color" id="col3" value="#0d1117" title="Fondo Tabla">
-                <input type="color" id="col4" value="#00f2ff" title="Bordes">
-                <input type="color" id="col5" value="#ffffff" title="Datos Texto">
-                <input type="color" id="col6" value="#00f2ff" title="Títulos">
-            </div>
-            <label style="font-size:9px; margin-top:5px; display:block;">OPACIDAD TABLA</label>
-            <input type="range" id="boxAlpha" min="0" max="100" value="90">
-        </div>
-
-        <button class="btn btn-primary" onclick="exportJpg()">DESCARGAR ESTA QSL (JPG)</button>
-        <button class="btn btn-zip" id="btnZip" onclick="downloadAllZip()" style="display:none;">DESCARGAR PACK ADIF (.ZIP)</button>
+        <button class="btn btn-primary" onclick="exportJpg()">EXPORTAR JPG</button>
+        <button class="btn btn-dark" id="btnZip" onclick="downloadAllZip()" style="display:none; background: var(--accent-sec); color:#000;">ZIP AUTOMÁTICO</button>
         
-        <div class="author-credits">
-            DESARROLLADO POR <strong>CL7ADV</strong> © 2026<br>
-            73 PARA LA COMUNIDAD DE RADIOAFICIONADOS
+        <div style="text-align: center; font-size: 10px; color: #555; padding: 20px;">
+            QSL ELITE v35.9.6 | RADIO SHACK EDITION-cl7adv.2026.
         </div>
-        <div style="height:20px;"></div>
     </div>
 
     <div class="preview-area">
-        <div id="indicator">ESTADO: INICIO LIMPIO</div>
+        <div id="indicator">DISEÑO MANUAL ACTIVO</div>
         <canvas id="cv" width="1800" height="1100"></canvas>
     </div>
 </div>
 
 <div id="updateModal">
     <div class="modal-content">
-        <h2 style="color:var(--warning-yellow); margin-top:0;">CONSEJOS DE OPERACIÓN</h2>
-        <div style="background:rgba(0,0,0,0.5); padding:15px; border-radius:8px; border-left:4px solid var(--warning-yellow); text-align:left; margin:15px 0;">
-            <div id="radioTip" style="font-style:italic; margin-top:5px; font-size:0.9rem;"></div>
-        </div>
-        <p style="font-size: 0.8rem; color: #888;">Este programa permite crear QSLs personalizadas de forma rápida. Al cargar un ADIF, se detectará automáticamente el operador.</p>
-        <button class="btn btn-primary" onclick="closeUpdateModal()">CERRAR</button>
+        <h2 style="color:var(--accent-main)">v35.9.6 ACTUALIZADA</h2>
+        <p style="font-size: 0.9rem; color: #aaa;">¡QR inteligente! Si el ADIF tiene el email del operador, se cargará automáticamente en el código QR.</p>
+        <button class="btn btn-primary" onclick="document.getElementById('updateModal').style.display='none'">ENTRAR AL SHACK</button>
     </div>
 </div>
 
 <script>
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 let bg = new Image(), log = [], idx = 0, logos = [];
-let elements = { myCall: { x: 80, y: 260 }, myQth: { x: 95, y: 380 }, qsoBox: { x: 80, y: 780, w: 1640, h: 280 } };
+let elements = { 
+    myCall: { x: 80, y: 180 }, 
+    myQth: { x: 85, y: 260 }, 
+    qsoBox: { x: 60, y: 700, w: 1680, h: 350 },
+    qrPos: { x: 1530, y: 60, size: 180 }
+};
 let offset = { x: 0, y: 0 }, activeLogoIdx = -1, draggingElement = null;
-
-const consejosRadio = [
-    "Escucha siempre antes de transmitir.", "Usa código fonético internacional.", "La antena es el alma de la estación.",
-    "Mínima potencia necesaria siempre.", "Reporte RST honesto ayuda más.", "Respeta el plan de bandas.",
-    "UTC es la hora universal del radioaficionado.", "Limpia tus conectores de antena.", "Aprender CW abre nuevos horizontes."
-];
-
-function openUpdateModal() {
-    document.getElementById('radioTip').innerText = `"${consejosRadio[Math.floor(Math.random() * consejosRadio.length)]}"`;
-    document.getElementById('updateModal').style.display = 'flex';
-}
-function closeUpdateModal() { document.getElementById('updateModal').style.display = 'none'; }
+let qrGenerator = new QRious({ size: 250, level: 'H' });
 
 function initApp() {
     bg.crossOrigin = "anonymous";
-    bg.src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1800&q=80";
+    bg.src = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1800&q=80";
     bg.onload = render;
+    
     setTimeout(() => {
         document.getElementById('intro-overlay').style.opacity = 0;
-        setTimeout(() => document.getElementById('intro-overlay').style.display = 'none', 1000);
-    }, 2000);
+        setTimeout(() => {
+            document.getElementById('intro-overlay').style.display = 'none';
+            document.getElementById('updateModal').style.display = 'flex';
+        }, 800);
+    }, 1000);
+    
     setInterval(updateClock, 1000);
     setupEvents();
 }
@@ -290,161 +295,180 @@ function updateClock() {
                                                  now.getUTCSeconds().toString().padStart(2,'0') + " UTC";
 }
 
+function openQRZ() {
+    const call = document.getElementById('qCall').value.trim();
+    if (call) {
+        window.open(`https://www.qrz.com/db/${call}`, '_blank');
+    }
+}
+
+function updateBoxSize() {
+    elements.qsoBox.w = parseInt(document.getElementById('boxW').value);
+    elements.qsoBox.h = parseInt(document.getElementById('boxH').value);
+    render();
+}
+
 function render() {
     ctx.clearRect(0,0,1800,1100);
-    if(bg.complete) ctx.drawImage(bg, 0, 0, 1800, 1100);
     
-    const fSize = parseInt(document.getElementById('frameSize').value);
-    if(fSize > 0) {
-        ctx.strokeStyle = document.getElementById('frameCol').value;
-        ctx.lineWidth = fSize;
-        ctx.strokeRect(fSize/2, fSize/2, 1800-fSize, 1100-fSize);
-    }
+    const blurVal = document.getElementById('bgBlur').value;
+    const brightVal = document.getElementById('bgBrightness').value;
+    
+    ctx.save();
+    ctx.filter = `blur(${blurVal}px) brightness(${brightVal}%)`;
+    if(bg.complete) ctx.drawImage(bg, 0, 0, 1800, 1100);
+    ctx.restore();
 
     logos.forEach(l => ctx.drawImage(l.img, l.x, l.y, l.w, l.h));
 
-    ctx.save();
-    const myCall = document.getElementById('myCall').value;
-    const myQth = document.getElementById('myQth').value;
-    const sSize = parseInt(document.getElementById('callStrokeSize').value);
-    const sCol = document.getElementById('callStrokeCol').value;
-
-    ctx.textAlign = "left";
-    
-    if(myCall) {
-        ctx.font = `900 ${document.getElementById('sizeCall').value}px sans-serif`;
-        if(sSize > 0) {
-            ctx.strokeStyle = sCol; ctx.lineWidth = sSize; ctx.lineJoin = "round";
-            ctx.strokeText(myCall, elements.myCall.x, elements.myCall.y);
-        }
-        ctx.fillStyle = document.getElementById('col1').value;
-        ctx.fillText(myCall, elements.myCall.x, elements.myCall.y);
+    if(document.getElementById('showQR').value === 'yes') {
+        const qSize = parseInt(document.getElementById('qrSize').value);
+        elements.qrPos.size = qSize;
+        qrGenerator.value = `mailto:${document.getElementById('myEmail').value}`;
+        ctx.save();
+        ctx.fillStyle = "white";
+        ctx.shadowBlur = 15; ctx.shadowColor = "rgba(0,0,0,0.5)";
+        ctx.beginPath();
+        ctx.roundRect(elements.qrPos.x - 10, elements.qrPos.y - 10, qSize + 20, qSize + 20, 10);
+        ctx.fill();
+        ctx.drawImage(qrGenerator.image, elements.qrPos.x, elements.qrPos.y, qSize, qSize);
+        ctx.restore();
     }
 
+    const myCall = document.getElementById('myCall').value;
+    const myQth = document.getElementById('myQth').value;
+    const callS = parseInt(document.getElementById('callSize').value);
+    const qthS = parseInt(document.getElementById('qthSize').value);
+    const colCall = document.getElementById('col1').value;
+    const colQth = document.getElementById('colQth').value;
+
+    ctx.save();
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    if(myCall) {
+        ctx.font = `900 ${callS}px sans-serif`;
+        ctx.strokeStyle = "black"; ctx.lineWidth = callS/20; ctx.strokeText(myCall, elements.myCall.x, elements.myCall.y);
+        ctx.fillStyle = colCall; ctx.fillText(myCall, elements.myCall.x, elements.myCall.y);
+    }
     if(myQth) {
-        ctx.font = `bold ${document.getElementById('sizeQth').value}px sans-serif`;
-        if(sSize > 0) {
-            ctx.strokeStyle = sCol; ctx.lineWidth = sSize * 0.6;
-            ctx.strokeText(myQth, elements.myQth.x, elements.myQth.y);
-        }
-        ctx.fillStyle = document.getElementById('col2').value;
-        ctx.fillText(myQth, elements.myQth.x, elements.myQth.y);
+        ctx.font = `bold ${qthS}px sans-serif`;
+        ctx.strokeStyle = "black"; ctx.lineWidth = 4; ctx.strokeText(myQth, elements.myQth.x, elements.myQth.y);
+        ctx.fillStyle = colQth; ctx.fillText(myQth, elements.myQth.x, elements.myQth.y);
     }
     ctx.restore();
 
     drawQsoBox(elements.qsoBox);
+
+    ctx.save();
+    ctx.font = "bold 14px sans-serif";
+    ctx.fillStyle = "rgba(255,255,255,0.3)";
+    ctx.textAlign = "right";
+    ctx.fillText("© CL7ADV QSL ELITE", 1780, 1085);
+    ctx.restore();
+}
+
+function fitText(text, maxWidth, baseSize) {
+    let size = baseSize;
+    ctx.font = `900 ${size}px monospace`;
+    while(ctx.measureText(text).width > maxWidth - 15 && size > 10) {
+        size--;
+        ctx.font = `900 ${size}px monospace`;
+    }
+    return size;
 }
 
 function drawQsoBox(box) {
     const style = document.getElementById('boxStyle').value;
-    const colBorder = document.getElementById('col4').value;
-    const colBg = document.getElementById('col3').value;
+    const colBg = document.getElementById('colBoxBg').value;
+    const colBorder = document.getElementById('colBoxBorder').value;
+    const colTitle = document.getElementById('colTitles').value; 
+    const colData = document.getElementById('col5').value;
+    const radius = parseInt(document.getElementById('boxRadius').value);
+    const bSize = parseInt(document.getElementById('borderSize').value);
     const alpha = parseInt(document.getElementById('boxAlpha').value) / 100;
-    const commentText = document.getElementById('qComment').value;
-    
-    const scaleFactor = Math.min(box.w / 1640, box.h / 280);
-    const spacing = box.w / 6; 
-    const titleSize = Math.max(10, 24 * scaleFactor);
-    let baseDataSize = Math.max(18, 58 * scaleFactor);
 
     ctx.save();
+    ctx.globalAlpha = alpha;
     
-    if (style === 'neon') { 
-        ctx.shadowBlur = 30; 
-        ctx.shadowColor = colBorder; 
-    } else if (style === 'fenix') {
-        ctx.shadowBlur = 40;
-        ctx.shadowColor = "#ff4500";
+    const rowH = box.h / 2;
+    const headH = rowH * 0.4;
+    
+    ctx.fillStyle = (style === 'clasico') ? colBg : (style === 'cyber' ? "#111" : "rgba(255,255,255,0.15)");
+    ctx.beginPath(); ctx.roundRect(box.x, box.y, box.w, box.h, radius); ctx.fill();
+
+    if(style === 'clasico') {
+        ctx.fillStyle = colBorder;
+        ctx.beginPath(); ctx.roundRect(box.x, box.y, box.w, headH, [radius, radius, 0, 0]); ctx.fill();
+        ctx.beginPath(); ctx.rect(box.x, box.y + rowH, box.w, headH); ctx.fill();
     }
 
-    ctx.globalAlpha = alpha; 
-    ctx.fillStyle = colBg;
-    ctx.beginPath(); 
-    ctx.roundRect(box.x, box.y, box.w, box.h, 15); 
-    ctx.fill();
+    const cols = 7;
+    const step = box.w / cols;
+    ctx.strokeStyle = (style === 'cristal') ? "rgba(255,255,255,0.3)" : colBorder;
+    ctx.lineWidth = 1;
+    
+    ctx.beginPath(); ctx.moveTo(box.x, box.y + rowH); ctx.lineTo(box.x + box.w, box.y + rowH); ctx.stroke();
 
-    ctx.globalAlpha = 1; 
-    ctx.lineWidth = (style === 'fenix') ? 6 : 4; 
-    ctx.strokeStyle = (style === 'fenix') ? "#ff8c00" : colBorder; 
-    ctx.stroke();
+    for(let i=1; i < cols; i++) {
+        ctx.beginPath(); ctx.moveTo(box.x + step*i, box.y); ctx.lineTo(box.x + step*i, box.y + rowH); ctx.stroke();
+    }
 
-    const line1Y = box.y + (box.h * 0.35); 
-    const line2Y = box.y + (box.h * 0.75); 
+    if(bSize > 0) {
+        ctx.strokeStyle = colBorder; ctx.lineWidth = bSize;
+        ctx.beginPath(); ctx.roundRect(box.x, box.y, box.w, box.h, radius); ctx.stroke();
+    }
 
-    ctx.beginPath(); 
-    ctx.moveTo(box.x, line1Y); ctx.lineTo(box.x + box.w, line1Y); 
-    ctx.moveTo(box.x, line2Y); ctx.lineTo(box.x + box.w, line2Y); 
-    ctx.stroke();
-
-    const labels = ["CALL", "DATE", "TIME UTC", "BAND", "MODE", "RST"];
+    const labels = ["INDICATIVO", "FECHA", "HORA", "BANDA", "FREQ", "MODO", "RST"];
     const vals = [
-        document.getElementById('qCall').value,
-        document.getElementById('qDate').value,
-        document.getElementById('qTime').value,
-        document.getElementById('qBand').value,
-        document.getElementById('qMode').value,
+        document.getElementById('qCall').value, 
+        document.getElementById('qDate').value, 
+        document.getElementById('qTime').value, 
+        document.getElementById('qBand').value, 
+        document.getElementById('qFreq').value, 
+        document.getElementById('qMode').value, 
         document.getElementById('qRst').value
     ];
 
-    labels.forEach((l, i) => {
-        const xCenter = box.x + (spacing * i) + (spacing / 2);
-        const maxWidth = spacing * 0.85;
+    ctx.globalAlpha = 1;
+    ctx.textAlign = "center";
 
-        ctx.fillStyle = document.getElementById('col6').value;
-        ctx.font = `bold ${titleSize}px sans-serif`; 
-        ctx.textAlign = "center";
-        ctx.fillText(l, xCenter, box.y + (box.h * 0.22));
+    labels.forEach((l, i) => {
+        const xc = box.x + step*i + step/2;
+        ctx.font = "bold 16px sans-serif";
         
-        if(vals[i]) {
-            let currentSize = baseDataSize;
-            ctx.font = `900 ${currentSize}px monospace`;
-            while (ctx.measureText(vals[i]).width > maxWidth && currentSize > 10) {
-                currentSize -= 2;
-                ctx.font = `900 ${currentSize}px monospace`;
-            }
-            ctx.fillStyle = document.getElementById('col5').value;
-            ctx.fillText(vals[i], xCenter, box.y + (box.h * 0.62));
+        if(style !== 'clasico') {
+            ctx.fillStyle = colTitle;
+        } else {
+            if(colTitle !== "#444444") ctx.fillStyle = colTitle;
+            else ctx.fillStyle = "#ffffff";
+        }
+        
+        ctx.fillText(l, xc, box.y + headH * 0.65);
+
+        const textVal = (vals[i] || "").toUpperCase();
+        if(textVal) {
+            const fSize = fitText(textVal, step, 45);
+            ctx.font = `900 ${fSize}px monospace`;
+            ctx.fillStyle = colData;
+            ctx.fillText(textVal, xc, box.y + rowH * 0.75);
         }
     });
 
-    if(commentText) {
-        ctx.fillStyle = document.getElementById('col5').value;
-        let commSize = Math.max(12, 26 * scaleFactor);
-        ctx.font = `italic 700 ${commSize}px sans-serif`;
-        ctx.textAlign = "left";
-        ctx.fillText(`MSG: ${commentText.toUpperCase()}`, box.x + 25, box.y + (box.h * 0.90));
+    ctx.font = "bold 16px sans-serif";
+    if(style !== 'clasico' || colTitle !== "#444444") ctx.fillStyle = colTitle;
+    else ctx.fillStyle = "#ffffff";
+    
+    ctx.fillText("COMENTARIOS", box.x + box.w/2, box.y + rowH + headH * 0.65);
+
+    const commText = (document.getElementById('qComment').value || "").toUpperCase();
+    if(commText) {
+        const fSizeComm = fitText(commText, box.w * 0.9, 55);
+        ctx.font = `900 ${fSizeComm}px monospace`;
+        ctx.fillStyle = colData;
+        ctx.fillText(commText, box.x + box.w/2, box.y + rowH + rowH * 0.7);
     }
+
     ctx.restore();
-}
-
-document.getElementById('adiInp').onchange = (e) => {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-        log = ev.target.result.split(/<eor>/i).map(c => {
-            if(c.length < 10) return null;
-            const f = (t) => { const m = c.match(new RegExp(`<${t}:\\d+>([^<]*)`, "i")); return m ? m[1].trim() : ""; };
-            let station = f('STATION_CALLSIGN') || f('OPERATOR') || "";
-            return { call: f('CALL'), date: f('QSO_DATE'), time: f('TIME_ON'), band: f('BAND'), mode: f('MODE'), rst: f('RST_SENT'), comment: f('COMMENT'), myCall: station };
-        }).filter(x => x && x.call);
-        if(log.length) { idx = 0; sync(); document.getElementById('btnZip').style.display = 'block'; }
-    };
-    reader.readAsText(e.target.files[0]);
-};
-
-function sync() {
-    if(!log[idx]) return;
-    const q = log[idx];
-    document.getElementById('qCall').value = q.call;
-    document.getElementById('qBand').value = q.band;
-    document.getElementById('qMode').value = q.mode;
-    document.getElementById('qRst').value = q.rst;
-    // Si el log ya tiene comentario lo usa, si no, usa el que esté en el input actualmente
-    document.getElementById('qComment').value = q.comment || document.getElementById('qComment').value;
-    document.getElementById('qDate').value = q.date.replace(/(\d{4})(\d{2})(\d{2})/, '$3/$2/$1');
-    document.getElementById('qTime').value = q.time.substring(0,2)+":"+q.time.substring(2,4);
-    if(q.myCall) document.getElementById('myCall').value = q.myCall;
-    document.getElementById('indicator').innerText = `QSO ${idx+1}/${log.length}`;
-    render();
 }
 
 function setupEvents() {
@@ -455,77 +479,153 @@ function setupEvents() {
         const cY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
         return { x: (cX - rect.left) * sx, y: (cY - rect.top) * sy };
     };
+
     const start = (e) => {
         const p = getPos(e); activeLogoIdx = -1; draggingElement = null;
         for(let i = logos.length-1; i >= 0; i--) {
-            let l = logos[i]; if(p.x > l.x && p.x < l.x + l.w && p.y > l.y && p.y < l.y + l.h) { activeLogoIdx = i; offset.x = p.x - l.x; offset.y = p.y - l.y; return; }
+            let l = logos[i]; 
+            if(p.x > l.x && p.x < l.x + l.w && p.y > l.y && p.y < l.y + l.h) { 
+                activeLogoIdx = i; offset.x = p.x - l.x; offset.y = p.y - l.y; return; 
+            }
+        }
+        if(document.getElementById('showQR').value === 'yes') {
+            const qr = elements.qrPos;
+            if(p.x > qr.x - 10 && p.x < qr.x + qr.size + 10 && p.y > qr.y - 10 && p.y < qr.y + qr.size + 10) {
+                draggingElement = qr; offset.x = p.x - qr.x; offset.y = p.y - qr.y; return;
+            }
         }
         for (let key in elements) {
+            if(key === 'qrPos') continue;
             let el = elements[key];
-            let hit = el.w ? (p.x > el.x && p.x < el.x + el.w && p.y > el.y && p.y < el.y + el.h) : (p.x > el.x && p.x < el.x + 800 && p.y > el.y - 200 && p.y < el.y);
+            let isBox = key === 'qsoBox';
+            let hit = isBox ? (p.x > el.x && p.x < el.x + el.w && p.y > el.y && p.y < el.y + el.h) : (p.x > el.x && p.x < el.x + 500 && p.y > el.y - 100 && p.y < el.y + 100);
             if (hit) { draggingElement = el; offset.x = p.x - el.x; offset.y = p.y - el.y; return; }
         }
     };
+
     const move = (e) => {
         if (!draggingElement && activeLogoIdx === -1) return;
         if(e.cancelable) e.preventDefault();
         const p = getPos(e);
-        if(activeLogoIdx !== -1) { logos[activeLogoIdx].x = p.x - offset.x; logos[activeLogoIdx].y = p.y - offset.y; } 
-        else if (draggingElement) { draggingElement.x = p.x - offset.x; draggingElement.y = p.y - offset.y; }
+        if(activeLogoIdx !== -1) { 
+            logos[activeLogoIdx].x = p.x - offset.x; 
+            logos[activeLogoIdx].y = p.y - offset.y; 
+        } else if (draggingElement) { 
+            draggingElement.x = p.x - offset.x; 
+            draggingElement.y = p.y - offset.y; 
+        }
         render();
     };
+
     cv.addEventListener('mousedown', start);
     window.addEventListener('mousemove', move);
     window.addEventListener('mouseup', () => { draggingElement = null; activeLogoIdx = -1; });
     cv.addEventListener('touchstart', start, {passive: false});
     window.addEventListener('touchmove', move, { passive: false });
-
-    // --- NUEVA LÓGICA DE ACTUALIZACIÓN EN TIEMPO REAL ---
-    document.querySelectorAll('input, select').forEach(i => { i.oninput = () => {
-        if(i.id === 'boxW') elements.qsoBox.w = parseInt(i.value);
-        if(i.id === 'boxH') elements.qsoBox.h = parseInt(i.value);
-        
-        // Si el usuario cambia el comentario manualmente, se aplica a TODOS los contactos cargados
-        if(i.id === 'qComment' && log.length > 0) {
-            log.forEach(contact => contact.comment = i.value);
-        }
-        
-        render();
-    };});
 }
 
 function nav(d) { if(log.length) { idx = (idx+d+log.length)%log.length; sync(); } }
-function exportJpg() { const a = document.createElement('a'); a.download = `QSL_${document.getElementById('qCall').value || 'TEMP'}.jpg`; a.href = cv.toDataURL('image/jpeg', 0.9); a.click(); }
-function resetLogos() { logos = []; render(); }
-function lookupQRZ() { const call = document.getElementById('qCall').value; if(call) window.open(`https://www.qrz.com/db/${call}`, '_blank'); }
-document.getElementById('bgInp').onchange = (e) => { const r = new FileReader(); r.onload = (ev) => { bg.src = ev.target.result; }; r.readAsDataURL(e.target.files[0]); };
+
+function exportJpg() { 
+    const a = document.createElement('a'); 
+    a.download = `QSL_${document.getElementById('qCall').value || 'MANUAL'}.jpg`; 
+    a.href = cv.toDataURL('image/jpeg', 0.95); a.click(); 
+}
+
+document.getElementById('bgInp').onchange = (e) => { 
+    const r = new FileReader(); 
+    r.onload = (ev) => { bg.src = ev.target.result; }; 
+    r.readAsDataURL(e.target.files[0]); 
+};
+
 document.getElementById('logoInp').onchange = (e) => {
     Array.from(e.target.files).forEach(f => {
-        const r = new FileReader(); r.onload = (ev) => {
-            const i = new Image(); i.src = ev.target.result; i.onload = () => { logos.push({ img: i, x: 1500, y: 50, w: 200, h: 200 }); render(); };
-        }; r.readAsDataURL(f);
+        const r = new FileReader(); 
+        r.onload = (ev) => {
+            const i = new Image(); i.src = ev.target.result; 
+            i.onload = () => { logos.push({ img: i, x: 1400, y: 300, w: 180, h: 180 }); render(); };
+        }; 
+        r.readAsDataURL(f);
     });
 };
 
-async function downloadAllZip() {
-    if (log.length === 0) return;
-    const btn = document.getElementById('btnZip');
-    const originalComment = document.getElementById('qComment').value; // Guardar el comentario actual
-    
-    btn.disabled = true; btn.innerText = "GENERANDO...";
-    const zip = new JSZip();
-    for (let i = 0; i < log.length; i++) {
-        idx = i; 
-        // Forzamos el comentario global en cada paso de la sincronización
-        log[i].comment = originalComment;
-        sync(); 
-        render();
-        const blob = await new Promise(resolve => cv.toBlob(resolve, 'image/jpeg', 0.8));
-        zip.file(`QSL_${log[i].call}.jpg`, blob);
+function formatADIFDate(dateStr) {
+    if (!dateStr || dateStr.length !== 8) return dateStr;
+    const y = dateStr.substring(2, 4);
+    const m = dateStr.substring(4, 6);
+    const d = dateStr.substring(6, 8);
+    return `${d}/${m}/${y}`;
+}
+
+function formatADIFTime(timeStr) {
+    if (!timeStr) return "";
+    let clean = timeStr.replace(/:/g, '');
+    if (clean.length >= 4) {
+        return clean.substring(0, 2) + ":" + clean.substring(2, 4);
     }
-    const content = await zip.generateAsync({type:"blob"});
-    saveAs(content, `PACK_QSL.zip`);
-    btn.disabled = false; btn.innerText = "DESCARGAR PACK ADIF (.ZIP)";
+    return timeStr;
+}
+
+function mapMode(mode) {
+    const m = mode.toUpperCase().trim();
+    const dvModos = ["DIGITAL VOICE", "D-STAR", "C4FM", "DMR", "DSTAR"];
+    if (dvModos.includes(m)) return "DV";
+    return m;
+}
+
+document.getElementById('adiInp').onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        const raw = ev.target.result;
+        
+        const myCallMatch = raw.match(/<(STATION_CALLSIGN|OPERATOR):\d+>([^<]*)/i);
+        if(myCallMatch && myCallMatch[2]) {
+            document.getElementById('myCall').value = myCallMatch[2].trim().toUpperCase();
+        }
+
+        log = raw.split(/<eor>/i).map(c => {
+            if(c.length < 10) return null;
+            const f = (t) => { const m = c.match(new RegExp(`<${t}:\\d+>([^<]*)`, "i")); return m ? m[1].trim() : ""; };
+            return { 
+                call: f('CALL'), 
+                date: formatADIFDate(f('QSO_DATE')), 
+                time: formatADIFTime(f('TIME_ON')), 
+                band: f('BAND'), 
+                freq: f('FREQ'),
+                mode: mapMode(f('MODE')), 
+                rst: f('RST_SENT') || "599",
+                comment: f('COMMENT'),
+                email: f('EMAIL') // Nuevo campo para extraer el email
+            };
+        }).filter(x => x && x.call);
+        
+        if(log.length) { 
+            idx = 0; 
+            sync(); 
+            document.getElementById('btnZip').style.display = 'block'; 
+        }
+    };
+    reader.readAsText(e.target.files[0]);
+};
+
+function sync() {
+    const q = log[idx];
+    document.getElementById('qCall').value = q.call;
+    document.getElementById('qDate').value = q.date;
+    document.getElementById('qTime').value = q.time;
+    document.getElementById('qBand').value = q.band;
+    document.getElementById('qFreq').value = q.freq;
+    document.getElementById('qMode').value = q.mode;
+    document.getElementById('qRst').value = q.rst;
+    document.getElementById('qComment').value = q.comment;
+    
+    // Si el ADIF tiene email, actualizar el campo email del QR
+    if(q.email) {
+        document.getElementById('myEmail').value = q.email;
+    }
+
+    document.getElementById('indicator').innerText = `ADIF MODO: ${idx+1} / ${log.length}`;
+    render();
 }
 </script>
 </body>
