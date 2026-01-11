@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v35.9.6 - Radio Shack Optimized</title>
+    <title>QSL ELITE v35.9.7 - Radio Shack Optimized</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
@@ -129,7 +129,7 @@
 </div>
 
 <div id="intro-overlay">
-    <div class="cl7adv-pulse">QSL ELITE v35.9.6<br><span style="font-size: 1rem; color:#fff">RADIO SHACK OPTIMIZED</span></div>
+    <div class="cl7adv-pulse">QSL ELITE v35.9.7<br><span style="font-size: 1rem; color:#fff">RADIO SHACK OPTIMIZED</span></div>
     <div style="color:#444; margin-top:10px; font-size: 12px; letter-spacing: 3px;">BY CL7ADV</div>
 </div>
 
@@ -177,6 +177,29 @@
             <div class="row" style="margin-top:10px;">
                 <div><label>COLOR FONDO</label><input type="color" id="colBoxBg" value="#ffffff" oninput="render()"></div>
                 <div><label>COLOR BORDE</label><input type="color" id="colBoxBorder" value="#2ec4b6" oninput="render()"></div>
+            </div>
+        </div>
+
+        <!-- NUEVA SECCIÓN: COMENTARIO SECUNDARIO -->
+        <div class="control-section" style="border-color: var(--accent-main);">
+            <div class="section-title">📝 COM. SECUNDARIO (PROYECTO)</div>
+            <div class="row">
+                <div>
+                    <label>ACTIVAR</label>
+                    <select id="secShow" onchange="render()">
+                        <option value="no">OCULTO</option>
+                        <option value="yes">VISIBLE</option>
+                    </select>
+                </div>
+                <div>
+                    <label>COLOR LETRA</label>
+                    <input type="color" id="secColor" value="#ffffff" oninput="render()">
+                </div>
+            </div>
+            <textarea id="secText" placeholder="Habla sobre tu proyecto o imagen aquí..." rows="2" oninput="render()">FOTO: ANTENA YAGI 3 EL. MONO-BANDA 20M PROYECTO HOME-BREW BY CL7ADV.</textarea>
+            <div class="row">
+                <div><label>TAMAÑO TXT</label><input type="range" id="secFontSize" min="10" max="60" value="24" oninput="render()"></div>
+                <div><label>OPACIDAD</label><input type="range" id="secAlpha" min="10" max="100" value="100" oninput="render()"></div>
             </div>
         </div>
 
@@ -250,7 +273,7 @@
         </div>
         
         <div style="text-align: center; font-size: 10px; color: #555; padding: 20px;">
-            QSL ELITE v35.9.6 | RADIO SHACK EDITION-cl7adv.2026.
+            QSL ELITE v35.9.7 | RADIO SHACK EDITION-cl7adv.2026.
         </div>
     </div>
 
@@ -262,8 +285,8 @@
 
 <div id="updateModal">
     <div class="modal-content">
-        <h2 style="color:var(--accent-main)">v35.9.6 ACTUALIZADA</h2>
-        <p style="font-size: 0.9rem; color: #aaa;">¡Bordes de tarjeta y Exportación Masiva ZIP integrada! Los datos del ADIF respetarán tu diseño actual.</p>
+        <h2 style="color:var(--accent-main)">v35.9.7 ACTUALIZADA</h2>
+        <p style="font-size: 0.9rem; color: #aaa;">¡Nuevo! Comentario secundario para proyectos e imagen. Ahora puedes explicar los detalles de tu estación de forma organizada.</p>
         <button class="btn btn-primary" onclick="document.getElementById('updateModal').style.display='none'">ENTRAR AL SHACK</button>
     </div>
 </div>
@@ -283,7 +306,8 @@ let elements = {
     myCall: { x: 80, y: 180 }, 
     myQth: { x: 85, y: 260 }, 
     qsoBox: { x: 60, y: 700, w: 1680, h: 350 },
-    qrPos: { x: 1530, y: 60, size: 180 }
+    qrPos: { x: 1530, y: 60, size: 180 },
+    secBox: { x: 1200, y: 550, w: 540, h: 120 } // Nueva posición inicial para Com. Secundario
 };
 let offset = { x: 0, y: 0 }, activeLogoIdx = -1, draggingElement = null;
 let qrGenerator = new QRious({ size: 250, level: 'H' });
@@ -384,12 +408,64 @@ function render() {
     ctx.restore();
 
     drawQsoBox(elements.qsoBox);
+    drawSecBox(elements.secBox); // Dibujar Com. Secundario
 
     ctx.save();
     ctx.font = "bold 14px sans-serif";
     ctx.fillStyle = "rgba(255,255,255,0.3)";
     ctx.textAlign = "right";
     ctx.fillText("© CL7ADV QSL ELITE", 1780, 1085);
+    ctx.restore();
+}
+
+// Función para dibujar el Comentario Secundario
+function drawSecBox(box) {
+    if(document.getElementById('secShow').value === 'no') return;
+
+    const text = document.getElementById('secText').value.toUpperCase();
+    const color = document.getElementById('secColor').value;
+    const fSize = parseInt(document.getElementById('secFontSize').value);
+    const alpha = parseInt(document.getElementById('secAlpha').value) / 100;
+    const colBorder = document.getElementById('colBoxBorder').value;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    
+    // Dibujamos la cuadrícula de fondo estilizada
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.beginPath(); ctx.roundRect(box.x, box.y, box.w, box.h, 10); ctx.fill();
+    ctx.strokeStyle = colBorder; ctx.lineWidth = 1; ctx.stroke();
+    
+    // Texto multi-línea básico para el comentario
+    ctx.fillStyle = color;
+    ctx.font = `900 ${fSize}px monospace`;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+
+    const words = text.split(' ');
+    let line = '';
+    let y = box.y + 15;
+    const maxWidth = box.w - 30;
+    const lineHeight = fSize * 1.2;
+
+    for(let n = 0; n < words.length; n++) {
+        let testLine = line + words[n] + ' ';
+        let metrics = ctx.measureText(testLine);
+        let testWidth = metrics.width;
+        if (testWidth > maxWidth && n > 0) {
+            ctx.fillText(line, box.x + 15, y);
+            line = words[n] + ' ';
+            y += lineHeight;
+        } else {
+            line = testLine;
+        }
+    }
+    ctx.fillText(line, box.x + 15, y);
+    
+    // Ajuste automático del alto de la caja basado en el texto
+    const newH = (y - box.y) + lineHeight + 10;
+    box.h = Math.max(80, newH);
+
     ctx.restore();
 }
 
@@ -523,7 +599,10 @@ function setupEvents() {
         for (let key in elements) {
             if(key === 'qrPos') continue;
             let el = elements[key];
-            let isBox = key === 'qsoBox';
+            // Si el Comentario Secundario está oculto, no permitir arrastre
+            if(key === 'secBox' && document.getElementById('secShow').value === 'no') continue;
+
+            let isBox = key === 'qsoBox' || key === 'secBox';
             let hit = isBox ? (p.x > el.x && p.x < el.x + el.w && p.y > el.y && p.y < el.y + el.h) : (p.x > el.x && p.x < el.x + 500 && p.y > el.y - 100 && p.y < el.y + 100);
             if (hit) { draggingElement = el; offset.x = p.x - el.x; offset.y = p.y - el.y; return; }
         }
@@ -558,7 +637,6 @@ function exportJpg() {
     a.href = cv.toDataURL('image/jpeg', 0.95); a.click(); 
 }
 
-// NUEVA FUNCIÓN: EXPORTACIÓN MASIVA ZIP
 async function downloadAllZip() {
     if(!log.length) return;
     
@@ -568,11 +646,9 @@ async function downloadAllZip() {
     loading.style.display = 'flex';
 
     for(let i = 0; i < log.length; i++) {
-        // Cambiamos el log internamente sin disparar mil renders pesados
         idx = i;
         const q = log[i];
         
-        // Actualizamos campos del DOM para que 'render' tome los datos correctos
         document.getElementById('qCall').value = q.call;
         document.getElementById('qDate').value = q.date;
         document.getElementById('qTime').value = q.time;
@@ -582,18 +658,15 @@ async function downloadAllZip() {
         document.getElementById('qRst').value = q.rst;
         document.getElementById('qComment').value = q.comment;
 
-        render(); // Dibujamos la tarjeta actual
+        render(); 
 
-        // Convertimos el canvas a blob para el ZIP
         const blob = await new Promise(res => cv.toBlob(res, 'image/jpeg', 0.85));
         const filename = `${i+1}_${q.call}_${q.band}.jpg`;
         zip.file(filename, blob);
 
-        // Actualizamos UI de carga
         const progress = Math.round(((i + 1) / log.length) * 100);
         loadingMsg.innerText = progress + "%";
         
-        // Pequeña pausa para no congelar el navegador totalmente
         if(i % 5 === 0) await new Promise(r => setTimeout(r, 10));
     }
 
@@ -601,7 +674,7 @@ async function downloadAllZip() {
     saveAs(content, `LOG_QSL_ELITE_${document.getElementById('myCall').value}.zip`);
     
     loading.style.display = 'none';
-    sync(); // Volvemos a sincronizar la vista con el registro actual
+    sync(); 
 }
 
 document.getElementById('bgInp').onchange = (e) => { 
