@@ -7,6 +7,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         :root {
             --caribbean-blue: #1a6b9a;
@@ -18,6 +20,9 @@
             --text-dark: #0a2647;
             --panel-bg: rgba(255, 255, 255, 0.1);
             --border-sea: rgba(64, 201, 193, 0.3);
+            --success-green: #2ecc71;
+            --error-red: #e74c3c;
+            --email-blue: #4a6fa5;
         }
 
         /* Animación de olas para el intro */
@@ -240,6 +245,16 @@
             color: white;
         }
 
+        .btn-email { 
+            background: linear-gradient(to right, var(--email-blue), #6a8bc5);
+            color: white;
+            box-shadow: 0 4px 15px rgba(74, 111, 165, 0.3);
+        }
+
+        .btn-email:hover {
+            transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74, 111, 165, 0.4);
+        }
+
         .btn-icon { 
             width: auto; padding: 8px 15px; margin-top: 0; 
             margin-bottom: 6px; border-radius: 6px;
@@ -273,7 +288,7 @@
         }
 
         /* MODALES */
-        #updateModal, #loadingOverlay {
+        #updateModal, #loadingOverlay, #emailModal, #emailTestModal {
             display:none; position: fixed; top:0; left:0; width:100%; height:100%; 
             background:rgba(10, 38, 71, 0.95); z-index:20000; 
             justify-content:center; align-items:center; backdrop-filter: blur(10px);
@@ -284,6 +299,40 @@
             border: 2px solid var(--sunrise-orange); padding: 40px; 
             border-radius: 20px; max-width: 450px; text-align: center;
             backdrop-filter: blur(10px);
+        }
+
+        /* ESTADOS DE EMAIL */
+        .email-status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none;
+        }
+
+        .email-success {
+            background-color: rgba(46, 204, 113, 0.2);
+            border: 1px solid var(--success-green);
+            color: #d4ffd4;
+        }
+
+        .email-error {
+            background-color: rgba(231, 76, 60, 0.2);
+            border: 1px solid var(--error-red);
+            color: #ffd4d4;
+        }
+
+        .email-sending {
+            background-color: rgba(255, 127, 50, 0.2);
+            border: 1px solid var(--sunrise-orange);
+            color: #ffe0d4;
+        }
+
+        .email-info {
+            background-color: rgba(74, 111, 165, 0.2);
+            border: 1px solid var(--email-blue);
+            color: #d4e0ff;
         }
 
         /* PALMERA DECORATIVA */
@@ -469,6 +518,58 @@
             </div>
         </div>
 
+        <!-- NUEVA SECCIÓN: ENVÍO DE CORREOS -->
+        <div class="control-section" style="border-color: var(--email-blue);">
+            <div class="section-title">📧 ENVIAR QSL POR CORREO</div>
+            
+            <div id="emailStatus" class="email-status"></div>
+            
+            <label>EMAIL DEL CORRESPONSAL</label>
+            <input type="email" id="correspondentEmail" placeholder="corresponsal@email.com" style="margin-bottom: 10px;">
+            
+            <label>ASUNTO DEL CORREO</label>
+            <input type="text" id="emailSubject" value="QSL Card de {myCall} para {qCall}" placeholder="Asunto del correo" oninput="updateEmailSubject()">
+            
+            <label>MENSAJE PERSONAL (opcional)</label>
+            <textarea id="emailMessage" rows="3" placeholder="¡Hola {qCall}!
+
+Te envío mi tarjeta QSL de nuestro QSO del {qDate} a las {qTime} UTC en {qBand}/{qFreq} kHz.
+
+73 de {myCall}">¡Hola {qCall}!
+
+Te envío mi tarjeta QSL de nuestro QSO del {qDate} a las {qTime} UTC en {qBand}/{qFreq} kHz.
+
+73 de {myCall}</textarea>
+            
+            <div class="row">
+                <div><label>ENVIAR COMO:</label>
+                    <select id="emailFormat">
+                        <option value="inline">Imagen en el correo (recomendado)</option>
+                        <option value="attachment">Adjunto JPG</option>
+                    </select>
+                </div>
+                <div><label>CALIDAD:</label>
+                    <select id="emailQuality">
+                        <option value="high">Alta (mejor calidad)</option>
+                        <option value="medium" selected>Media (recomendado)</option>
+                        <option value="low">Baja (más rápido)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="btn btn-email" onclick="sendEmail()" style="margin-top: 15px;">
+                📤 ENVIAR QSL POR CORREO
+            </button>
+            
+            <button class="btn btn-dark" onclick="showEmailTestModal()" style="margin-top: 10px;">
+                🧪 PROBAR CONFIGURACIÓN
+            </button>
+            
+            <div style="font-size: 0.7rem; color: rgba(255,255,255,0.7); margin-top: 10px; text-align: center;">
+                Usa EmailJS • Configuración automática incluida
+            </div>
+        </div>
+
         <div class="control-section" style="border-color: var(--sunrise-orange);">
             <div class="section-title">📝 COM. SECUNDARIO (PROYECTO)</div>
             <div class="row">
@@ -493,7 +594,7 @@
 
         <div class="control-section">
             <div class="section-title">👤 DATOS ESTACIÓN</div>
-            <input type="text" id="myCall" value="CL7ADV" placeholder="TU CALL" oninput="render()">
+            <input type="text" id="myCall" value="CL7ADV" placeholder="TU CALL" oninput="render(); updateEmailSubject()">
             <div class="row">
                 <div><label>TAMAÑO</label><input type="range" id="callSize" min="50" max="400" value="200" oninput="render()"></div>
                 <div><label>COLOR CALL</label><input type="color" id="col1" value="#ffffff" oninput="render()"></div>
@@ -503,6 +604,9 @@
                 <div><label>TAMAÑO QTH</label><input type="range" id="qthSize" min="20" max="150" value="80" oninput="render()"></div>
                 <div><label>COLOR PAÍS</label><input type="color" id="colQth" value="#ff7f32" oninput="render()"></div>
             </div>
+            
+            <label style="margin-top:10px;">TU EMAIL (para responder)</label>
+            <input type="email" id="operatorEmail" value="tuemail@gmail.com" placeholder="tu@email.com" oninput="render()">
         </div>
 
         <div class="control-section">
@@ -510,7 +614,7 @@
             <div style="display: flex; gap: 8px; align-items: flex-end;">
                 <div style="flex: 1;">
                     <label>INDICATIVO DESTINATARIO</label>
-                    <input type="text" id="qCall" placeholder="CALLSIGN" oninput="render()" style="margin-bottom: 0;">
+                    <input type="text" id="qCall" placeholder="CALLSIGN" oninput="render(); updateEmailSubject()" style="margin-bottom: 0;">
                 </div>
                 <button class="btn btn-dark btn-icon" onclick="openQRZ()" title="Ver en QRZ.com">👁️</button>
             </div>
@@ -587,7 +691,76 @@
     </div>
 </div>
 
+<!-- MODAL PARA CONFIGURAR EMAILJS -->
+<div id="emailModal">
+    <div class="modal-content" style="max-width: 500px;">
+        <h2 style="color:var(--wave-teal)">CONFIGURAR ENVÍO DE CORREOS</h2>
+        <p style="text-align: left; font-size: 0.9rem; margin-bottom: 20px;">
+            Para usar el envío de correos, necesitas configurar EmailJS:<br><br>
+            1. Ve a <a href="https://dashboard.emailjs.com/admin" target="_blank" style="color:var(--sunrise-orange)">EmailJS Dashboard</a><br>
+            2. Copia tu <strong>Public Key</strong><br>
+            3. Copia tu <strong>Service ID</strong><br>
+            4. Crea una plantilla y copia su <strong>Template ID</strong>
+        </p>
+        
+        <label style="display: block; text-align: left; margin-top: 15px;">PUBLIC KEY</label>
+        <input type="text" id="emailjsPublicKey" placeholder="tu_public_key_de_emailjs" style="margin-bottom: 10px;">
+        
+        <label style="display: block; text-align: left;">SERVICE ID</label>
+        <input type="text" id="emailjsServiceId" placeholder="tu_service_id" style="margin-bottom: 10px;">
+        
+        <label style="display: block; text-align: left;">TEMPLATE ID</label>
+        <input type="text" id="emailjsTemplateId" placeholder="tu_template_id" style="margin-bottom: 20px;">
+        
+        <div class="row">
+            <button class="btn btn-success" onclick="saveEmailJSCredentials()">GUARDAR CONFIGURACIÓN</button>
+            <button class="btn btn-dark" onclick="document.getElementById('emailModal').style.display='none'">CANCELAR</button>
+        </div>
+        
+        <p style="font-size: 0.7rem; color: #b0e0e6; margin-top: 20px;">
+            Las credenciales se guardan localmente en tu navegador.
+        </p>
+    </div>
+</div>
+
+<!-- MODAL PARA PROBAR EMAILJS -->
+<div id="emailTestModal">
+    <div class="modal-content" style="max-width: 500px;">
+        <h2 style="color:var(--wave-teal)">PROBAR CONFIGURACIÓN EMAILJS</h2>
+        <p style="text-align: left; font-size: 0.9rem; margin-bottom: 20px;">
+            Ingresa tu email para recibir una prueba de configuración:
+        </p>
+        
+        <label style="display: block; text-align: left; margin-top: 15px;">TU EMAIL PARA PRUEBA</label>
+        <input type="email" id="testEmail" placeholder="tuemail@ejemplo.com" style="margin-bottom: 20px;">
+        
+        <div id="testEmailStatus" class="email-status"></div>
+        
+        <div class="row">
+            <button class="btn btn-success" onclick="testEmailJSSetup()">ENVIAR PRUEBA</button>
+            <button class="btn btn-dark" onclick="document.getElementById('emailTestModal').style.display='none'">CANCELAR</button>
+        </div>
+        
+        <p style="font-size: 0.7rem; color: #b0e0e6; margin-top: 20px;">
+            Esto verificará que tu configuración de EmailJS funciona correctamente.
+        </p>
+    </div>
+</div>
+
 <script>
+// ============================================
+// CONFIGURACIÓN DE EMAILJS - INICIAL
+// ============================================
+const EMAILJS_CONFIG = {
+    // Configuración inicial - se puede sobrescribir desde localStorage
+    publicKey: 'wWqk__Df3OQn8Q9M5',  // Public Key de ejemplo - reemplazar con el tuyo
+    serviceId: 'service_qsl_elite',   // Service ID de ejemplo
+    templateId: 'template_qsl_card'   // Template ID de ejemplo
+};
+
+// ============================================
+// VARIABLES GLOBALES DEL SISTEMA
+// ============================================
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 let bg = new Image(), log = [], idx = 0, logos = [];
 let elements = { 
@@ -599,20 +772,11 @@ let elements = {
 };
 let offset = { x: 0, y: 0 }, activeLogoIdx = -1, draggingElement = null;
 let qrGenerator = new QRious({ size: 250, level: 'H' });
+let emailjsConfigured = false;
 
-// FUNCIÓN TOGGLE SIDEBAR PARA MÓVIL
-function toggleSidebar() {
-    const sidebar = document.getElementById('mainSidebar');
-    sidebar.classList.toggle('active');
-}
-
-// CIERRA SIDEBAR AL HACER CLICK EN BOTÓN EXPORTAR (para móviles)
-function closeSidebarOnMobile() {
-    if (window.innerWidth <= 900) {
-        const sidebar = document.getElementById('mainSidebar');
-        sidebar.classList.remove('active');
-    }
-}
+// ============================================
+// FUNCIONES DE INICIALIZACIÓN
+// ============================================
 
 function initApp() {
     // FONDO CARIBEÑO POR DEFECTO
@@ -627,7 +791,7 @@ function initApp() {
             document.getElementById('intro-overlay').style.display = 'none';
             document.getElementById('updateModal').style.display = 'flex';
         }, 800);
-    }, 2500); // Más tiempo para disfrutar el intro
+    }, 2500);
     
     setInterval(updateClock, 1000);
     setupEvents();
@@ -635,7 +799,387 @@ function initApp() {
     // AJUSTAR TAMAÑO DE CANVAS EN MÓVIL
     window.addEventListener('resize', adjustCanvasSize);
     adjustCanvasSize();
+    
+    // INICIALIZAR EMAILJS
+    initializeEmailJS();
 }
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('mainSidebar');
+    sidebar.classList.toggle('active');
+}
+
+function closeSidebarOnMobile() {
+    if (window.innerWidth <= 900) {
+        const sidebar = document.getElementById('mainSidebar');
+        sidebar.classList.remove('active');
+    }
+}
+
+// ============================================
+// CONFIGURACIÓN DE EMAILJS
+// ============================================
+
+function initializeEmailJS() {
+    try {
+        // Cargar configuración desde localStorage o usar valores por defecto
+        const savedConfig = loadEmailJSConfig();
+        
+        if (savedConfig.publicKey && savedConfig.publicKey !== 'TU_PUBLIC_KEY_AQUI') {
+            // Inicializar EmailJS con la configuración guardada
+            emailjs.init(savedConfig.publicKey);
+            emailjsConfigured = true;
+            
+            showEmailStatus("✅ EmailJS configurado. Puedes enviar correos.", "success");
+            
+            // Ocultar mensaje después de 3 segundos
+            setTimeout(() => {
+                hideEmailStatus();
+            }, 3000);
+        } else {
+            // Usar configuración por defecto si está disponible
+            if (EMAILJS_CONFIG.publicKey && EMAILJS_CONFIG.publicKey !== 'TU_PUBLIC_KEY_AQUI') {
+                emailjs.init(EMAILJS_CONFIG.publicKey);
+                emailjsConfigured = true;
+                
+                showEmailStatus("✅ EmailJS configurado con valores por defecto.", "info");
+                setTimeout(() => hideEmailStatus(), 3000);
+            } else {
+                showEmailStatus("⚠️ Configura EmailJS para enviar correos", "sending");
+            }
+        }
+    } catch (error) {
+        console.error("Error al inicializar EmailJS:", error);
+        showEmailStatus("❌ Error en EmailJS. Verifica la consola.", "error");
+    }
+}
+
+function loadEmailJSConfig() {
+    return {
+        publicKey: localStorage.getItem('emailjs_public_key') || EMAILJS_CONFIG.publicKey,
+        serviceId: localStorage.getItem('emailjs_service_id') || EMAILJS_CONFIG.serviceId,
+        templateId: localStorage.getItem('emailjs_template_id') || EMAILJS_CONFIG.templateId
+    };
+}
+
+function saveEmailJSCredentials() {
+    const publicKey = document.getElementById('emailjsPublicKey').value.trim();
+    const serviceId = document.getElementById('emailjsServiceId').value.trim();
+    const templateId = document.getElementById('emailjsTemplateId').value.trim();
+    
+    if (!publicKey || !serviceId || !templateId) {
+        showEmailStatus("❌ Por favor, completa todos los campos", "error");
+        return;
+    }
+    
+    // Guardar en localStorage
+    localStorage.setItem('emailjs_public_key', publicKey);
+    localStorage.setItem('emailjs_service_id', serviceId);
+    localStorage.setItem('emailjs_template_id', templateId);
+    
+    // Reinicializar EmailJS
+    try {
+        emailjs.init(publicKey);
+        emailjsConfigured = true;
+        document.getElementById('emailModal').style.display = 'none';
+        
+        showEmailStatus("✅ Configuración guardada correctamente", "success");
+        setTimeout(() => hideEmailStatus(), 3000);
+        
+    } catch (error) {
+        console.error("Error al guardar configuración:", error);
+        showEmailStatus("❌ Error: " + error.message, "error");
+    }
+}
+
+// ============================================
+// FUNCIONES DE ENVÍO DE EMAIL
+// ============================================
+
+async function sendEmail() {
+    // Verificar configuración
+    if (!emailjsConfigured) {
+        showEmailStatus("❌ EmailJS no configurado. Configura primero.", "error");
+        document.getElementById('emailModal').style.display = 'flex';
+        return;
+    }
+    
+    // Validar email del corresponsal
+    const correspondentEmail = document.getElementById('correspondentEmail').value.trim();
+    if (!correspondentEmail) {
+        showEmailStatus("❌ Ingresa el email del corresponsal", "error");
+        return;
+    }
+    
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(correspondentEmail)) {
+        showEmailStatus("❌ Email inválido", "error");
+        return;
+    }
+    
+    // Mostrar estado de envío
+    showEmailStatus("📤 Preparando y enviando QSL...", "sending");
+    
+    try {
+        // Obtener configuración
+        const config = loadEmailJSConfig();
+        
+        // Generar imagen del QSL
+        const quality = getEmailQuality();
+        const imageBase64 = cv.toDataURL('image/jpeg', quality);
+        
+        // Preparar datos para la plantilla
+        const templateParams = prepareEmailTemplateParams(correspondentEmail, imageBase64);
+        
+        console.log("Enviando email con:", {
+            serviceId: config.serviceId,
+            templateId: config.templateId,
+            to: correspondentEmail
+        });
+        
+        // Enviar correo
+        const response = await emailjs.send(
+            config.serviceId,
+            config.templateId,
+            templateParams
+        );
+        
+        console.log("Respuesta EmailJS:", response);
+        
+        if (response.status === 200) {
+            showEmailStatus(`✅ QSL enviado a ${correspondentEmail}`, "success");
+            
+            // Limpiar campo de email
+            document.getElementById('correspondentEmail').value = '';
+            
+            // Ocultar mensaje después de 5 segundos
+            setTimeout(() => hideEmailStatus(), 5000);
+        }
+        
+    } catch (error) {
+        console.error("Error al enviar email:", error);
+        
+        let errorMessage = "❌ Error al enviar correo";
+        if (error.text) {
+            try {
+                const errorData = JSON.parse(error.text);
+                errorMessage = `❌ Error: ${errorData.message || error.text}`;
+            } catch (e) {
+                errorMessage = `❌ Error: ${error.text}`;
+            }
+        } else if (error.message) {
+            errorMessage = `❌ Error: ${error.message}`;
+        }
+        
+        showEmailStatus(errorMessage, "error");
+    }
+}
+
+function prepareEmailTemplateParams(correspondentEmail, imageBase64) {
+    const myCall = document.getElementById('myCall').value || 'CL7ADV';
+    const qCall = document.getElementById('qCall').value || '';
+    const qDate = document.getElementById('qDate').value || '';
+    const qTime = document.getElementById('qTime').value || '';
+    const qBand = document.getElementById('qBand').value || '';
+    const qFreq = document.getElementById('qFreq').value || '';
+    const qMode = document.getElementById('qMode').value || '';
+    const qRst = document.getElementById('qRst').value || '';
+    const qComment = document.getElementById('qComment').value || '';
+    const myQth = document.getElementById('myQth').value || '';
+    const operatorEmail = document.getElementById('operatorEmail').value || 'noreply@qsl.com';
+    
+    // Procesar plantillas
+    const subject = processTemplate(document.getElementById('emailSubject').value);
+    const message = processTemplate(document.getElementById('emailMessage').value);
+    
+    // Obtener formato de envío
+    const emailFormat = document.getElementById('emailFormat').value;
+    
+    return {
+        to_email: correspondentEmail,
+        from_name: myCall,
+        from_email: operatorEmail,
+        reply_to: operatorEmail,
+        subject: subject,
+        message: message,
+        my_call: myCall,
+        qso_call: qCall,
+        qso_date: qDate,
+        qso_time: qTime,
+        qso_band: qBand,
+        qso_freq: qFreq,
+        qso_mode: qMode,
+        qso_rst: qRst,
+        qso_comment: qComment,
+        my_qth: myQth,
+        qsl_image: emailFormat === 'inline' ? imageBase64 : '',
+        current_year: new Date().getFullYear(),
+        timestamp: new Date().toISOString()
+    };
+}
+
+function getEmailQuality() {
+    const quality = document.getElementById('emailQuality').value;
+    switch(quality) {
+        case 'high': return 0.95;
+        case 'medium': return 0.8;
+        case 'low': return 0.6;
+        default: return 0.8;
+    }
+}
+
+function processTemplate(template) {
+    const myCall = document.getElementById('myCall').value || 'CL7ADV';
+    const qCall = document.getElementById('qCall').value || '';
+    const qDate = document.getElementById('qDate').value || '';
+    const qTime = document.getElementById('qTime').value || '';
+    const qBand = document.getElementById('qBand').value || '';
+    const qFreq = document.getElementById('qFreq').value || '';
+    const qMode = document.getElementById('qMode').value || '';
+    const qRst = document.getElementById('qRst').value || '';
+    const myQth = document.getElementById('myQth').value || '';
+    const operatorEmail = document.getElementById('operatorEmail').value || '';
+    
+    let result = template;
+    result = result.replace(/{myCall}/g, myCall);
+    result = result.replace(/{qCall}/g, qCall);
+    result = result.replace(/{qDate}/g, qDate);
+    result = result.replace(/{qTime}/g, qTime);
+    result = result.replace(/{qBand}/g, qBand);
+    result = result.replace(/{qFreq}/g, qFreq);
+    result = result.replace(/{qMode}/g, qMode);
+    result = result.replace(/{qRst}/g, qRst);
+    result = result.replace(/{myQth}/g, myQth);
+    result = result.replace(/{operatorEmail}/g, operatorEmail);
+    
+    return result;
+}
+
+// ============================================
+// FUNCIONES DE PRUEBA EMAILJS
+// ============================================
+
+function showEmailTestModal() {
+    document.getElementById('emailTestModal').style.display = 'flex';
+    document.getElementById('testEmailStatus').style.display = 'none';
+    document.getElementById('testEmail').value = '';
+}
+
+async function testEmailJSSetup() {
+    const testEmail = document.getElementById('testEmail').value.trim();
+    const testStatus = document.getElementById('testEmailStatus');
+    
+    if (!testEmail) {
+        testStatus.textContent = "❌ Ingresa un email para la prueba";
+        testStatus.className = "email-status email-error";
+        testStatus.style.display = 'block';
+        return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(testEmail)) {
+        testStatus.textContent = "❌ Email inválido";
+        testStatus.className = "email-status email-error";
+        testStatus.style.display = 'block';
+        return;
+    }
+    
+    testStatus.textContent = "🧪 Enviando correo de prueba...";
+    testStatus.className = "email-status email-sending";
+    testStatus.style.display = 'block';
+    
+    try {
+        const config = loadEmailJSConfig();
+        
+        const testParams = {
+            to_email: testEmail,
+            from_name: "QSL ELITE Test",
+            from_email: "test@qsl.com",
+            subject: "✅ Prueba de configuración - QSL ELITE",
+            message: "¡Hola! Este es un correo de prueba para verificar que tu configuración de EmailJS funciona correctamente.\n\nSi recibes este mensaje, puedes enviar tarjetas QSL sin problemas.\n\n73 de CL7ADV",
+            my_call: "CL7ADV",
+            qso_call: "TEST",
+            qso_date: new Date().toLocaleDateString(),
+            qso_time: new Date().toLocaleTimeString(),
+            qso_band: "20m",
+            qso_freq: "14.200",
+            qso_mode: "SSB",
+            qso_rst: "59",
+            qso_comment: "Prueba de configuración EmailJS",
+            my_qth: "CUBA",
+            current_year: new Date().getFullYear(),
+            timestamp: new Date().toISOString()
+        };
+        
+        const response = await emailjs.send(config.serviceId, config.templateId, testParams);
+        
+        if (response.status === 200) {
+            testStatus.textContent = "✅ Correo de prueba enviado correctamente";
+            testStatus.className = "email-status email-success";
+            
+            setTimeout(() => {
+                document.getElementById('emailTestModal').style.display = 'none';
+            }, 3000);
+        }
+        
+    } catch (error) {
+        console.error("Error en prueba EmailJS:", error);
+        
+        let errorMessage = "❌ Error en la prueba";
+        if (error.text) {
+            try {
+                const errorData = JSON.parse(error.text);
+                errorMessage = `❌ Error: ${errorData.message || error.text}`;
+            } catch (e) {
+                errorMessage = `❌ Error: ${error.text}`;
+            }
+        }
+        
+        testStatus.textContent = errorMessage;
+        testStatus.className = "email-status email-error";
+    }
+}
+
+// ============================================
+// FUNCIONES DE INTERFAZ EMAIL
+// ============================================
+
+function showEmailStatus(message, type = "info") {
+    const statusDiv = document.getElementById('emailStatus');
+    statusDiv.textContent = message;
+    statusDiv.className = 'email-status';
+    
+    switch(type) {
+        case 'success': statusDiv.classList.add('email-success'); break;
+        case 'error': statusDiv.classList.add('email-error'); break;
+        case 'sending': statusDiv.classList.add('email-sending'); break;
+        case 'info': statusDiv.classList.add('email-info'); break;
+    }
+    
+    statusDiv.style.display = 'block';
+}
+
+function hideEmailStatus() {
+    const statusDiv = document.getElementById('emailStatus');
+    statusDiv.style.display = 'none';
+}
+
+function updateEmailSubject() {
+    const myCall = document.getElementById('myCall').value || '{myCall}';
+    const qCall = document.getElementById('qCall').value || '{qCall}';
+    const subjectInput = document.getElementById('emailSubject');
+    
+    let subject = subjectInput.value;
+    subject = subject.replace('{myCall}', myCall);
+    subject = subject.replace('{qCall}', qCall);
+    
+    subjectInput.value = subject;
+}
+
+// ============================================
+// FUNCIONES DEL SISTEMA QSL EXISTENTES
+// ============================================
 
 function adjustCanvasSize() {
     if (window.innerWidth <= 900) {
@@ -678,10 +1222,8 @@ function render() {
     ctx.save();
     ctx.filter = `blur(${blurVal}px) brightness(${brightVal}%)`;
     if(bg.complete) {
-        // Ajustar imagen al tamaño del canvas
         ctx.drawImage(bg, 0, 0, cv.width, cv.height);
     } else {
-        // Fondo degradado caribeño si no hay imagen
         const gradient = ctx.createLinearGradient(0, 0, cv.width, cv.height);
         gradient.addColorStop(0, '#1a6b9a');
         gradient.addColorStop(0.5, '#2d8cba');
@@ -727,7 +1269,6 @@ function render() {
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
     if(myCall) {
-        // Ajustar tamaño de texto para móviles
         const adjustedCallSize = window.innerWidth <= 900 ? callS * 0.5 : callS;
         ctx.font = `900 ${adjustedCallSize}px sans-serif`;
         ctx.strokeStyle = "rgba(0,0,0,0.5)"; 
@@ -767,7 +1308,6 @@ function drawSecBox(box) {
     const alpha = parseInt(document.getElementById('secAlpha').value) / 100;
     const colBorder = document.getElementById('colBoxBorder').value;
 
-    // Ajustar posición para móviles
     const adjustedBox = window.innerWidth <= 900 ? {
         x: box.x * 0.5,
         y: box.y * 0.5,
@@ -778,7 +1318,6 @@ function drawSecBox(box) {
     ctx.save();
     ctx.globalAlpha = alpha;
     
-    // Fondo con gradiente caribeño
     const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x + adjustedBox.w, adjustedBox.y + adjustedBox.h);
     gradient.addColorStop(0, 'rgba(26, 107, 154, 0.8)');
     gradient.addColorStop(1, 'rgba(64, 201, 193, 0.8)');
@@ -792,7 +1331,6 @@ function drawSecBox(box) {
     ctx.lineWidth = 2; 
     ctx.stroke();
     
-    // Texto
     ctx.fillStyle = color;
     const adjustedFontSize = window.innerWidth <= 900 ? fSize * 0.7 : fSize;
     ctx.font = `900 ${adjustedFontSize}px monospace`;
@@ -848,7 +1386,6 @@ function drawQsoBox(box) {
     const bSize = parseInt(document.getElementById('borderSize').value);
     const alpha = parseInt(document.getElementById('boxAlpha').value) / 100;
 
-    // Ajustar tamaño para móviles
     const adjustedBox = window.innerWidth <= 900 ? {
         x: box.x * 0.5,
         y: box.y * 0.5,
@@ -862,7 +1399,6 @@ function drawQsoBox(box) {
     const rowH = adjustedBox.h / 2;
     const headH = rowH * 0.4;
     
-    // Estilo Caribeño especial
     if (style === 'caribbean') {
         const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x, adjustedBox.y + adjustedBox.h);
         gradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
@@ -925,7 +1461,6 @@ function drawQsoBox(box) {
     ctx.globalAlpha = 1;
     ctx.textAlign = "center";
 
-    // Ajustar tamaño de fuente para móviles
     const titleFontSize = window.innerWidth <= 900 ? 12 : 16;
     const dataFontSize = window.innerWidth <= 900 ? 35 : 45;
 
@@ -1022,7 +1557,6 @@ function setupEvents() {
     cv.addEventListener('touchstart', start, {passive: false});
     window.addEventListener('touchmove', move, { passive: false });
     
-    // Cerrar sidebar al hacer click fuera en móvil
     document.addEventListener('click', (e) => {
         if (window.innerWidth <= 900 && !e.target.closest('.sidebar') && !e.target.closest('.menu-toggle')) {
             const sidebar = document.getElementById('mainSidebar');
@@ -1135,6 +1669,7 @@ document.getElementById('adiInp').onchange = (e) => {
         const myEmailMatch = raw.match(/<(MY_EMAIL):\d+>([^<]*)/i);
         if(myEmailMatch && myEmailMatch[2]) {
             document.getElementById('myEmail').value = myEmailMatch[2].trim();
+            document.getElementById('operatorEmail').value = myEmailMatch[2].trim();
         }
 
         log = raw.split(/<eor>/i).map(c => {
@@ -1175,6 +1710,16 @@ function sync() {
     document.getElementById('indicator').innerText = `ADIF MODO: ${idx+1} / ${log.length}`;
     render();
 }
+
+// Inicializar EmailJS cuando se carga la página
+window.addEventListener('DOMContentLoaded', () => {
+    // Inicializar EmailJS después de un breve retraso
+    setTimeout(() => {
+        if (typeof emailjs !== 'undefined') {
+            initializeEmailJS();
+        }
+    }, 1000);
+});
 </script>
 </body>
 </html>
