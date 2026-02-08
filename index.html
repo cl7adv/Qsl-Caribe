@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v37.0.0 - Caribe Edition PLUS</title>
+    <title>QSL ELITE v38.0.0 - Caribe Edition 3D</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Roboto+Condensed:wght@300;400;700&family=Oswald:wght@300;400;700&family=Raleway:wght@300;400;600&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
@@ -452,8 +452,8 @@
     <div class="sun">
         <div class="sun-rays"></div>
     </div>
-    <div class="caribbean-title">QSL ELITE v37.0.0<br><span style="font-size: 1.5rem;">CARIBBEAN ELEGANCE EDITION</span></div>
-    <div class="caribbean-subtitle">BY CL7ADV • NOW WITH FONT STYLING & COMPACT MODE</div>
+    <div class="caribbean-title">QSL ELITE v38.0.0<br><span style="font-size: 1.5rem;">CARIBE 3D + NUEVO DISEÑO</span></div>
+    <div class="caribbean-subtitle">BY CL7ADV • CON EFECTO 3D REAL Y TARJETAS FLOTANTES</div>
     <div class="wave"></div>
     <div class="wave wave2"></div>
     <div class="palm-tree">🌴</div>
@@ -461,7 +461,7 @@
 
 <header>
     <button class="menu-toggle" onclick="toggleSidebar()">☰ MENÚ</button>
-    <div class="header-title">QSL ELITE <span style="color:var(--sunrise-orange)">CARIBBEAN PLUS</span></div>
+    <div class="header-title">QSL ELITE <span style="color:var(--sunrise-orange)">CARIBBEAN 3D</span></div>
     <div id="clock" style="font-family: monospace; font-size: 14px; color: var(--wave-teal);">00:00:00 UTC</div>
 </header>
 
@@ -568,6 +568,7 @@
                 <option value="outline">Contorno fino</option>
                 <option value="gradient">Gradiente dorado</option>
                 <option value="glow">Brillo suave</option>
+                <option value="3d">🔥 EFECTO 3D REAL (NUEVO)</option>
             </select>
         </div>
 
@@ -579,7 +580,8 @@
                 <option value="cyber">🤖 CYBER TECH</option>
                 <option value="caribbean">🌊 CARIBBEAN STYLE</option>
                 <option value="elegante">👑 ELEGANTE DORADO</option>
-                <option value="compacto" selected>📦 COMPACTO MODERNO</option>
+                <option value="compacto">📦 COMPACTO MODERNO</option>
+                <option value="tarjetas" selected>🗂️ TARJETAS FLOTANTES (NUEVO)</option>
             </select>
             <div class="row">
                 <div><label>REDONDEO</label><input type="range" id="boxRadius" min="0" max="60" value="15" oninput="render()"></div>
@@ -692,7 +694,7 @@
         </div>
         
         <div style="text-align: center; font-size: 10px; color: rgba(255,255,255,0.6); padding: 20px;">
-            QSL ELITE v37.0.0 | CARIBBEAN ELEGANCE EDITION • cl7adv.2026
+            QSL ELITE v38.0.0 | CARIBBEAN 3D EDITION • cl7adv.2026
         </div>
     </div>
 
@@ -704,8 +706,8 @@
 
 <div id="updateModal">
     <div class="modal-content">
-        <h2 style="color:var(--sunrise-orange)">¡NUEVA VERSIÓN ELEGANTE!</h2>
-        <p style="font-size: 0.9rem; color: #f0f8ff;">Nuevas fuentes elegantes, estilos de texto y modo compacto añadidos.</p>
+        <h2 style="color:var(--sunrise-orange)">¡NUEVA VERSIÓN 3D!</h2>
+        <p style="font-size: 0.9rem; color: #f0f8ff;">Ahora con Efecto 3D Real para textos y la nueva Caja QSO "Tarjetas Flotantes".</p>
         <button class="btn btn-elegant" onclick="document.getElementById('updateModal').style.display='none'">EMPEZAR A DISEÑAR</button>
     </div>
 </div>
@@ -761,10 +763,10 @@ function applyElegantPreset() {
     document.getElementById('fontDataStyle').value = 'normal';
     
     // Efectos
-    document.getElementById('textEffect').value = 'shadow';
+    document.getElementById('textEffect').value = '3d'; // Actualizado al nuevo efecto 3D
     
     // Estilo de caja
-    document.getElementById('boxStyle').value = 'elegante';
+    document.getElementById('boxStyle').value = 'tarjetas'; // Actualizado al nuevo estilo
     document.getElementById('colBoxBg').value = '#ffffff';
     document.getElementById('colBoxBorder').value = '#ffd166';
     document.getElementById('colTitles').value = '#1a6b9a';
@@ -773,7 +775,7 @@ function applyElegantPreset() {
     document.getElementById('borderSize').value = '4';
     
     // Colores
-    document.getElementById('col1').value = '#0a2647';
+    document.getElementById('col1').value = '#ffd166'; // Dorado para resaltar el 3D
     document.getElementById('colQth').value = '#ff7f32';
     
     // Renderizar
@@ -876,6 +878,23 @@ function applyTextEffect(text, x, y, color, effectType) {
             ctx.fillText(text, x, y);
             ctx.shadowBlur = 0;
             break;
+
+        case '3d': // NUEVO EFECTO 3D
+            ctx.lineJoin = "round";
+            ctx.miterLimit = 2;
+            // Capa de profundidad (sombra dura)
+            ctx.fillStyle = "#000000"; // Sombra negra profunda para contraste
+            for(let i=4; i>0; i--) {
+                 ctx.fillText(text, x+i, y+i);
+            }
+            // Capa de color principal
+            ctx.fillStyle = color;
+            ctx.fillText(text, x, y);
+            // Brillo superior (highlight opcional para efecto metálico)
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "rgba(255,255,255,0.4)";
+            ctx.strokeText(text, x, y);
+            break;
             
         default:
             ctx.fillStyle = color;
@@ -972,7 +991,7 @@ function render() {
     ctx.font = "300 12px 'Montserrat'";
     ctx.fillStyle = "rgba(255,255,255,0.5)";
     ctx.textAlign = "right";
-    ctx.fillText("© CL7ADV QSL ELITE CARIBBEAN ELEGANCE", cv.width - 20, cv.height - 15);
+    ctx.fillText("© CL7ADV QSL ELITE CARIBBEAN 3D", cv.width - 20, cv.height - 15);
     ctx.restore();
 }
 
@@ -1083,46 +1102,7 @@ function drawQsoBox(box) {
     ctx.save();
     ctx.globalAlpha = alpha;
     
-    // ESTILOS ESPECIALES
-    if (style === 'caribbean') {
-        const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x, adjustedBox.y + adjustedBox.h);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
-        gradient.addColorStop(1, 'rgba(245, 230, 202, 0.95)');
-        ctx.fillStyle = gradient;
-    } else if (style === 'elegante') {
-        // Estilo elegante dorado
-        const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x + adjustedBox.w, adjustedBox.y + adjustedBox.h);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
-        gradient.addColorStop(0.5, 'rgba(255, 249, 235, 0.95)');
-        gradient.addColorStop(1, 'rgba(255, 241, 214, 0.92)');
-        ctx.fillStyle = gradient;
-    } else if (style === 'compacto') {
-        // Estilo compacto moderno - más pequeño y eficiente
-        const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x + adjustedBox.w, adjustedBox.y + adjustedBox.h);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.97)');
-        gradient.addColorStop(1, 'rgba(240, 248, 255, 0.95)');
-        ctx.fillStyle = gradient;
-        // Ajustar tamaño para modo compacto
-        adjustedBox.h = Math.min(adjustedBox.h, 280);
-    } else {
-        ctx.fillStyle = (style === 'clasico') ? colBg : (style === 'cyber' ? "#111" : "rgba(255,255,255,0.15)");
-    }
-    
-    ctx.beginPath(); 
-    ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h, radius); 
-    ctx.fill();
-
-    if(style === 'clasico') {
-        ctx.fillStyle = colBorder;
-        ctx.beginPath(); 
-        ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h * 0.4, [radius, radius, 0, 0]); 
-        ctx.fill();
-        ctx.beginPath(); 
-        ctx.rect(adjustedBox.x, adjustedBox.y + adjustedBox.h * 0.5, adjustedBox.w, adjustedBox.h * 0.4); 
-        ctx.fill();
-    }
-
-    // DIBUJAR TABLA SEGÚN ESTILO
+    // VARIABLES DE DATOS
     const labels = ["INDICATIVO", "FECHA", "HORA", "BANDA", "FREQ", "MODO", "RST"];
     const vals = [
         document.getElementById('qCall').value, 
@@ -1134,194 +1114,231 @@ function drawQsoBox(box) {
         document.getElementById('qRst').value
     ];
 
-    ctx.globalAlpha = 1;
-    ctx.textAlign = "center";
-
     const titleFontSize = window.innerWidth <= 900 ? 12 : 16;
     const dataFontSize = window.innerWidth <= 900 ? 35 : 45;
 
-    // ESTILO COMPACTO ESPECIAL
-    if (style === 'compacto') {
+    // --- NUEVO ESTILO: TARJETAS FLOTANTES (Práctico y Diferente) ---
+    if (style === 'tarjetas') {
+        // No dibujamos un fondo grande, sino pequeñas tarjetas
+        
+        // 1. Tarjeta Grande para CALLSIGN (Destinatario)
+        // Ocupa el 40% del ancho a la izquierda
+        const leftWidth = adjustedBox.w * 0.35;
+        const rightWidth = adjustedBox.w * 0.63; // Un poco de espacio
+        const gap = adjustedBox.w * 0.02;
+
+        // DIBUJAR TARJETA CALLSIGN
+        ctx.fillStyle = colBg;
+        ctx.shadowBlur = 10; ctx.shadowColor = "rgba(0,0,0,0.2)";
+        ctx.beginPath();
+        ctx.roundRect(adjustedBox.x, adjustedBox.y, leftWidth, adjustedBox.h, radius);
+        ctx.fill();
+        ctx.shadowBlur = 0; // Reset shadow
+
+        if(bSize > 0) { ctx.strokeStyle = colBorder; ctx.lineWidth = bSize; ctx.stroke(); }
+
+        // Texto Callsign (vals[0])
+        ctx.textAlign = "center";
+        ctx.fillStyle = colTitle;
+        ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`;
+        ctx.fillText("DESTINATARIO", adjustedBox.x + leftWidth/2, adjustedBox.y + 40);
+
+        const callText = (vals[0] || "").toUpperCase();
+        if(callText) {
+            const fSize = fitText(callText, leftWidth * 0.9, 70, fontDataFamily, fontDataWeight, fontDataStyle);
+            ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`;
+            ctx.fillStyle = colData;
+            ctx.fillText(callText, adjustedBox.x + leftWidth/2, adjustedBox.y + adjustedBox.h/2);
+        }
+
+        // Comentario en tarjeta callsign (parte inferior)
+        ctx.fillStyle = colTitle;
+        ctx.font = `italic 14px 'Montserrat'`;
+        ctx.fillText("Gracias por el QSO", adjustedBox.x + leftWidth/2, adjustedBox.y + adjustedBox.h - 30);
+
+        // 2. Grid de tarjetas para el resto de datos (6 datos restantes)
+        // 2 filas de 3 columnas
+        const startX = adjustedBox.x + leftWidth + gap;
+        const cardW = (rightWidth - (gap*2)) / 3;
+        const cardH = (adjustedBox.h - gap) / 2; // Usamos la mitad de altura
+
+        // Datos restantes: Fecha, Hora, Banda, Freq, Modo, RST (indices 1 a 6)
+        const gridLabels = labels.slice(1);
+        const gridVals = vals.slice(1);
+
+        gridLabels.forEach((l, i) => {
+            // Calcular posición fila/columna
+            const col = i % 3;
+            const row = Math.floor(i / 3);
+            
+            const cardX = startX + (col * (cardW + gap));
+            const cardY = adjustedBox.y + (row * (cardH + gap));
+
+            // Dibujar tarjetita
+            ctx.fillStyle = "rgba(255, 255, 255, 0.9)"; // Fondo semi-transparente blanco para legibilidad
+            if(style === 'tarjetas') ctx.shadowBlur = 5; ctx.shadowColor = "rgba(0,0,0,0.1)";
+            ctx.beginPath();
+            ctx.roundRect(cardX, cardY, cardW, cardH, 10);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Borde inferior decorativo
+            ctx.fillStyle = colBorder;
+            ctx.beginPath();
+            ctx.roundRect(cardX, cardY + cardH - 5, cardW, 5, [0,0,10,10]);
+            ctx.fill();
+
+            // Título
+            ctx.textAlign = "left";
+            ctx.fillStyle = colTitle;
+            ctx.font = `600 12px 'Roboto Condensed'`;
+            ctx.fillText(l, cardX + 15, cardY + 25);
+
+            // Dato
+            const val = (gridVals[i] || "").toUpperCase();
+            if(val) {
+                ctx.textAlign = "center";
+                const fSize = fitText(val, cardW * 0.9, 35, fontDataFamily, fontDataWeight, fontDataStyle);
+                ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`;
+                ctx.fillStyle = colData;
+                ctx.fillText(val, cardX + cardW/2, cardY + cardH/2 + 10);
+            }
+        });
+
+        // NOTA: En este estilo, el comentario largo principal se muestra sutilmente arriba si hay espacio, o se omite en favor del diseño limpio.
+        // Opcional: Dibujar comentario flotante abajo si hay texto.
+        const commText = (document.getElementById('qComment').value || "").toUpperCase();
+        if(commText) {
+             ctx.textAlign = "left";
+             ctx.fillStyle = "white";
+             ctx.shadowColor = "black"; ctx.shadowBlur = 4;
+             ctx.font = "bold 16px 'Montserrat'";
+             ctx.fillText(commText, adjustedBox.x, adjustedBox.y - 15);
+             ctx.shadowBlur = 0;
+        }
+
+    } 
+    // --- ESTILOS ANTERIORES ---
+    else if (style === 'compacto') {
+        const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x + adjustedBox.w, adjustedBox.y + adjustedBox.h);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.97)');
+        gradient.addColorStop(1, 'rgba(240, 248, 255, 0.95)');
+        ctx.fillStyle = gradient;
+        
+        ctx.beginPath(); 
+        ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h, radius); 
+        ctx.fill();
+        
         // Dividir en 2 filas: 4 columnas arriba, 3 abajo + comentario
         const rowHeight = adjustedBox.h / 3;
+        const cols1 = 4; const step1 = adjustedBox.w / cols1;
+        const cols2 = 3; const step2 = adjustedBox.w / cols2;
         
-        // Primera fila (4 columnas)
-        const cols1 = 4;
-        const step1 = adjustedBox.w / cols1;
+        ctx.strokeStyle = colBorder; ctx.lineWidth = 1;
         
-        // Segunda fila (3 columnas)
-        const cols2 = 3;
-        const step2 = adjustedBox.w / cols2;
+        // Líneas
+        ctx.beginPath(); ctx.moveTo(adjustedBox.x, adjustedBox.y + rowHeight); ctx.lineTo(adjustedBox.x + adjustedBox.w, adjustedBox.y + rowHeight); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(adjustedBox.x, adjustedBox.y + rowHeight * 2); ctx.lineTo(adjustedBox.x + adjustedBox.w, adjustedBox.y + rowHeight * 2); ctx.stroke();
+        for(let i = 1; i < cols1; i++) { ctx.beginPath(); ctx.moveTo(adjustedBox.x + step1 * i, adjustedBox.y); ctx.lineTo(adjustedBox.x + step1 * i, adjustedBox.y + rowHeight); ctx.stroke(); }
+        for(let i = 1; i < cols2; i++) { ctx.beginPath(); ctx.moveTo(adjustedBox.x + step2 * i, adjustedBox.y + rowHeight); ctx.lineTo(adjustedBox.x + step2 * i, adjustedBox.y + rowHeight * 2); ctx.stroke(); }
         
-        // Dibujar líneas
-        ctx.strokeStyle = colBorder;
-        ctx.lineWidth = 1;
-        
-        // Línea horizontal entre filas 1 y 2
-        ctx.beginPath();
-        ctx.moveTo(adjustedBox.x, adjustedBox.y + rowHeight);
-        ctx.lineTo(adjustedBox.x + adjustedBox.w, adjustedBox.y + rowHeight);
-        ctx.stroke();
-        
-        // Línea horizontal entre filas 2 y comentario
-        ctx.beginPath();
-        ctx.moveTo(adjustedBox.x, adjustedBox.y + rowHeight * 2);
-        ctx.lineTo(adjustedBox.x + adjustedBox.w, adjustedBox.y + rowHeight * 2);
-        ctx.stroke();
-        
-        // Líneas verticales primera fila
-        for(let i = 1; i < cols1; i++) {
-            ctx.beginPath();
-            ctx.moveTo(adjustedBox.x + step1 * i, adjustedBox.y);
-            ctx.lineTo(adjustedBox.x + step1 * i, adjustedBox.y + rowHeight);
-            ctx.stroke();
-        }
-        
-        // Líneas verticales segunda fila
-        for(let i = 1; i < cols2; i++) {
-            ctx.beginPath();
-            ctx.moveTo(adjustedBox.x + step2 * i, adjustedBox.y + rowHeight);
-            ctx.lineTo(adjustedBox.x + step2 * i, adjustedBox.y + rowHeight * 2);
-            ctx.stroke();
-        }
-        
-        // Títulos y datos primera fila (4 columnas)
-        const labels1 = labels.slice(0, 4);
-        const vals1 = vals.slice(0, 4);
-        
+        // Datos fila 1
+        const labels1 = labels.slice(0, 4); const vals1 = vals.slice(0, 4);
         labels1.forEach((l, i) => {
             const xc = adjustedBox.x + step1 * i + step1 / 2;
-            const yTitle = adjustedBox.y + rowHeight * 0.3;
-            const yData = adjustedBox.y + rowHeight * 0.7;
-            
-            ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`;
-            ctx.fillStyle = colTitle;
-            ctx.fillText(l, xc, yTitle);
-            
+            const yTitle = adjustedBox.y + rowHeight * 0.3; const yData = adjustedBox.y + rowHeight * 0.7;
+            ctx.textAlign = "center";
+            ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`; ctx.fillStyle = colTitle; ctx.fillText(l, xc, yTitle);
             const textVal = (vals1[i] || "").toUpperCase();
             if(textVal) {
                 const fSize = fitText(textVal, step1 * 0.9, dataFontSize * 0.8, fontDataFamily, fontDataWeight, fontDataStyle);
-                ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`;
-                ctx.fillStyle = colData;
-                ctx.fillText(textVal, xc, yData);
+                ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`; ctx.fillStyle = colData; ctx.fillText(textVal, xc, yData);
             }
         });
         
-        // Títulos y datos segunda fila (3 columnas)
-        const labels2 = labels.slice(4);
-        const vals2 = vals.slice(4);
-        
+        // Datos fila 2
+        const labels2 = labels.slice(4); const vals2 = vals.slice(4);
         labels2.forEach((l, i) => {
             const xc = adjustedBox.x + step2 * i + step2 / 2;
-            const yTitle = adjustedBox.y + rowHeight * 1.3;
-            const yData = adjustedBox.y + rowHeight * 1.7;
-            
-            ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`;
-            ctx.fillStyle = colTitle;
-            ctx.fillText(l, xc, yTitle);
-            
+            const yTitle = adjustedBox.y + rowHeight * 1.3; const yData = adjustedBox.y + rowHeight * 1.7;
+            ctx.textAlign = "center";
+            ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`; ctx.fillStyle = colTitle; ctx.fillText(l, xc, yTitle);
             const textVal = (vals2[i] || "").toUpperCase();
             if(textVal) {
                 const fSize = fitText(textVal, step2 * 0.9, dataFontSize * 0.8, fontDataFamily, fontDataWeight, fontDataStyle);
-                ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`;
-                ctx.fillStyle = colData;
-                ctx.fillText(textVal, xc, yData);
+                ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`; ctx.fillStyle = colData; ctx.fillText(textVal, xc, yData);
             }
         });
         
-        // Comentario (tercera fila)
-        ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`;
-        ctx.fillStyle = colTitle;
-        ctx.fillText("COMENTARIOS", adjustedBox.x + adjustedBox.w / 2, adjustedBox.y + rowHeight * 2.3);
-        
+        // Comentario
+        ctx.textAlign = "center";
+        ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`; ctx.fillStyle = colTitle; ctx.fillText("COMENTARIOS", adjustedBox.x + adjustedBox.w / 2, adjustedBox.y + rowHeight * 2.3);
         const commText = (document.getElementById('qComment').value || "").toUpperCase();
         if(commText) {
             const fSizeComm = fitText(commText, adjustedBox.w * 0.9, 24, fontDataFamily, fontDataWeight, fontDataStyle);
-            ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSizeComm}px ${fontDataFamily}`;
-            ctx.fillStyle = colData;
-            ctx.fillText(commText, adjustedBox.x + adjustedBox.w / 2, adjustedBox.y + rowHeight * 2.7);
+            ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSizeComm}px ${fontDataFamily}`; ctx.fillStyle = colData; ctx.fillText(commText, adjustedBox.x + adjustedBox.w / 2, adjustedBox.y + rowHeight * 2.7);
         }
+        
+        if(bSize > 0) { ctx.strokeStyle = colBorder; ctx.lineWidth = bSize; ctx.beginPath(); ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h, radius); ctx.stroke(); }
         
     } else {
-        // ESTILO ORIGINAL (7 columnas)
-        const cols = 7;
-        const step = adjustedBox.w / cols;
-        const rowH = adjustedBox.h / 2;
-        const headH = rowH * 0.4;
-        
-        // Líneas de la tabla
-        if(style !== 'compacto') {
-            ctx.strokeStyle = (style === 'cristal') ? "rgba(255,255,255,0.3)" : colBorder;
-            ctx.lineWidth = 1;
-            
-            ctx.beginPath(); 
-            ctx.moveTo(adjustedBox.x, adjustedBox.y + rowH); 
-            ctx.lineTo(adjustedBox.x + adjustedBox.w, adjustedBox.y + rowH); 
-            ctx.stroke();
-            
-            for(let i=1; i < cols; i++) {
-                ctx.beginPath(); 
-                ctx.moveTo(adjustedBox.x + step*i, adjustedBox.y); 
-                ctx.lineTo(adjustedBox.x + step*i, adjustedBox.y + rowH); 
-                ctx.stroke();
-            }
+        // ESTILOS CLÁSICOS/OTROS
+        if (style === 'caribbean') {
+            const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x, adjustedBox.y + adjustedBox.h);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)'); gradient.addColorStop(1, 'rgba(245, 230, 202, 0.95)'); ctx.fillStyle = gradient;
+        } else if (style === 'elegante') {
+            const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x + adjustedBox.w, adjustedBox.y + adjustedBox.h);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.98)'); gradient.addColorStop(0.5, 'rgba(255, 249, 235, 0.95)'); gradient.addColorStop(1, 'rgba(255, 241, 214, 0.92)'); ctx.fillStyle = gradient;
+        } else {
+            ctx.fillStyle = (style === 'clasico') ? colBg : (style === 'cyber' ? "#111" : "rgba(255,255,255,0.15)");
         }
         
-        // Títulos y datos
+        ctx.beginPath(); ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h, radius); ctx.fill();
+
+        if(style === 'clasico') {
+            ctx.fillStyle = colBorder;
+            ctx.beginPath(); ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h * 0.4, [radius, radius, 0, 0]); ctx.fill();
+            ctx.beginPath(); ctx.rect(adjustedBox.x, adjustedBox.y + adjustedBox.h * 0.5, adjustedBox.w, adjustedBox.h * 0.4); ctx.fill();
+        }
+
+        const cols = 7; const step = adjustedBox.w / cols; const rowH = adjustedBox.h / 2; const headH = rowH * 0.4;
+        
+        if(style !== 'compacto') {
+            ctx.strokeStyle = (style === 'cristal') ? "rgba(255,255,255,0.3)" : colBorder; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(adjustedBox.x, adjustedBox.y + rowH); ctx.lineTo(adjustedBox.x + adjustedBox.w, adjustedBox.y + rowH); ctx.stroke();
+            for(let i=1; i < cols; i++) { ctx.beginPath(); ctx.moveTo(adjustedBox.x + step*i, adjustedBox.y); ctx.lineTo(adjustedBox.x + step*i, adjustedBox.y + rowH); ctx.stroke(); }
+        }
+        
+        ctx.textAlign = "center";
         labels.forEach((l, i) => {
             const xc = adjustedBox.x + step*i + step/2;
-            
             ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`;
-            if(style !== 'clasico') {
-                ctx.fillStyle = colTitle;
-            } else {
-                if(colTitle !== "#1a6b9a") ctx.fillStyle = colTitle;
-                else ctx.fillStyle = "#ffffff";
-            }
-            
+            if(style !== 'clasico') { ctx.fillStyle = colTitle; } else { if(colTitle !== "#1a6b9a") ctx.fillStyle = colTitle; else ctx.fillStyle = "#ffffff"; }
             ctx.fillText(l, xc, adjustedBox.y + headH * 0.65);
             
             const textVal = (vals[i] || "").toUpperCase();
             if(textVal) {
                 const fSize = fitText(textVal, step, dataFontSize, fontDataFamily, fontDataWeight, fontDataStyle);
-                ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`;
-                ctx.fillStyle = colData;
-                ctx.fillText(textVal, xc, adjustedBox.y + rowH * 0.75);
+                ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`; ctx.fillStyle = colData; ctx.fillText(textVal, xc, adjustedBox.y + rowH * 0.75);
             }
         });
         
-        // Comentario
         ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`;
-        if(style !== 'clasico' || colTitle !== "#1a6b9a") ctx.fillStyle = colTitle;
-        else ctx.fillStyle = "#ffffff";
-        
+        if(style !== 'clasico' || colTitle !== "#1a6b9a") ctx.fillStyle = colTitle; else ctx.fillStyle = "#ffffff";
         ctx.fillText("COMENTARIOS", adjustedBox.x + adjustedBox.w/2, adjustedBox.y + rowH + headH * 0.65);
         
         const commText = (document.getElementById('qComment').value || "").toUpperCase();
         if(commText) {
             const fSizeComm = fitText(commText, adjustedBox.w * 0.9, 55, fontDataFamily, fontDataWeight, fontDataStyle);
-            ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSizeComm}px ${fontDataFamily}`;
-            ctx.fillStyle = colData;
-            ctx.fillText(commText, adjustedBox.x + adjustedBox.w/2, adjustedBox.y + rowH + rowH * 0.7);
+            ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSizeComm}px ${fontDataFamily}`; ctx.fillStyle = colData; ctx.fillText(commText, adjustedBox.x + adjustedBox.w/2, adjustedBox.y + rowH + rowH * 0.7);
         }
-    }
-    
-    // Borde de la caja
-    if(bSize > 0) {
-        ctx.strokeStyle = colBorder; 
-        ctx.lineWidth = bSize;
-        ctx.beginPath(); 
-        ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h, radius); 
-        ctx.stroke();
-    }
-    
-    // Efecto especial para estilo elegante
-    if(style === 'elegante') {
-        ctx.strokeStyle = '#ffd166';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.roundRect(adjustedBox.x - 2, adjustedBox.y - 2, adjustedBox.w + 4, adjustedBox.h + 4, radius + 2);
-        ctx.stroke();
+
+        if(bSize > 0) { ctx.strokeStyle = colBorder; ctx.lineWidth = bSize; ctx.beginPath(); ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h, radius); ctx.stroke(); }
+        
+        if(style === 'elegante') {
+            ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.roundRect(adjustedBox.x - 2, adjustedBox.y - 2, adjustedBox.w + 4, adjustedBox.h + 4, radius + 2); ctx.stroke();
+        }
     }
 
     ctx.restore();
