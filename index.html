@@ -50,6 +50,7 @@
             justify-content: center;
             align-items: center;
             padding: 10px;
+            overflow: visible;
         }
 
         .qsl-container {
@@ -94,8 +95,9 @@
             transition: border 0.2s;
             border: 1px dashed transparent;
             touch-action: none;
+            padding: 2px;
         }
-        .draggable:hover { border-color: rgba(255,255,255,0.5); }
+        .draggable:hover { border-color: rgba(255,255,255,0.5); background-color: rgba(0,0,0,0.1); }
 
         .qso-table {
             background: rgba(255, 255, 255, 0.95);
@@ -119,9 +121,9 @@
             font-weight: 700;
             font-size: 1rem;
             text-transform: uppercase;
-            margin-top: 4px;
-            text-align: right;
+            text-align: center;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            color: white;
         }
 
         .step-pill { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #334155; font-size: 11px; }
@@ -140,6 +142,7 @@
 
         #qrcode img {
             border: 4px solid white;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -225,6 +228,7 @@
             <!-- PASO 3 -->
             <div id="step-3" class="step-content space-y-6">
                 <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Paso 3: Carga de ADIF</h3>
+                <p class="text-[10px] text-slate-400">Compatible con N1MM, WSJT-X, MixW y más.</p>
                 <input type="file" id="adifInput" accept=".adif,.adi" class="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white cursor-pointer">
                 <div id="logInfo" class="hidden text-xs space-y-2 py-4 border-t border-slate-800">
                     <p>Total QSOs: <span id="qsoCount" class="text-blue-400 font-bold">0</span></p>
@@ -236,7 +240,7 @@
                 <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Paso 4: Multimedia y Estilo</h3>
                 <div class="bg-slate-800/50 p-4 rounded-lg space-y-4 border border-slate-700">
                     <div>
-                        <label class="text-[10px] font-bold mb-2 block uppercase text-slate-500">Logo</label>
+                        <label class="text-[10px] font-bold mb-2 block uppercase text-slate-500">Logo Personal</label>
                         <button onclick="document.getElementById('logoInput').click()" class="w-full py-2 bg-slate-900 border border-slate-700 rounded text-[10px]">Cargar Logo</button>
                         <input type="file" id="logoInput" class="hidden" accept="image/*">
                         <div class="flex items-center gap-2 mt-2">
@@ -245,7 +249,7 @@
                         </div>
                     </div>
                     <div class="border-t border-slate-700 pt-3">
-                        <label class="text-[10px] font-bold mb-2 block uppercase text-slate-500">QR (Directorio App)</label>
+                        <label class="text-[10px] font-bold mb-2 block uppercase text-slate-500">QR (Enlace Web)</label>
                         <div class="grid grid-cols-2 gap-2">
                             <input type="number" id="qrSizeInput" value="85" class="w-full h-8 bg-slate-900 border border-slate-700 rounded p-2 text-xs">
                             <div class="flex items-center gap-2">
@@ -255,6 +259,7 @@
                         </div>
                     </div>
                     <div class="border-t border-slate-700 pt-3">
+                        <label class="text-[10px] font-bold mb-2 block uppercase text-slate-500">Tipografía Indicativo</label>
                         <select id="fontSelect" class="w-full bg-slate-900 border border-slate-700 p-2 text-xs rounded">
                             <option value="'Oswald', sans-serif">Oswald</option>
                             <option value="'Audiowide', cursive">Audiowide</option>
@@ -277,20 +282,26 @@
                 <button id="massExportBtn" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg shadow-lg uppercase text-sm">Exportar Lote</button>
             </div>
 
-            <!-- PASO 6 ACTUALIZADO -->
+            <!-- PASO 6 ACTUALIZADO: AYUDA Y CRÉDITOS -->
             <div id="step-6" class="step-content space-y-4">
-                <h3 class="text-xs font-bold text-yellow-500 uppercase tracking-widest">Paso 6: Ayuda y Soporte</h3>
-                <div class="text-[11px] text-slate-300 space-y-3 leading-relaxed">
-                    <div class="bg-blue-900/30 p-3 rounded border border-blue-800">
-                        <b class="text-blue-400 uppercase block mb-1">¡MUY IMPORTANTE!</b>
-                        <p>Siempre <b class="text-white">chequea tu QSL</b> visualmente antes de enviarla. Si notas algún fallo en la posición o texto, ajústalo manualmente arrastrando o editando el campo.</p>
+                <h3 class="text-xs font-bold text-yellow-500 uppercase tracking-widest">Paso 6: Guía y Soporte</h3>
+                <div class="text-[11px] text-slate-300 space-y-3 leading-relaxed p-2 bg-slate-800/50 rounded-lg">
+                    <div class="space-y-2">
+                        <p><strong class="text-white">Paso 1:</strong> Elige un fondo tropical o sube tu propia foto.</p>
+                        <p><strong class="text-white">Paso 2:</strong> Introduce los datos del QSO manualmente si es uno solo.</p>
+                        <p><strong class="text-white">Paso 3:</strong> Sube tu archivo .ADIF para cargar múltiples contactos automáticamente.</p>
+                        <p><strong class="text-white">Paso 4:</strong> Personaliza logos, QR, colores y fuentes.</p>
+                        <p><strong class="text-white">Paso 5:</strong> Descarga tu tarjeta individual o todo el lote.</p>
                     </div>
-                    <p><b class="text-white">MOVIL Y PC:</b> Esta app está diseñada para funcionar perfectamente tanto en tu computadora como en tu teléfono móvil o tablet.</p>
-                    <p><b class="text-white">CÓDIGO QR:</b> El QR generado dará la dirección directa de este sitio para usar la aplicación: <br><span class="text-blue-400 font-bold">QSL ELITE v38.0.0 - Caribe Edition 3D</span>.</p>
-                    <p><b class="text-white">EDICIÓN:</b> Haz clic en cualquier texto sobre la tarjeta para editarlo en tiempo real.</p>
-                    <div class="pt-4 border-t border-slate-800 italic text-slate-400 text-center">
-                        <p>Muchas gracias a todos por usar esta herramienta.</p>
-                        <p class="font-bold text-white mt-1 underline">73's de CL7ADV</p>
+                    
+                    <div class="bg-red-900/30 p-3 rounded border border-red-800 mt-4">
+                        <b class="text-red-400 uppercase block mb-1">⚠ ATENCIÓN</b>
+                        <p>Siempre <b class="text-white">revisa visualmente tu QSL</b> antes de enviarla. Puedes mover CUALQUIER elemento (texto, logos, tablas) arrastrándolo con el mouse o el dedo.</p>
+                    </div>
+
+                    <div class="pt-6 border-t border-slate-700 text-center">
+                        <p class="italic mb-2">Gracias a todos por utilizar QSL ELITE PRO.</p>
+                        <p class="text-blue-400 font-black text-lg">73's de CL7ADV</p>
                     </div>
                 </div>
             </div>
@@ -303,43 +314,53 @@
                     <div id="borderInner" class="inner-border"></div>
                     <div id="bgLayer" style="background-image: url('https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=800&q=80');"></div>
                     
+                    <!-- Indicativo Principal (Ahora completamente movible) -->
                     <div class="draggable" style="top: 40px; left: 40px;" id="dragCall">
                         <h2 id="dispCall" contenteditable="true" class="callsign-main text-white italic">CL7ADV</h2>
                     </div>
 
+                    <!-- Badge DX Station -->
                     <div class="draggable flex flex-col items-end" style="top: 40px; right: 40px;" id="dragBadge">
-                        <div contenteditable="true" id="dispBadge" class="bg-red-600 text-white px-3 py-1 text-sm font-black italic shadow-lg">DX STATION</div>
-                        <div id="dispLocation" contenteditable="true" class="text-white location-text opacity-90">SANTIAGO DE CUBA, CUBA</div>
+                        <div contenteditable="true" id="dispBadge" class="bg-red-600 text-white px-3 py-1 text-sm font-black italic shadow-lg whitespace-nowrap">DX STATION</div>
                     </div>
 
+                    <!-- Localidad -->
+                    <div class="draggable" style="top: 80px; right: 40px;" id="dragLocation">
+                        <div id="dispLocation" contenteditable="true" class="location-text">SANTIAGO DE CUBA, CUBA</div>
+                    </div>
+
+                    <!-- Logo Personal -->
                     <div class="draggable" style="top: 140px; left: 40px; width: 80px;" id="dragLogo">
-                        <img id="opLogoImg" src="https://via.placeholder.com/80?text=LOGO" class="w-full h-auto opacity-90">
+                        <img id="opLogoImg" src="https://via.placeholder.com/80?text=LOGO" class="w-full h-auto opacity-90 border-2 border-white/50 rounded-lg">
                     </div>
 
+                    <!-- QR Code (Ahora con texto fijo solicitado) -->
                     <div class="draggable" style="top: 150px; right: 40px;" id="dragQR">
                         <div id="qrcode"></div>
                     </div>
 
+                    <!-- Datos Corresponsal -->
                     <div class="draggable" style="bottom: 160px; left: 40px;" id="dragTo">
-                        <div class="bg-black/80 text-white p-3 border-l-4 border-red-500 shadow-xl">
+                        <div class="bg-black/80 text-white p-3 border-l-4 border-red-500 shadow-xl backdrop-blur-sm">
                             <div class="text-[9px] uppercase tracking-tighter opacity-70">Confirming QSO with:</div>
-                            <div class="flex items-baseline gap-2">
+                            <div class="flex items-baseline gap-2 flex-wrap">
                                 <span id="dispTo" contenteditable="true" class="text-3xl font-black text-yellow-400">W1AW</span>
-                                <span id="dispToName" contenteditable="true" class="text-lg font-bold opacity-80 border-b border-red-500">ARRL HQ</span>
+                                <span id="dispToName" contenteditable="true" class="text-lg font-bold opacity-80 border-b border-red-500 min-w-[50px]">ARRL HQ</span>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Tabla de QSO -->
                     <div class="draggable" style="bottom: 40px; left: 40px;" id="dragTable">
                         <table class="qso-table shadow-2xl" id="qsoTableUI">
                             <thead>
-                                <tr><th>DATE</th><th>TIME</th><th>FREQ</th><th>MODE</th><th>RST</th></tr>
+                                <tr><th>DATE</th><th>TIME (UTC)</th><th>FREQ</th><th>MODE</th><th>RST</th></tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td id="dispDate" contenteditable="true">2024-10-25</td>
                                     <td id="dispTime" contenteditable="true">14:22</td>
-                                    <td id="dispFreq" contenteditable="true">14.074 MHZ</td>
+                                    <td id="dispFreq" contenteditable="true">14.074</td>
                                     <td id="dispMode" contenteditable="true">FT8</td>
                                     <td id="dispRst" contenteditable="true">-12</td>
                                 </tr>
@@ -349,7 +370,7 @@
                 </div>
             </div>
 
-            <div id="logControls" class="mt-4 flex items-center gap-4 bg-slate-900 px-6 py-3 rounded-full border border-slate-800 hidden scale-75 md:scale-100">
+            <div id="logControls" class="mt-4 flex items-center gap-4 bg-slate-900 px-6 py-3 rounded-full border border-slate-800 hidden scale-75 md:scale-100 z-50">
                 <button id="prevBtn" class="hover:text-blue-400 font-bold px-2 text-xl">◀</button>
                 <span id="qsoCounter" class="text-xs font-mono text-slate-400">QSO 0 / 0</span>
                 <button id="nextBtn" class="hover:text-blue-400 font-bold px-2 text-xl">▶</button>
@@ -394,9 +415,10 @@
             const qrContainer = document.getElementById('qrcode');
             qrContainer.innerHTML = '';
             const size = parseInt(document.getElementById('qrSizeInput').value) || 85;
-            // QR apunta a la dirección de la app
+            
+            // AJUSTE: Texto fijo para el código QR según solicitud
             qr = new QRCode(qrContainer, {
-                text: `QSL ELITE v38.0.0 - Caribe Edition 3D - Online App`,
+                text: "QSL ELITE PRO v 38.0-caribe",
                 width: size,
                 height: size,
                 colorDark: "#000000",
@@ -418,31 +440,64 @@
             reader.readAsDataURL(e.target.files[0]);
         };
 
+        document.getElementById('customBg').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    document.getElementById('bgLayer').style.backgroundImage = `url('${ev.target.result}')`;
+                    showToast("Fondo actualizado", "success");
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // Lógica de Arrastre Universal
         let activeElement = null;
         let offset = { x: 0, y: 0 };
 
         function startDragging(e, el) {
-            if(e.target.getAttribute('contenteditable')) return;
+            // Permitir editar texto si se hace click dentro, pero arrastrar si se agarra del borde o contenedor
+            if(e.target.getAttribute('contenteditable') === 'true') {
+                return; 
+            }
+            
             activeElement = el;
             const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
             const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
             const rect = el.getBoundingClientRect();
-            const scale = document.body.clientWidth < 850 ? 0.45 : 1;
+            
+            const containerRect = document.getElementById('qslCapture').getBoundingClientRect();
+            const originalWidth = 800; 
+            const currentWidth = containerRect.width;
+            const scale = currentWidth / originalWidth;
+
             offset.x = (clientX - rect.left) / scale;
             offset.y = (clientY - rect.top) / scale;
+            
+            document.querySelectorAll('.draggable').forEach(d => d.style.zIndex = "10");
+            el.style.zIndex = "50";
         }
 
         function drag(e) {
             if (!activeElement) return;
+            e.preventDefault(); 
+            
             const container = document.getElementById('qslCapture').getBoundingClientRect();
             const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
             const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            const scale = document.body.clientWidth < 850 ? 0.45 : 1;
+            
+            const originalWidth = 800;
+            const currentWidth = container.width;
+            const scale = currentWidth / originalWidth;
+
             let x = (clientX - container.left) / scale - offset.x;
             let y = (clientY - container.top) / scale - offset.y;
+            
             activeElement.style.left = x + 'px';
             activeElement.style.top = y + 'px';
             activeElement.style.right = 'auto';
+            activeElement.style.bottom = 'auto';
         }
 
         document.querySelectorAll('.draggable').forEach(el => {
@@ -456,11 +511,29 @@
         window.addEventListener('touchend', () => activeElement = null);
 
         function resetPositions() {
-            document.getElementById('dragCall').style.top = "40px";
-            document.getElementById('dragCall').style.left = "40px";
-            document.getElementById('dragBadge').style.top = "40px";
-            document.getElementById('dragBadge').style.right = "40px";
-            document.getElementById('dragBadge').style.left = "auto";
+            const setPos = (id, t, l, r, b) => {
+                const el = document.getElementById(id);
+                el.style.top = t; el.style.left = l; el.style.right = r; el.style.bottom = b;
+            };
+            setPos('dragCall', '40px', '40px', 'auto', 'auto');
+            setPos('dragBadge', '40px', 'auto', '40px', 'auto');
+            setPos('dragLocation', '80px', 'auto', '40px', 'auto');
+            setPos('dragLogo', '140px', '40px', 'auto', 'auto');
+            setPos('dragQR', '150px', 'auto', '40px', 'auto');
+            setPos('dragTo', 'auto', '40px', 'auto', '160px');
+            setPos('dragTable', 'auto', '40px', 'auto', '40px');
+        }
+
+        function formatTime(timeStr) {
+            if(!timeStr) return "---";
+            let clean = timeStr.replace(/:/g, '').trim();
+            if(clean.length === 4) {
+                return clean.slice(0, 2) + ":" + clean.slice(2, 4);
+            }
+            if(clean.length === 6) {
+                return clean.slice(0, 2) + ":" + clean.slice(2, 4);
+            }
+            return timeStr;
         }
 
         function applyManualData() {
@@ -470,7 +543,7 @@
             if(call) document.getElementById('dispTo').innerText = call;
             document.getElementById('dispToName').innerText = document.getElementById('manName').value;
             document.getElementById('dispDate').innerText = document.getElementById('manDate').value || '---';
-            document.getElementById('dispTime').innerText = document.getElementById('manTime').value || '---';
+            document.getElementById('dispTime').innerText = formatTime(document.getElementById('manTime').value);
             document.getElementById('dispFreq').innerText = document.getElementById('manFreq').value || '---';
             document.getElementById('dispMode').innerText = document.getElementById('manMode').value || '---';
             document.getElementById('dispRst').innerText = document.getElementById('manRst').value || '---';
@@ -493,20 +566,32 @@
         });
 
         function parseADIF(text) {
-            const records = text.split(/<eor>/i);
-            qsoList = records.filter(r => r.includes('<')).map(r => {
-                const data = {};
-                const regex = /<([^:]+):(\d+)(?::[^>]+)?>([^<]*)/gi;
-                let m;
-                while ((m = regex.exec(r)) !== null) data[m[1].toUpperCase()] = m[3].trim();
-                return data;
+            const qsos = text.split(/<eor>/i);
+            qsoList = [];
+            
+            qsos.forEach(qsoText => {
+                if(!qsoText.trim()) return;
+                const qsoData = {};
+                const regex = /<([a-z0-9_]+)(?::\d+)?>([^<]+)/gi;
+                let match;
+                while ((match = regex.exec(qsoText)) !== null) {
+                    const tag = match[1].toUpperCase();
+                    const value = match[2].trim();
+                    qsoData[tag] = value;
+                }
+                if(Object.keys(qsoData).length > 0) {
+                    qsoList.push(qsoData);
+                }
             });
+
             if (qsoList.length > 0) {
                 document.getElementById('logControls').classList.remove('hidden');
                 document.getElementById('logInfo').classList.remove('hidden');
                 document.getElementById('qsoCount').innerText = qsoList.length;
                 loadQSO(0);
-                showToast("ADIF cargado correctamente", "success");
+                showToast(`Cargados ${qsoList.length} QSOs correctamente`, "success");
+            } else {
+                showToast("No se encontraron QSOs válidos", "error");
             }
         }
 
@@ -515,8 +600,9 @@
             const qso = qsoList[index];
             document.getElementById('dispTo').innerText = qso.CALL || '---';
             document.getElementById('dispToName').innerText = qso.NAME || '';
-            document.getElementById('dispDate').innerText = qso.QSO_DATE || '---';
-            document.getElementById('dispTime').innerText = qso.TIME_ON || '---';
+            document.getElementById('dispDate').innerText = qso.QSO_DATE || qso.DATE || '---';
+            const timeRaw = qso.TIME_ON || qso.TIME_OFF || '---';
+            document.getElementById('dispTime').innerText = formatTime(timeRaw);
             document.getElementById('dispFreq').innerText = qso.FREQ || qso.BAND || '---';
             document.getElementById('dispMode').innerText = qso.MODE || '---';
             document.getElementById('dispRst').innerText = qso.RST_SENT || '---';
@@ -526,19 +612,33 @@
         document.getElementById('downloadBtn').onclick = () => exportQSL(document.getElementById('dispTo').innerText);
 
         async function exportQSL(name) {
-            showToast("Generando imagen...");
-            const canvas = await html2canvas(document.getElementById('qslCapture'), { useCORS: true, scale: 2 });
+            showToast("Generando imagen HD...");
+            if (document.activeElement) document.activeElement.blur();
+            document.querySelectorAll('.draggable').forEach(d => d.style.border = 'none');
+            
+            const canvas = await html2canvas(document.getElementById('qslCapture'), { 
+                useCORS: true, 
+                scale: 3, 
+                backgroundColor: null
+            });
+            
             const link = document.createElement('a');
-            link.download = `QSL_${name}.png`;
-            link.href = canvas.toDataURL();
+            link.download = `QSL_${name}_${new Date().getTime()}.png`;
+            link.href = canvas.toDataURL('image/png');
             link.click();
+            
+            document.querySelectorAll('.draggable').forEach(d => d.style.border = '');
+            showToast("Descarga completada", "success");
         }
 
         document.getElementById('massExportBtn').onclick = async () => {
             if(!qsoList.length) return;
+            const confirmMsg = confirm(`Se generarán ${qsoList.length} imágenes. ¿Continuar?`);
+            if(!confirmMsg) return;
+
             for(let i=0; i < qsoList.length; i++) {
                 loadQSO(i);
-                await new Promise(r => setTimeout(r, 500));
+                await new Promise(r => setTimeout(r, 800));
                 await exportQSL(qsoList[i].CALL || `QSO_${i}`);
             }
         };
@@ -549,7 +649,7 @@
         function showToast(msg, type='info') {
             const t = document.getElementById('toast');
             t.innerText = msg; t.style.display = 'block';
-            t.className = `fixed bottom-5 right-5 p-4 rounded-lg text-white z-[10000] shadow-2xl ${type === 'success' ? 'bg-emerald-600' : 'bg-blue-600'}`;
+            t.className = `fixed bottom-5 right-5 p-4 rounded-lg text-white z-[10000] shadow-2xl font-bold transition-all ${type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600'}`;
             setTimeout(() => t.style.display = 'none', 3000);
         }
 
@@ -558,7 +658,7 @@
             thumbs.forEach(url => {
                 const img = document.createElement('img');
                 img.src = url;
-                img.className = 'h-10 w-full object-cover rounded cursor-pointer border-2 border-transparent hover:border-blue-500';
+                img.className = 'h-10 w-full object-cover rounded cursor-pointer border-2 border-transparent hover:border-blue-500 hover:scale-105 transition-transform';
                 img.onclick = () => document.getElementById('bgLayer').style.backgroundImage = `url('${url}')`;
                 document.getElementById('thumbContainer').appendChild(img);
             });
