@@ -3,1553 +3,567 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QSL ELITE v38.0.0 - Caribe Edition 3D</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Roboto+Condensed:wght@300;400;700&family=Oswald:wght@300;400;700&family=Raleway:wght@300;400;600&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <title>QSL ELITE PRO v 38.0-caribe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root {
-            --caribbean-blue: #1a6b9a;
-            --light-caribbean: #2d8cba;
-            --sunrise-orange: #ff7f32;
-            --sand-beige: #f5e6ca;
-            --wave-teal: #40c9c1;
-            --text-light: #f0f8ff;
-            --text-dark: #0a2647;
-            --panel-bg: rgba(255, 255, 255, 0.1);
-            --border-sea: rgba(64, 201, 193, 0.3);
-            --elegant-gold: #ffd166;
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@500&family=Audiowide&family=Bungee&family=Permanent+Marker&family=Roboto+Condensed:wght@700&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #020617; 
+            color: #e2e8f0;
+            touch-action: manipulation;
+            margin: 0;
+            overflow-x: hidden;
         }
 
-        /* Animación de olas para el intro */
-        .wave {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%232d8cba" fill-opacity="0.7" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
-            animation: waveMove 15s linear infinite;
+        /* Pantalla de Bienvenida Tropical */
+        #welcomeScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-in-out;
         }
 
-        .wave2 {
-            animation: waveMove 20s linear infinite;
-            opacity: 0.5;
-            height: 120px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org2000/svg" viewBox="0 0 1440 320"><path fill="%231a6b9a" fill-opacity="0.5" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,208C672,213,768,203,864,186.7C960,171,1056,149,1152,149.3C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
-        }
-
-        @keyframes waveMove {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        @keyframes sunrise {
-            0% { transform: translateY(100px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        #orientation-warning {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, var(--caribbean-blue), var(--light-caribbean)); 
-            z-index: 10000; color: var(--sand-beige);
-            flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; font-family: sans-serif; padding: 20px;
-        }
-
-        /* INTRO CARIBEÑO */
-        #intro-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, #ff7f32 0%, #ffb347 25%, #2d8cba 70%, #1a6b9a 100%);
-            z-index: 9999; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; overflow: hidden;
-        }
-
-        .sun {
-            width: 120px; height: 120px;
-            background: radial-gradient(circle at 30% 30%, #ffdd00, #ff7f32);
-            border-radius: 50%; position: relative;
-            animation: sunrise 2s ease-out, float 4s ease-in-out infinite;
-            box-shadow: 0 0 60px #ff7f32, 0 0 100px rgba(255, 127, 50, 0.5);
-            margin-bottom: 30px;
-        }
-
-        .sun-rays {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 200px; height: 200px;
-            background: radial-gradient(circle, transparent 60%, rgba(255, 127, 50, 0.2) 70%, transparent 80%);
-            border-radius: 50%;
-        }
-
-        .caribbean-title {
-            font-size: 3.5rem; font-weight: 900; 
-            background: linear-gradient(to right, #ffdd00, #ff7f32, #ffffff);
-            -webkit-background-clip: text; background-clip: text;
-            color: transparent; text-align: center;
-            margin: 20px 0; text-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .caribbean-subtitle {
-            color: var(--text-light); font-size: 1.2rem;
-            letter-spacing: 3px; margin-bottom: 40px;
+        .welcome-content {
             text-align: center;
+            animation: fadeInScale 1.5s ease-out;
         }
 
-        /* BODY CON FONDO MARINO */
-        body {
-            font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; 
-            background: linear-gradient(135deg, var(--caribbean-blue) 0%, var(--light-caribbean) 100%);
-            color: var(--text-light); margin: 0; 
-            display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .qsl-wrapper {
+            perspective: 1000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
         }
 
-        /* HEADER MARINO */
-        header {
-            background: rgba(26, 107, 154, 0.9); 
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-sea);
-            padding: 12px 20px; display: flex; 
-            justify-content: space-between; align-items: center;
-            flex-shrink: 0; position: relative;
+        .qsl-container {
+            width: 800px;
+            height: 514px;
+            position: relative;
+            overflow: hidden;
+            background-color: #1e293b;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            user-select: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            transform-origin: center;
         }
 
-        .header-title {
-            font-weight: 900; font-size: 1.3rem; 
-            letter-spacing: -0.5px;
-            background: linear-gradient(to right, #ffffff, var(--wave-teal));
-            -webkit-background-clip: text; background-clip: text;
-            color: transparent;
+        @media (max-width: 850px) {
+            .qsl-container {
+                transform: scale(0.45); 
+                margin: -140px 0;
+            }
         }
 
-        /* BOTÓN MENÚ MÓVIL */
-        .menu-toggle {
-            display: none; background: var(--sunrise-orange);
-            border: none; color: white; padding: 10px 15px;
-            border-radius: 5px; cursor: pointer; font-weight: bold;
-            margin-right: 10px;
+        .inner-border {
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            pointer-events: none;
+            z-index: 5;
         }
 
-        /* CONTENEDOR PRINCIPAL RESPONSIVO */
-        .app-container { 
-            display: flex; flex: 1; overflow: hidden;
-            flex-direction: row;
+        #bgLayer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
         }
 
-        /* SIDEBAR RESPONSIVO */
-        .sidebar {
-            width: 380px; background: var(--panel-bg); 
-            backdrop-filter: blur(10px);
-            border-right: 1px solid var(--border-sea);
-            padding: 20px; overflow-y: auto; box-sizing: border-box;
-            display: flex; flex-direction: column;
-            transition: transform 0.3s ease;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+        .draggable {
+            position: absolute;
+            cursor: move;
+            z-index: 10;
+            transition: border 0.2s;
+            border: 1px dashed transparent;
+            touch-action: none;
+        }
+        .draggable:hover { border-color: rgba(255,255,255,0.5); }
+
+        .qso-table {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #000;
+            color: #000;
+            font-family: 'JetBrains Mono', monospace;
+            border-collapse: collapse;
+        }
+        .qso-table th, .qso-table td { border: 1px solid #000; padding: 6px 12px; text-align: center; }
+        .qso-table th { font-size: 10px; background: rgba(0,0,0,0.05); }
+
+        .callsign-main {
+            font-family: 'Oswald', sans-serif;
+            font-size: 85px;
+            line-height: 0.85;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.4);
+            white-space: nowrap;
         }
 
-        .sidebar::-webkit-scrollbar { width: 8px; }
-        .sidebar::-webkit-scrollbar-thumb { 
-            background: var(--wave-teal); border-radius: 10px; 
+        .location-text {
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            margin-top: 4px;
+            text-align: right;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
 
-        /* ÁREA DE PREVIEW */
-        .preview-area { 
-            flex: 1; background: rgba(0, 20, 40, 0.3); 
-            display: flex; justify-content: center; align-items: center; 
-            position: relative; 
-            overflow: auto;
-        }
+        .step-pill { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #334155; font-size: 11px; }
+        .step-pill.active { background: #3b82f6; border-color: #3b82f6; color: white; }
+        .step-content { display: none; }
+        .step-content.active { display: block; }
 
-        canvas#cv { 
-            max-width: 95%; max-height: 95%; border-radius: 10px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
-            background: rgba(255,255,255,0.05);
-            cursor: crosshair; border: 2px solid var(--border-sea);
-        }
-
-        /* CONTROL SECTIONS ESTILO CARIBEÑO */
-        .control-section {
-            background: rgba(255, 255, 255, 0.15); 
-            border: 1px solid var(--border-sea);
-            border-radius: 15px; padding: 18px; margin-bottom: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        .section-title { 
-            color: var(--sunrise-orange); font-size: 0.75rem; 
-            font-weight: 800; margin-bottom: 15px; 
-            text-transform: uppercase; letter-spacing: 1px; 
-            border-bottom: 2px solid rgba(255, 127, 50, 0.3); 
-            padding-bottom: 8px; display: flex; align-items: center;
-        }
-
-        .section-title::before {
-            content: "🌊"; margin-right: 8px;
-        }
-
-        /* INPUTS Y CONTROLES */
-        input, select, textarea {
-            width: 100%; background: rgba(255, 255, 255, 0.9);
-            border: 1px solid var(--wave-teal); border-radius: 8px; 
-            padding: 10px; color: var(--text-dark); 
-            margin-bottom: 8px; font-size: 0.85rem;
-            box-sizing: border-box; transition: all 0.3s;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none; border-color: var(--sunrise-orange);
-            box-shadow: 0 0 0 2px rgba(255, 127, 50, 0.2);
-            background: white;
-        }
-
-        .row { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .row-3 { 
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        /* BOTONES CON TEMÁTICA CARIBEÑA */
-        .btn {
-            width: 100%; padding: 14px; border-radius: 10px; 
-            border: none; font-weight: 700; cursor: pointer; 
-            text-transform: uppercase; margin-top: 8px; 
-            transition: all 0.3s; font-size: 0.75rem;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-primary { 
-            background: linear-gradient(to right, var(--sunrise-orange), #ff9f1c);
-            color: white; box-shadow: 0 4px 15px rgba(255, 127, 50, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 127, 50, 0.4);
-        }
-
-        .btn-dark { 
-            background: rgba(10, 38, 71, 0.8); 
-            color: var(--text-light); 
-            border: 1px solid var(--border-sea);
-        }
-
-        .btn-success { 
-            background: linear-gradient(to right, var(--wave-teal), #2ec4b6);
-            color: white;
-        }
-
-        .btn-icon { 
-            width: auto; padding: 8px 15px; margin-top: 0; 
-            margin-bottom: 6px; border-radius: 6px;
-        }
-
-        .btn-elegant {
-            background: linear-gradient(to right, var(--elegant-gold), #ffb347);
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-
-        /* INDICADOR */
-        #indicator {
-            position: absolute; top: 20px; left: 20px; font-size: 11px;
-            color: var(--wave-teal); background: rgba(10, 38, 71, 0.8); 
-            padding: 8px 16px; border-radius: 20px; 
-            border: 1px solid var(--wave-teal);
-            backdrop-filter: blur(5px);
-        }
-
-        /* RANGE INPUTS MEJORADOS */
-        input[type=range] { 
-            -webkit-appearance: none; width: 100%; 
-            background: transparent; height: 20px;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 20px; width: 20px; 
-            border-radius: 50%; background: var(--sunrise-orange); 
-            cursor: pointer; margin-top: -6px; border: 2px solid white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        input[type=range]::-webkit-slider-runnable-track {
-            height: 8px; background: rgba(255,255,255,0.2); 
+        #toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; border-radius: 8px; display: none; z-index: 10000; }
+        
+        [contenteditable="true"] { cursor: text; }
+        [contenteditable="true"]:focus { 
+            outline: 2px solid #3b82f6; 
+            background: rgba(255,255,255,0.1); 
             border-radius: 4px;
         }
 
-        /* MODALES */
-        #updateModal, #loadingOverlay {
-            display:none; position: fixed; top:0; left:0; width:100%; height:100%; 
-            background:rgba(10, 38, 71, 0.95); z-index:20000; 
-            justify-content:center; align-items:center; backdrop-filter: blur(10px);
-        }
-
-        .modal-content {
-            background: rgba(26, 107, 154, 0.9); 
-            border: 2px solid var(--sunrise-orange); padding: 40px; 
-            border-radius: 20px; max-width: 450px; text-align: center;
-            backdrop-filter: blur(10px);
-        }
-
-        /* PALMERA DECORATIVA */
-        .palm-tree {
-            position: absolute; bottom: 0; right: 50px;
-            font-size: 100px; opacity: 0.1; z-index: 0;
-            animation: float 8s ease-in-out infinite;
-        }
-
-        /* ESTILOS DE FUENTES PERSONALIZADAS */
-        .font-preview {
-            display: inline-block; padding: 4px 8px; border-radius: 4px;
-            margin: 2px; font-size: 11px; background: rgba(255,255,255,0.1);
-            cursor: pointer; transition: all 0.2s;
-        }
-
-        .font-preview:hover {
-            background: rgba(255,255,255,0.2);
-            transform: scale(1.05);
-        }
-
-        .font-active {
-            background: var(--sunrise-orange);
-            color: white;
-            font-weight: bold;
-        }
-
-        /* RESPONSIVE DESIGN */
-        @media screen and (max-width: 1200px) {
-            .sidebar { width: 320px; padding: 15px; }
-            .caribbean-title { font-size: 2.8rem; }
-            .row-3 { grid-template-columns: 1fr 1fr; }
-        }
-
-        @media screen and (max-width: 900px) {
-            .app-container { flex-direction: column; }
-            
-            .menu-toggle { display: block; }
-            
-            .sidebar {
-                width: 100%; height: 50vh; 
-                transform: translateX(-100%);
-                position: fixed; top: 60px; left: 0;
-                z-index: 1000; background: rgba(26, 107, 154, 0.95);
-            }
-            
-            .sidebar.active { transform: translateX(0); }
-            
-            .preview-area { height: 50vh; }
-            
-            canvas#cv { max-width: 98%; max-height: 90%; }
-            
-            .caribbean-title { font-size: 2.2rem; }
-            
-            .row, .row-3 { grid-template-columns: 1fr; }
-        }
-
-        @media screen and (max-width: 600px) {
-            header { padding: 10px 15px; flex-wrap: wrap; }
-            
-            .header-title { font-size: 1rem; }
-            
-            #clock { font-size: 12px; }
-            
-            .caribbean-title { font-size: 1.8rem; }
-            
-            .control-section { padding: 12px; }
-            
-            .btn { padding: 12px; font-size: 0.7rem; }
-            
-            .sun { width: 80px; height: 80px; }
-            
-            .palm-tree { display: none; }
-        }
-
-        @media screen and (max-width: 900px) and (orientation: portrait) {
-            #orientation-warning { display: flex; }
-            
-            .app-container { height: calc(100vh - 120px); }
-        }
-
-        @media screen and (min-width: 901px) and (max-width: 1200px) {
-            .sidebar { width: 300px; }
-            canvas#cv { max-width: 90%; }
-        }
-
-        /* GRID RESPONSIVO PARA TABLETS */
-        @media screen and (min-width: 768px) and (max-width: 1024px) {
-            .sidebar { 
-                width: 280px; 
-                padding: 12px;
-            }
-            
-            .row { 
-                grid-template-columns: 1fr 1fr; 
-                gap: 8px;
-            }
-            
-            .control-section {
-                padding: 15px;
-                margin-bottom: 15px;
-            }
-            
-            input, select, textarea {
-                padding: 8px;
-                font-size: 0.8rem;
-            }
-            
-            .btn {
-                padding: 12px;
-                font-size: 0.7rem;
-            }
-        }
-
-        /* ESTILOS PARA MOBILE GRANDE */
-        @media screen and (min-width: 601px) and (max-width: 767px) {
-            .sidebar {
-                height: 60vh;
-            }
-            
-            .preview-area {
-                height: 40vh;
-            }
-            
-            .row {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .caribbean-title {
-                font-size: 2rem;
-            }
+        #qrcode img {
+            border: 4px solid white;
         }
     </style>
 </head>
-<body onload="initApp()">
+<body class="flex flex-col min-h-screen">
 
-<div id="orientation-warning">
-    <div style="font-size: 50px;">🔄</div>
-    <h2>GIRA TU DISPOSITIVO</h2>
-    <p>Para mejor experiencia, usa el modo horizontal.</p>
-    <div style="margin-top: 30px; font-size: 30px;">🌅</div>
-</div>
-
-<!-- INTRO AMANECER CARIBEÑO -->
-<div id="intro-overlay">
-    <div class="sun">
-        <div class="sun-rays"></div>
+    <!-- Pantalla de Inicio Tropical -->
+    <div id="welcomeScreen">
+        <div class="welcome-content">
+            <h1 class="text-6xl md:text-8xl font-black text-white italic drop-shadow-2xl mb-2">QSL ELITE PRO</h1>
+            <p class="text-xl md:text-2xl text-blue-200 font-bold tracking-widest mb-8">v 38.0 - CARIBE EDITION</p>
+            <button onclick="startApp()" class="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-full transition-all hover:scale-105 shadow-2xl">
+                INICIAR SISTEMA
+            </button>
+        </div>
     </div>
-    <div class="caribbean-title">QSL ELITE v38.0.0<br><span style="font-size: 1.5rem;">CARIBE 3D + NUEVO DISEÑO</span></div>
-    <div class="caribbean-subtitle">BY CL7ADV • CON EFECTO 3D REAL Y TARJETAS FLOTANTES</div>
-    <div class="wave"></div>
-    <div class="wave wave2"></div>
-    <div class="palm-tree">🌴</div>
-</div>
 
-<header>
-    <button class="menu-toggle" onclick="toggleSidebar()">☰ MENÚ</button>
-    <div class="header-title">QSL ELITE <span style="color:var(--sunrise-orange)">CARIBBEAN 3D</span></div>
-    <div id="clock" style="font-family: monospace; font-size: 14px; color: var(--wave-teal);">00:00:00 UTC</div>
-</header>
-
-<div class="app-container">
-    <div class="sidebar" id="mainSidebar">
-        
-        <div class="control-section">
-            <div class="section-title">🌅 IMAGEN Y MARCO QSL</div>
-            <label>ENFOQUE (BLUR)</label>
-            <input type="range" id="bgBlur" min="0" max="25" value="0" oninput="render()">
-            <label>BRILLO DEL FONDO</label>
-            <input type="range" id="bgBrightness" min="10" max="150" value="100" oninput="render()">
-            
-            <div class="row" style="margin-top:10px; border-top: 1px solid var(--border-sea); padding-top:10px;">
-                <div><label>BORDE EXTERIOR PX</label><input type="range" id="outerBorderSize" min="0" max="60" value="0" oninput="render()"></div>
-                <div><label>COLOR BORDE QSL</label><input type="color" id="outerBorderColor" value="#ff7f32" oninput="render()"></div>
-            </div>
-            
-            <label style="margin-top:10px;">CAMBIAR FONDO</label>
-            <input type="file" id="bgInp" accept="image/*">
-        </div>
-
-        <!-- NUEVA SECCIÓN: ESTILOS DE FUENTES -->
-        <div class="control-section" style="border-color: var(--elegant-gold);">
-            <div class="section-title">🎨 ESTILOS DE FUENTES ELEGANTES</div>
-            
-            <label>FUENTE CALLSIGN</label>
-            <div class="row-3">
-                <select id="fontCallFamily" onchange="render()">
-                    <option value="Poppins">Poppins</option>
-                    <option value="Montserrat">Montserrat</option>
-                    <option value="Playfair Display">Playfair Display</option>
-                    <option value="Roboto Condensed">Roboto Condensed</option>
-                    <option value="Oswald">Oswald</option>
-                    <option value="Raleway">Raleway</option>
-                    <option value="Quicksand">Quicksand</option>
-                </select>
-                <select id="fontCallWeight" onchange="render()">
-                    <option value="normal">Normal</option>
-                    <option value="bold" selected>Bold</option>
-                    <option value="300">Light</option>
-                    <option value="600">Semi-Bold</option>
-                    <option value="900">Black</option>
-                </select>
-                <select id="fontCallStyle" onchange="render()">
-                    <option value="normal">Normal</option>
-                    <option value="italic">Italic</option>
-                    <option value="oblique">Oblique</option>
-                </select>
-            </div>
-
-            <label>FUENTE QTH/PAÍS</label>
-            <div class="row-3">
-                <select id="fontQthFamily" onchange="render()">
-                    <option value="Montserrat">Montserrat</option>
-                    <option value="Poppins">Poppins</option>
-                    <option value="Playfair Display">Playfair Display</option>
-                    <option value="Roboto Condensed">Roboto Condensed</option>
-                    <option value="Oswald">Oswald</option>
-                    <option value="Raleway">Raleway</option>
-                    <option value="Quicksand">Quicksand</option>
-                </select>
-                <select id="fontQthWeight" onchange="render()">
-                    <option value="normal">Normal</option>
-                    <option value="bold" selected>Bold</option>
-                    <option value="300">Light</option>
-                    <option value="600">Semi-Bold</option>
-                    <option value="900">Black</option>
-                </select>
-                <select id="fontQthStyle" onchange="render()">
-                    <option value="normal">Normal</option>
-                    <option value="italic">Italic</option>
-                    <option value="oblique">Oblique</option>
-                </select>
-            </div>
-
-            <label>FUENTE DATOS QSO</label>
-            <div class="row-3">
-                <select id="fontDataFamily" onchange="render()">
-                    <option value="Roboto Condensed">Roboto Condensed</option>
-                    <option value="Poppins">Poppins</option>
-                    <option value="Montserrat">Montserrat</option>
-                    <option value="Oswald">Oswald</option>
-                    <option value="Raleway">Raleway</option>
-                    <option value="Quicksand">Quicksand</option>
-                </select>
-                <select id="fontDataWeight" onchange="render()">
-                    <option value="normal">Normal</option>
-                    <option value="bold" selected>Bold</option>
-                    <option value="300">Light</option>
-                    <option value="600">Semi-Bold</option>
-                    <option value="900">Black</option>
-                </select>
-                <select id="fontDataStyle" onchange="render()">
-                    <option value="normal">Normal</option>
-                    <option value="italic">Italic</option>
-                </select>
-            </div>
-
-            <label>EFECTO DE TEXTO</label>
-            <select id="textEffect" onchange="render()">
-                <option value="none">Sin efecto</option>
-                <option value="shadow">Sombra elegante</option>
-                <option value="outline">Contorno fino</option>
-                <option value="gradient">Gradiente dorado</option>
-                <option value="glow">Brillo suave</option>
-                <option value="3d">🔥 EFECTO 3D REAL (NUEVO)</option>
-            </select>
-        </div>
-
-        <div class="control-section">
-            <div class="section-title">📐 DISEÑO TABLA QSO</div>
-            <select id="boxStyle" onchange="render()">
-                <option value="clasico">📜 CLÁSICO (GRID)</option>
-                <option value="cristal">💎 CRISTAL GLASS</option>
-                <option value="cyber">🤖 CYBER TECH</option>
-                <option value="caribbean">🌊 CARIBBEAN STYLE</option>
-                <option value="elegante">👑 ELEGANTE DORADO</option>
-                <option value="compacto">📦 COMPACTO MODERNO</option>
-                <option value="tarjetas" selected>🗂️ TARJETAS FLOTANTES (NUEVO)</option>
-            </select>
-            <div class="row">
-                <div><label>REDONDEO</label><input type="range" id="boxRadius" min="0" max="60" value="15" oninput="render()"></div>
-                <div><label>BORDE TABLA PX</label><input type="range" id="borderSize" min="0" max="15" value="3" oninput="render()"></div>
-            </div>
-            <div class="row">
-                <div><label>ANCHO</label><input type="range" id="boxW" min="800" max="1750" value="1680" oninput="updateBoxSize()"></div>
-                <div><label>ALTO</label><input type="range" id="boxH" min="200" max="550" value="350" oninput="updateBoxSize()"></div>
-            </div>
-            <label>OPACIDAD</label>
-            <input type="range" id="boxAlpha" min="0" max="100" value="95" oninput="render()">
-            <div class="row" style="margin-top:10px;">
-                <div><label>COLOR FONDO</label><input type="color" id="colBoxBg" value="#ffffff" oninput="render()"></div>
-                <div><label>COLOR BORDE</label><input type="color" id="colBoxBorder" value="#40c9c1" oninput="render()"></div>
+    <!-- Header -->
+    <header class="bg-slate-900 border-b border-slate-800 flex flex-col md:flex-row items-center justify-between px-4 py-3 gap-4">
+        <div class="flex items-center gap-3">
+            <h1 class="text-lg font-black italic text-blue-400">QSL ELITE PRO <span class="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded ml-2">v 38.0-caribe</span></h1>
+            <div class="h-6 w-px bg-slate-700 hidden md:block"></div>
+            <div class="flex gap-2 overflow-x-auto pb-1 max-w-[320px] md:max-w-none">
+                <div class="flex items-center gap-1 cursor-pointer" onclick="setStep(1)"><div class="step-pill active" id="pill-1">1</div></div>
+                <div class="flex items-center gap-1 cursor-pointer" onclick="setStep(2)"><div class="step-pill" id="pill-2">2</div></div>
+                <div class="flex items-center gap-1 cursor-pointer" onclick="setStep(3)"><div class="step-pill" id="pill-3">3</div></div>
+                <div class="flex items-center gap-1 cursor-pointer" onclick="setStep(4)"><div class="step-pill" id="pill-4">4</div></div>
+                <div class="flex items-center gap-1 cursor-pointer" onclick="setStep(5)"><div class="step-pill" id="pill-5">5</div></div>
+                <div class="flex items-center gap-1 cursor-pointer" onclick="setStep(6)"><div class="step-pill" id="pill-6">6</div><span class="text-[10px] font-bold uppercase text-yellow-500">AYUDA</span></div>
             </div>
         </div>
+        <div class="flex gap-2 w-full md:w-auto">
+            <button id="prevStep" class="flex-1 md:flex-none px-4 py-2 bg-slate-800 rounded-lg text-xs font-bold opacity-50 cursor-not-allowed">Anterior</button>
+            <button id="nextStep" class="flex-1 md:flex-none px-4 py-2 bg-blue-600 rounded-lg text-xs font-bold hover:bg-blue-500">Siguiente</button>
+        </div>
+    </header>
 
-        <div class="control-section" style="border-color: var(--sunrise-orange);">
-            <div class="section-title">📝 COM. SECUNDARIO (PROYECTO)</div>
-            <div class="row">
+    <div class="flex flex-1 flex-col md:flex-row overflow-hidden">
+        <aside class="w-full md:w-80 bg-slate-900 border-r border-slate-800 p-6 overflow-y-auto max-h-[40vh] md:max-h-none">
+            
+            <!-- PASO 1 -->
+            <div id="step-1" class="step-content active space-y-6">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Paso 1: Fondo y Marco</h3>
                 <div>
-                    <label>ACTIVAR</label>
-                    <select id="secShow" onchange="render()">
-                        <option value="no">OCULTO</option>
-                        <option value="yes">VISIBLE</option>
-                    </select>
+                    <label class="text-[10px] font-bold mb-2 block uppercase text-slate-500">Imágenes Predeterminadas</label>
+                    <div class="grid grid-cols-4 gap-2 mb-3" id="thumbContainer"></div>
+                    <button onclick="document.getElementById('customBg').click()" class="w-full py-2 border border-dashed border-slate-600 rounded text-xs hover:bg-slate-800">Cargar Imagen Propia</button>
+                    <input type="file" id="customBg" class="hidden" accept="image/*">
                 </div>
-                <div>
-                    <label>COLOR LETRA</label>
-                    <input type="color" id="secColor" value="#ffffff" oninput="render()">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold mb-2 block uppercase text-slate-500">Color Marco</label>
+                        <input type="color" id="borderColor" value="#ffffff" class="h-10 w-full bg-transparent rounded cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold mb-2 block uppercase text-slate-500">Opacidad</label>
+                        <input type="range" id="borderOpacity" min="0" max="100" value="30" class="w-full h-10">
+                    </div>
                 </div>
             </div>
-            <textarea id="secText" placeholder="Habla sobre tu proyecto o imagen aquí..." rows="2" oninput="render()">FOTO: ANTENA YAGI 3 EL. MONO-BANDA 20M PROYECTO HOME-BREW BY CL7ADV.</textarea>
-            <div class="row">
-                <div><label>TAMAÑO TXT</label><input type="range" id="secFontSize" min="10" max="60" value="24" oninput="render()"></div>
-                <div><label>OPACIDAD</label><input type="range" id="secAlpha" min="10" max="100" value="100" oninput="render()"></div>
-            </div>
-        </div>
 
-        <div class="control-section">
-            <div class="section-title">👤 DATOS ESTACIÓN</div>
-            <input type="text" id="myCall" value="CL7ADV" placeholder="TU CALL" oninput="render()">
-            <div class="row">
-                <div><label>TAMAÑO</label><input type="range" id="callSize" min="50" max="400" value="200" oninput="render()"></div>
-                <div><label>COLOR CALL</label><input type="color" id="col1" value="#ffffff" oninput="render()"></div>
-            </div>
-            <input type="text" id="myQth" value="CUBA" placeholder="TU PAÍS / QTH" oninput="render()">
-            <div class="row">
-                <div><label>TAMAÑO QTH</label><input type="range" id="qthSize" min="20" max="150" value="80" oninput="render()"></div>
-                <div><label>COLOR PAÍS</label><input type="color" id="colQth" value="#ff7f32" oninput="render()"></div>
-            </div>
-        </div>
-
-        <div class="control-section">
-            <div class="section-title">📡 DATOS QSO</div>
-            <div style="display: flex; gap: 8px; align-items: flex-end;">
-                <div style="flex: 1;">
-                    <label>INDICATIVO DESTINATARIO</label>
-                    <input type="text" id="qCall" placeholder="CALLSIGN" oninput="render()" style="margin-bottom: 0;">
+            <!-- PASO 2 -->
+            <div id="step-2" class="step-content space-y-4">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest text-blue-400">Paso 2: Datos de Estación</h3>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold uppercase text-slate-500">Tu Indicativo (Operador)</label>
+                    <input type="text" id="manOpCall" value="CL7ADV" class="w-full bg-slate-800 border border-slate-700 p-2 text-sm rounded uppercase font-bold text-blue-400">
+                    <div class="h-px bg-slate-800 my-4"></div>
+                    <input type="text" id="manCall" placeholder="INDICATIVO CORRESPONSAL" class="w-full bg-slate-800 border border-slate-700 p-2 text-sm rounded uppercase">
+                    <input type="text" id="manName" placeholder="NOMBRE CORRESPONSAL" class="w-full bg-slate-800 border border-slate-700 p-2 text-sm rounded">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="date" id="manDate" class="bg-slate-800 border border-slate-700 p-2 text-sm rounded text-white">
+                        <input type="text" id="manTime" placeholder="HORA (UTC)" class="bg-slate-800 border border-slate-700 p-2 text-sm rounded">
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <input type="text" id="manFreq" placeholder="FREQ" class="bg-slate-800 border border-slate-700 p-2 text-sm rounded">
+                        <input type="text" id="manMode" placeholder="MODO" class="bg-slate-800 border border-slate-700 p-2 text-sm rounded">
+                        <input type="text" id="manRst" placeholder="RST" class="bg-slate-800 border border-slate-700 p-2 text-sm rounded">
+                    </div>
+                    <button onclick="applyManualData()" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black rounded-lg">APLICAR DATOS</button>
                 </div>
-                <button class="btn btn-dark btn-icon" onclick="openQRZ()" title="Ver en QRZ.com">👁️</button>
             </div>
-            <div class="row" style="margin-top: 6px;">
-                <input type="text" id="qDate" placeholder="FECHA (DD/MM/AA)" oninput="render()">
-                <input type="text" id="qTime" placeholder="HORA (UTC)" oninput="render()">
-            </div>
-            <div class="row">
-                <input type="text" id="qBand" placeholder="BANDA" oninput="render()">
-                <input type="text" id="qFreq" placeholder="FRECUENCIA" oninput="render()">
-            </div>
-            <div class="row">
-                <input type="text" id="qMode" placeholder="MODO" oninput="render()">
-                <input type="text" id="qRst" placeholder="RST" oninput="render()">
-            </div>
-            <textarea id="qComment" placeholder="COMENTARIOS DEL QSO" rows="2" oninput="render()"></textarea>
-            
-            <div class="row">
-                <div><label>COLOR TÍTULOS QSO</label><input type="color" id="colTitles" value="#1a6b9a" oninput="render()"></div>
-                <div><label>COLOR DATOS QSO</label><input type="color" id="col5" value="#0a2647" oninput="render()"></div>
-            </div>
-        </div>
 
-        <div class="control-section">
-            <div class="section-title">📦 ADIF & QR (OPERADOR)</div>
-            <input type="file" id="adiInp" accept=".adi,.adif">
-            <div class="row">
-                <button class="btn btn-dark" onclick="nav(-1)">ANT.</button>
-                <button class="btn btn-dark" onclick="nav(1)">SIG.</button>
+            <!-- PASO 3 -->
+            <div id="step-3" class="step-content space-y-6">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Paso 3: Carga de ADIF</h3>
+                <input type="file" id="adifInput" accept=".adif,.adi" class="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white cursor-pointer">
+                <div id="logInfo" class="hidden text-xs space-y-2 py-4 border-t border-slate-800">
+                    <p>Total QSOs: <span id="qsoCount" class="text-blue-400 font-bold">0</span></p>
+                </div>
             </div>
-            <label style="margin-top:10px;">EMAIL OPERADOR (PARA QR)</label>
-            <input type="email" id="myEmail" value="cl7adv@qsl.com" oninput="render()">
-            <div class="row">
-                <div><label>VER QR</label><select id="showQR" onchange="render()"><option value="yes">SÍ</option><option value="no">NO</option></select></div>
-                <div><label>QR TAMAÑO</label><input type="range" id="qrSize" min="50" max="400" value="180" oninput="render()"></div>
+
+            <!-- PASO 4 -->
+            <div id="step-4" class="step-content space-y-6">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Paso 4: Multimedia y Estilo</h3>
+                <div class="bg-slate-800/50 p-4 rounded-lg space-y-4 border border-slate-700">
+                    <div>
+                        <label class="text-[10px] font-bold mb-2 block uppercase text-slate-500">Logo</label>
+                        <button onclick="document.getElementById('logoInput').click()" class="w-full py-2 bg-slate-900 border border-slate-700 rounded text-[10px]">Cargar Logo</button>
+                        <input type="file" id="logoInput" class="hidden" accept="image/*">
+                        <div class="flex items-center gap-2 mt-2">
+                             <input type="checkbox" id="showLogo" checked class="w-3 h-3">
+                             <label for="showLogo" class="text-[10px]">Mostrar Logo</label>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-700 pt-3">
+                        <label class="text-[10px] font-bold mb-2 block uppercase text-slate-500">QR (Directorio App)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="qrSizeInput" value="85" class="w-full h-8 bg-slate-900 border border-slate-700 rounded p-2 text-xs">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="showQR" checked class="w-3 h-3">
+                                <label for="showQR" class="text-[10px]">Mostrar QR</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-700 pt-3">
+                        <select id="fontSelect" class="w-full bg-slate-900 border border-slate-700 p-2 text-xs rounded">
+                            <option value="'Oswald', sans-serif">Oswald</option>
+                            <option value="'Audiowide', cursive">Audiowide</option>
+                            <option value="'Bungee', cursive">Bungee</option>
+                            <option value="'Permanent Marker', cursive">Marker</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="color" id="opColor" value="#ffffff" class="h-10 w-full bg-transparent rounded cursor-pointer">
+                        <input type="number" id="opSize" value="85" class="w-full h-10 bg-slate-900 border border-slate-700 rounded p-2 text-xs">
+                    </div>
+                </div>
+                <button onclick="resetPositions()" class="w-full py-2 bg-slate-800 text-xs rounded">RESTAURAR POSICIONES</button>
             </div>
-        </div>
 
-        <div class="control-section">
-            <div class="section-title">🏷️ LOGOS</div>
-            <input type="file" id="logoInp" accept="image/*" multiple>
-            <button class="btn btn-dark" onclick="logos=[];render()">BORRAR LOGOS</button>
-        </div>
+            <!-- PASO 5 -->
+            <div id="step-5" class="step-content space-y-6">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest text-emerald-400">Paso 5: Exportar</h3>
+                <button id="downloadBtn" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg shadow-lg uppercase text-sm">Descargar QSL</button>
+                <button id="massExportBtn" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg shadow-lg uppercase text-sm">Exportar Lote</button>
+            </div>
 
-        <div class="row">
-            <button class="btn btn-primary" onclick="exportJpg()">EXPORTAR JPG</button>
-            <button class="btn btn-elegant" onclick="applyElegantPreset()">PRESET ELEGANTE</button>
-        </div>
-        <div class="row">
-            <button class="btn btn-success" id="btnZip" onclick="downloadAllZip()" style="display:none;">EXPORTAR TODO (ZIP)</button>
-        </div>
-        
-        <div style="text-align: center; font-size: 10px; color: rgba(255,255,255,0.6); padding: 20px;">
-            QSL ELITE v38.0.0 | CARIBBEAN 3D EDITION • cl7adv.2026
-        </div>
+            <!-- PASO 6 ACTUALIZADO -->
+            <div id="step-6" class="step-content space-y-4">
+                <h3 class="text-xs font-bold text-yellow-500 uppercase tracking-widest">Paso 6: Ayuda y Soporte</h3>
+                <div class="text-[11px] text-slate-300 space-y-3 leading-relaxed">
+                    <div class="bg-blue-900/30 p-3 rounded border border-blue-800">
+                        <b class="text-blue-400 uppercase block mb-1">¡MUY IMPORTANTE!</b>
+                        <p>Siempre <b class="text-white">chequea tu QSL</b> visualmente antes de enviarla. Si notas algún fallo en la posición o texto, ajústalo manualmente arrastrando o editando el campo.</p>
+                    </div>
+                    <p><b class="text-white">MOVIL Y PC:</b> Esta app está diseñada para funcionar perfectamente tanto en tu computadora como en tu teléfono móvil o tablet.</p>
+                    <p><b class="text-white">CÓDIGO QR:</b> El QR generado dará la dirección directa de este sitio para usar la aplicación: <br><span class="text-blue-400 font-bold">QSL ELITE v38.0.0 - Caribe Edition 3D</span>.</p>
+                    <p><b class="text-white">EDICIÓN:</b> Haz clic en cualquier texto sobre la tarjeta para editarlo en tiempo real.</p>
+                    <div class="pt-4 border-t border-slate-800 italic text-slate-400 text-center">
+                        <p>Muchas gracias a todos por usar esta herramienta.</p>
+                        <p class="font-bold text-white mt-1 underline">73's de CL7ADV</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Preview Area -->
+        <main class="flex-1 flex flex-col items-center justify-start md:justify-center bg-black overflow-hidden py-8">
+            <div class="qsl-wrapper">
+                <div id="qslCapture" class="qsl-container">
+                    <div id="borderInner" class="inner-border"></div>
+                    <div id="bgLayer" style="background-image: url('https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=800&q=80');"></div>
+                    
+                    <div class="draggable" style="top: 40px; left: 40px;" id="dragCall">
+                        <h2 id="dispCall" contenteditable="true" class="callsign-main text-white italic">CL7ADV</h2>
+                    </div>
+
+                    <div class="draggable flex flex-col items-end" style="top: 40px; right: 40px;" id="dragBadge">
+                        <div contenteditable="true" id="dispBadge" class="bg-red-600 text-white px-3 py-1 text-sm font-black italic shadow-lg">DX STATION</div>
+                        <div id="dispLocation" contenteditable="true" class="text-white location-text opacity-90">SANTIAGO DE CUBA, CUBA</div>
+                    </div>
+
+                    <div class="draggable" style="top: 140px; left: 40px; width: 80px;" id="dragLogo">
+                        <img id="opLogoImg" src="https://via.placeholder.com/80?text=LOGO" class="w-full h-auto opacity-90">
+                    </div>
+
+                    <div class="draggable" style="top: 150px; right: 40px;" id="dragQR">
+                        <div id="qrcode"></div>
+                    </div>
+
+                    <div class="draggable" style="bottom: 160px; left: 40px;" id="dragTo">
+                        <div class="bg-black/80 text-white p-3 border-l-4 border-red-500 shadow-xl">
+                            <div class="text-[9px] uppercase tracking-tighter opacity-70">Confirming QSO with:</div>
+                            <div class="flex items-baseline gap-2">
+                                <span id="dispTo" contenteditable="true" class="text-3xl font-black text-yellow-400">W1AW</span>
+                                <span id="dispToName" contenteditable="true" class="text-lg font-bold opacity-80 border-b border-red-500">ARRL HQ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="draggable" style="bottom: 40px; left: 40px;" id="dragTable">
+                        <table class="qso-table shadow-2xl" id="qsoTableUI">
+                            <thead>
+                                <tr><th>DATE</th><th>TIME</th><th>FREQ</th><th>MODE</th><th>RST</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="dispDate" contenteditable="true">2024-10-25</td>
+                                    <td id="dispTime" contenteditable="true">14:22</td>
+                                    <td id="dispFreq" contenteditable="true">14.074 MHZ</td>
+                                    <td id="dispMode" contenteditable="true">FT8</td>
+                                    <td id="dispRst" contenteditable="true">-12</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="logControls" class="mt-4 flex items-center gap-4 bg-slate-900 px-6 py-3 rounded-full border border-slate-800 hidden scale-75 md:scale-100">
+                <button id="prevBtn" class="hover:text-blue-400 font-bold px-2 text-xl">◀</button>
+                <span id="qsoCounter" class="text-xs font-mono text-slate-400">QSO 0 / 0</span>
+                <button id="nextBtn" class="hover:text-blue-400 font-bold px-2 text-xl">▶</button>
+            </div>
+        </main>
     </div>
 
-    <div class="preview-area">
-        <div id="indicator">DISEÑO MANUAL ACTIVO</div>
-        <canvas id="cv" width="1800" height="1100"></canvas>
-    </div>
-</div>
+    <div id="toast" class="bg-slate-800 border border-slate-700 text-white shadow-2xl"></div>
 
-<div id="updateModal">
-    <div class="modal-content">
-        <h2 style="color:var(--sunrise-orange)">¡NUEVA VERSIÓN 3D!</h2>
-        <p style="font-size: 0.9rem; color: #f0f8ff;">Ahora con Efecto 3D Real para textos y la nueva Caja QSO "Tarjetas Flotantes".</p>
-        <button class="btn btn-elegant" onclick="document.getElementById('updateModal').style.display='none'">EMPEZAR A DISEÑAR</button>
-    </div>
-</div>
+    <script>
+        let currentStep = 1;
+        let qsoList = [];
+        let currentIndex = 0;
+        let qr = null;
 
-<div id="loadingOverlay">
-    <div class="modal-content" style="border-color: var(--wave-teal);">
-        <h2 style="color:var(--wave-teal)">PROCESANDO ZIP...</h2>
-        <p id="loadingMsg" style="font-size: 1.2rem; font-weight: bold;">0%</p>
-        <p style="font-size: 0.8rem; color: #b0e0e6;">Por favor, no cierres la ventana.</p>
-    </div>
-</div>
-
-<script>
-const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
-let bg = new Image(), log = [], idx = 0, logos = [];
-let elements = { 
-    myCall: { x: 80, y: 180 }, 
-    myQth: { x: 85, y: 260 }, 
-    qsoBox: { x: 60, y: 700, w: 1680, h: 350 },
-    qrPos: { x: 1530, y: 60, size: 180 },
-    secBox: { x: 1200, y: 550, w: 540, h: 120 }
-};
-let offset = { x: 0, y: 0 }, activeLogoIdx = -1, draggingElement = null;
-let qrGenerator = new QRious({ size: 250, level: 'H' });
-
-// FUNCIÓN TOGGLE SIDEBAR PARA MÓVIL
-function toggleSidebar() {
-    const sidebar = document.getElementById('mainSidebar');
-    sidebar.classList.toggle('active');
-}
-
-// CIERRA SIDEBAR AL HACER CLICK EN BOTÓN EXPORTAR (para móviles)
-function closeSidebarOnMobile() {
-    if (window.innerWidth <= 900) {
-        const sidebar = document.getElementById('mainSidebar');
-        sidebar.classList.remove('active');
-    }
-}
-
-// PRESET ELEGANTE
-function applyElegantPreset() {
-    // Fuentes
-    document.getElementById('fontCallFamily').value = 'Playfair Display';
-    document.getElementById('fontCallWeight').value = '900';
-    document.getElementById('fontCallStyle').value = 'normal';
-    
-    document.getElementById('fontQthFamily').value = 'Montserrat';
-    document.getElementById('fontQthWeight').value = '300';
-    document.getElementById('fontQthStyle').value = 'italic';
-    
-    document.getElementById('fontDataFamily').value = 'Roboto Condensed';
-    document.getElementById('fontDataWeight').value = '600';
-    document.getElementById('fontDataStyle').value = 'normal';
-    
-    // Efectos
-    document.getElementById('textEffect').value = '3d'; // Actualizado al nuevo efecto 3D
-    
-    // Estilo de caja
-    document.getElementById('boxStyle').value = 'tarjetas'; // Actualizado al nuevo estilo
-    document.getElementById('colBoxBg').value = '#ffffff';
-    document.getElementById('colBoxBorder').value = '#ffd166';
-    document.getElementById('colTitles').value = '#1a6b9a';
-    document.getElementById('col5').value = '#0a2647';
-    document.getElementById('boxRadius').value = '20';
-    document.getElementById('borderSize').value = '4';
-    
-    // Colores
-    document.getElementById('col1').value = '#ffd166'; // Dorado para resaltar el 3D
-    document.getElementById('colQth').value = '#ff7f32';
-    
-    // Renderizar
-    render();
-}
-
-function initApp() {
-    // FONDO CARIBEÑO POR DEFECTO
-    bg.crossOrigin = "anonymous";
-    bg.src = "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1800&q=80";
-    bg.onload = render;
-    
-    // INTRO CON RETRASO
-    setTimeout(() => {
-        document.getElementById('intro-overlay').style.opacity = 0;
-        setTimeout(() => {
-            document.getElementById('intro-overlay').style.display = 'none';
-            document.getElementById('updateModal').style.display = 'flex';
-        }, 800);
-    }, 2500);
-    
-    setInterval(updateClock, 1000);
-    setupEvents();
-    
-    // AJUSTAR TAMAÑO DE CANVAS EN MÓVIL
-    window.addEventListener('resize', adjustCanvasSize);
-    adjustCanvasSize();
-}
-
-function adjustCanvasSize() {
-    if (window.innerWidth <= 900) {
-        cv.width = Math.min(1800, window.innerWidth * 0.9);
-        cv.height = cv.width * 0.6;
-        render();
-    } else {
-        cv.width = 1800;
-        cv.height = 1100;
-        render();
-    }
-}
-
-function updateClock() {
-    const now = new Date();
-    document.getElementById('clock').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + 
-                                                 now.getUTCMinutes().toString().padStart(2,'0') + ":" + 
-                                                 now.getUTCSeconds().toString().padStart(2,'0') + " UTC";
-}
-
-function openQRZ() {
-    const call = document.getElementById('qCall').value.trim();
-    if (call) {
-        window.open(`https://www.qrz.com/db/${call}`, '_blank');
-    }
-}
-
-function updateBoxSize() {
-    elements.qsoBox.w = parseInt(document.getElementById('boxW').value);
-    elements.qsoBox.h = parseInt(document.getElementById('boxH').value);
-    render();
-}
-
-// FUNCIÓN PARA APLICAR EFECTOS DE TEXTO
-function applyTextEffect(text, x, y, color, effectType) {
-    const effect = document.getElementById('textEffect').value;
-    
-    switch(effect) {
-        case 'shadow':
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-            ctx.shadowBlur = 8;
-            ctx.shadowOffsetX = 2;
-            ctx.shadowOffsetY = 2;
-            ctx.fillStyle = color;
-            ctx.fillText(text, x, y);
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-            break;
-            
-        case 'outline':
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.lineWidth = 2;
-            ctx.strokeText(text, x, y);
-            ctx.fillStyle = color;
-            ctx.fillText(text, x, y);
-            break;
-            
-        case 'gradient':
-            const gradient = ctx.createLinearGradient(x, y - 50, x, y + 50);
-            gradient.addColorStop(0, '#ffd166');
-            gradient.addColorStop(0.5, color);
-            gradient.addColorStop(1, '#ff9e6d');
-            ctx.fillStyle = gradient;
-            ctx.fillText(text, x, y);
-            break;
-            
-        case 'glow':
-            ctx.shadowColor = color;
-            ctx.shadowBlur = 15;
-            ctx.fillStyle = color;
-            ctx.fillText(text, x, y);
-            ctx.shadowBlur = 0;
-            break;
-
-        case '3d': // NUEVO EFECTO 3D
-            ctx.lineJoin = "round";
-            ctx.miterLimit = 2;
-            // Capa de profundidad (sombra dura)
-            ctx.fillStyle = "#000000"; // Sombra negra profunda para contraste
-            for(let i=4; i>0; i--) {
-                 ctx.fillText(text, x+i, y+i);
-            }
-            // Capa de color principal
-            ctx.fillStyle = color;
-            ctx.fillText(text, x, y);
-            // Brillo superior (highlight opcional para efecto metálico)
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "rgba(255,255,255,0.4)";
-            ctx.strokeText(text, x, y);
-            break;
-            
-        default:
-            ctx.fillStyle = color;
-            ctx.fillText(text, x, y);
-    }
-}
-
-function render() {
-    ctx.clearRect(0,0,cv.width,cv.height);
-    
-    const blurVal = document.getElementById('bgBlur').value;
-    const brightVal = document.getElementById('bgBrightness').value;
-    
-    ctx.save();
-    ctx.filter = `blur(${blurVal}px) brightness(${brightVal}%)`;
-    if(bg.complete) {
-        ctx.drawImage(bg, 0, 0, cv.width, cv.height);
-    } else {
-        const gradient = ctx.createLinearGradient(0, 0, cv.width, cv.height);
-        gradient.addColorStop(0, '#1a6b9a');
-        gradient.addColorStop(0.5, '#2d8cba');
-        gradient.addColorStop(1, '#40c9c1');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, cv.width, cv.height);
-    }
-    ctx.restore();
-
-    const outBSize = parseInt(document.getElementById('outerBorderSize').value);
-    if(outBSize > 0) {
-        ctx.save();
-        ctx.strokeStyle = document.getElementById('outerBorderColor').value;
-        ctx.lineWidth = outBSize * 2;
-        ctx.strokeRect(0, 0, cv.width, cv.height);
-        ctx.restore();
-    }
-
-    logos.forEach(l => ctx.drawImage(l.img, l.x, l.y, l.w, l.h));
-
-    if(document.getElementById('showQR').value === 'yes') {
-        const qSize = parseInt(document.getElementById('qrSize').value);
-        elements.qrPos.size = qSize;
-        qrGenerator.value = `mailto:${document.getElementById('myEmail').value}`;
-        ctx.save();
-        ctx.fillStyle = "white";
-        ctx.shadowBlur = 15; ctx.shadowColor = "rgba(0,0,0,0.5)";
-        ctx.beginPath();
-        ctx.roundRect(elements.qrPos.x - 10, elements.qrPos.y - 10, qSize + 20, qSize + 20, 10);
-        ctx.fill();
-        ctx.drawImage(qrGenerator.image, elements.qrPos.x, elements.qrPos.y, qSize, qSize);
-        ctx.restore();
-    }
-
-    const myCall = document.getElementById('myCall').value;
-    const myQth = document.getElementById('myQth').value;
-    const callS = parseInt(document.getElementById('callSize').value);
-    const qthS = parseInt(document.getElementById('qthSize').value);
-    const colCall = document.getElementById('col1').value;
-    const colQth = document.getElementById('colQth').value;
-
-    // OBTENER CONFIGURACIONES DE FUENTE
-    const fontCallFamily = document.getElementById('fontCallFamily').value;
-    const fontCallWeight = document.getElementById('fontCallWeight').value;
-    const fontCallStyle = document.getElementById('fontCallStyle').value;
-    
-    const fontQthFamily = document.getElementById('fontQthFamily').value;
-    const fontQthWeight = document.getElementById('fontQthWeight').value;
-    const fontQthStyle = document.getElementById('fontQthStyle').value;
-
-    ctx.save();
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-    
-    if(myCall) {
-        const adjustedCallSize = window.innerWidth <= 900 ? callS * 0.5 : callS;
-        ctx.font = `${fontCallStyle} ${fontCallWeight} ${adjustedCallSize}px ${fontCallFamily}`;
-        
-        // Aplicar efecto de texto
-        applyTextEffect(myCall, elements.myCall.x, elements.myCall.y, colCall);
-    }
-    
-    if(myQth) {
-        const adjustedQthSize = window.innerWidth <= 900 ? qthS * 0.5 : qthS;
-        ctx.font = `${fontQthStyle} ${fontQthWeight} ${adjustedQthSize}px ${fontQthFamily}`;
-        
-        // Aplicar efecto de texto
-        applyTextEffect(myQth, elements.myQth.x, elements.myQth.y, colQth);
-    }
-    ctx.restore();
-
-    drawQsoBox(elements.qsoBox);
-    drawSecBox(elements.secBox);
-
-    ctx.save();
-    ctx.font = "300 12px 'Montserrat'";
-    ctx.fillStyle = "rgba(255,255,255,0.5)";
-    ctx.textAlign = "right";
-    ctx.fillText("© CL7ADV QSL ELITE CARIBBEAN 3D", cv.width - 20, cv.height - 15);
-    ctx.restore();
-}
-
-function drawSecBox(box) {
-    if(document.getElementById('secShow').value === 'no') return;
-
-    const text = document.getElementById('secText').value.toUpperCase();
-    const color = document.getElementById('secColor').value;
-    const fSize = parseInt(document.getElementById('secFontSize').value);
-    const alpha = parseInt(document.getElementById('secAlpha').value) / 100;
-    const colBorder = document.getElementById('colBoxBorder').value;
-
-    const adjustedBox = window.innerWidth <= 900 ? {
-        x: box.x * 0.5,
-        y: box.y * 0.5,
-        w: box.w * 0.6,
-        h: box.h
-    } : box;
-
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    
-    const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x + adjustedBox.w, adjustedBox.y + adjustedBox.h);
-    gradient.addColorStop(0, 'rgba(26, 107, 154, 0.8)');
-    gradient.addColorStop(1, 'rgba(64, 201, 193, 0.8)');
-    
-    ctx.fillStyle = gradient;
-    ctx.beginPath(); 
-    ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h, 10); 
-    ctx.fill();
-    
-    ctx.strokeStyle = colBorder; 
-    ctx.lineWidth = 2; 
-    ctx.stroke();
-    
-    // Texto con fuente configurable
-    const fontDataFamily = document.getElementById('fontDataFamily').value;
-    const fontDataWeight = document.getElementById('fontDataWeight').value;
-    const fontDataStyle = document.getElementById('fontDataStyle').value;
-    
-    ctx.fillStyle = color;
-    const adjustedFontSize = window.innerWidth <= 900 ? fSize * 0.7 : fSize;
-    ctx.font = `${fontDataStyle} ${fontDataWeight} ${adjustedFontSize}px ${fontDataFamily}`;
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-
-    const words = text.split(' ');
-    let line = '';
-    let y = adjustedBox.y + 15;
-    const maxWidth = adjustedBox.w - 30;
-    const lineHeight = adjustedFontSize * 1.2;
-
-    for(let n = 0; n < words.length; n++) {
-        let testLine = line + words[n] + ' ';
-        let metrics = ctx.measureText(testLine);
-        let testWidth = metrics.width;
-        if (testWidth > maxWidth && n > 0) {
-            ctx.fillText(line, adjustedBox.x + 15, y);
-            line = words[n] + ' ';
-            y += lineHeight;
-        } else {
-            line = testLine;
-        }
-    }
-    ctx.fillText(line, adjustedBox.x + 15, y);
-    
-    const newH = (y - adjustedBox.y) + lineHeight + 10;
-    adjustedBox.h = Math.max(80, newH);
-    box.h = adjustedBox.h;
-
-    ctx.restore();
-}
-
-function fitText(text, maxWidth, baseSize, fontFamily, fontWeight, fontStyle) {
-    let size = baseSize;
-    const adjustedBaseSize = window.innerWidth <= 900 ? baseSize * 0.7 : baseSize;
-    size = adjustedBaseSize;
-    ctx.font = `${fontStyle} ${fontWeight} ${size}px ${fontFamily}`;
-    while(ctx.measureText(text).width > maxWidth - 15 && size > 10) {
-        size--;
-        ctx.font = `${fontStyle} ${fontWeight} ${size}px ${fontFamily}`;
-    }
-    return size;
-}
-
-function drawQsoBox(box) {
-    const style = document.getElementById('boxStyle').value;
-    const colBg = document.getElementById('colBoxBg').value;
-    const colBorder = document.getElementById('colBoxBorder').value;
-    const colTitle = document.getElementById('colTitles').value; 
-    const colData = document.getElementById('col5').value;
-    const radius = parseInt(document.getElementById('boxRadius').value);
-    const bSize = parseInt(document.getElementById('borderSize').value);
-    const alpha = parseInt(document.getElementById('boxAlpha').value) / 100;
-
-    // Obtener configuraciones de fuente
-    const fontDataFamily = document.getElementById('fontDataFamily').value;
-    const fontDataWeight = document.getElementById('fontDataWeight').value;
-    const fontDataStyle = document.getElementById('fontDataStyle').value;
-
-    const adjustedBox = window.innerWidth <= 900 ? {
-        x: box.x * 0.5,
-        y: box.y * 0.5,
-        w: box.w * 0.9,
-        h: box.h * 0.8
-    } : box;
-
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    
-    // VARIABLES DE DATOS
-    const labels = ["INDICATIVO", "FECHA", "HORA", "BANDA", "FREQ", "MODO", "RST"];
-    const vals = [
-        document.getElementById('qCall').value, 
-        document.getElementById('qDate').value, 
-        document.getElementById('qTime').value, 
-        document.getElementById('qBand').value, 
-        document.getElementById('qFreq').value, 
-        document.getElementById('qMode').value, 
-        document.getElementById('qRst').value
-    ];
-
-    const titleFontSize = window.innerWidth <= 900 ? 12 : 16;
-    const dataFontSize = window.innerWidth <= 900 ? 35 : 45;
-
-    // --- NUEVO ESTILO: TARJETAS FLOTANTES (Práctico y Diferente) ---
-    if (style === 'tarjetas') {
-        // No dibujamos un fondo grande, sino pequeñas tarjetas
-        
-        // 1. Tarjeta Grande para CALLSIGN (Destinatario)
-        // Ocupa el 40% del ancho a la izquierda
-        const leftWidth = adjustedBox.w * 0.35;
-        const rightWidth = adjustedBox.w * 0.63; // Un poco de espacio
-        const gap = adjustedBox.w * 0.02;
-
-        // DIBUJAR TARJETA CALLSIGN
-        ctx.fillStyle = colBg;
-        ctx.shadowBlur = 10; ctx.shadowColor = "rgba(0,0,0,0.2)";
-        ctx.beginPath();
-        ctx.roundRect(adjustedBox.x, adjustedBox.y, leftWidth, adjustedBox.h, radius);
-        ctx.fill();
-        ctx.shadowBlur = 0; // Reset shadow
-
-        if(bSize > 0) { ctx.strokeStyle = colBorder; ctx.lineWidth = bSize; ctx.stroke(); }
-
-        // Texto Callsign (vals[0])
-        ctx.textAlign = "center";
-        ctx.fillStyle = colTitle;
-        ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`;
-        ctx.fillText("DESTINATARIO", adjustedBox.x + leftWidth/2, adjustedBox.y + 40);
-
-        const callText = (vals[0] || "").toUpperCase();
-        if(callText) {
-            const fSize = fitText(callText, leftWidth * 0.9, 70, fontDataFamily, fontDataWeight, fontDataStyle);
-            ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`;
-            ctx.fillStyle = colData;
-            ctx.fillText(callText, adjustedBox.x + leftWidth/2, adjustedBox.y + adjustedBox.h/2);
+        function startApp() {
+            const screen = document.getElementById('welcomeScreen');
+            screen.style.opacity = '0';
+            setTimeout(() => screen.style.display = 'none', 1000);
         }
 
-        // Comentario en tarjeta callsign (parte inferior)
-        ctx.fillStyle = colTitle;
-        ctx.font = `italic 14px 'Montserrat'`;
-        ctx.fillText("Gracias por el QSO", adjustedBox.x + leftWidth/2, adjustedBox.y + adjustedBox.h - 30);
+        function setStep(step) {
+            currentStep = step;
+            updateSteps();
+        }
 
-        // 2. Grid de tarjetas para el resto de datos (6 datos restantes)
-        // 2 filas de 3 columnas
-        const startX = adjustedBox.x + leftWidth + gap;
-        const cardW = (rightWidth - (gap*2)) / 3;
-        const cardH = (adjustedBox.h - gap) / 2; // Usamos la mitad de altura
-
-        // Datos restantes: Fecha, Hora, Banda, Freq, Modo, RST (indices 1 a 6)
-        const gridLabels = labels.slice(1);
-        const gridVals = vals.slice(1);
-
-        gridLabels.forEach((l, i) => {
-            // Calcular posición fila/columna
-            const col = i % 3;
-            const row = Math.floor(i / 3);
+        function updateSteps() {
+            document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.step-pill').forEach(p => p.classList.remove('active'));
+            document.getElementById(`step-${currentStep}`).classList.add('active');
+            document.getElementById(`pill-${currentStep}`).classList.add('active');
             
-            const cardX = startX + (col * (cardW + gap));
-            const cardY = adjustedBox.y + (row * (cardH + gap));
+            const btnPrev = document.getElementById('prevStep');
+            btnPrev.classList.toggle('opacity-50', currentStep === 1);
+            btnPrev.classList.toggle('cursor-not-allowed', currentStep === 1);
+        }
 
-            // Dibujar tarjetita
-            ctx.fillStyle = "rgba(255, 255, 255, 0.9)"; // Fondo semi-transparente blanco para legibilidad
-            if(style === 'tarjetas') ctx.shadowBlur = 5; ctx.shadowColor = "rgba(0,0,0,0.1)";
-            ctx.beginPath();
-            ctx.roundRect(cardX, cardY, cardW, cardH, 10);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            
-            // Borde inferior decorativo
-            ctx.fillStyle = colBorder;
-            ctx.beginPath();
-            ctx.roundRect(cardX, cardY + cardH - 5, cardW, 5, [0,0,10,10]);
-            ctx.fill();
+        document.getElementById('nextStep').onclick = () => { if(currentStep < 6) { currentStep++; updateSteps(); } };
+        document.getElementById('prevStep').onclick = () => { if(currentStep > 1) { currentStep--; updateSteps(); } };
 
-            // Título
-            ctx.textAlign = "left";
-            ctx.fillStyle = colTitle;
-            ctx.font = `600 12px 'Roboto Condensed'`;
-            ctx.fillText(l, cardX + 15, cardY + 25);
+        function updateQR() {
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            const size = parseInt(document.getElementById('qrSizeInput').value) || 85;
+            // QR apunta a la dirección de la app
+            qr = new QRCode(qrContainer, {
+                text: `QSL ELITE v38.0.0 - Caribe Edition 3D - Online App`,
+                width: size,
+                height: size,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
 
-            // Dato
-            const val = (gridVals[i] || "").toUpperCase();
-            if(val) {
-                ctx.textAlign = "center";
-                const fSize = fitText(val, cardW * 0.9, 35, fontDataFamily, fontDataWeight, fontDataStyle);
-                ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`;
-                ctx.fillStyle = colData;
-                ctx.fillText(val, cardX + cardW/2, cardY + cardH/2 + 10);
-            }
+        document.getElementById('qrSizeInput').oninput = updateQR;
+        document.getElementById('showQR').onchange = (e) => document.getElementById('dragQR').style.display = e.target.checked ? 'block' : 'none';
+        document.getElementById('showLogo').onchange = (e) => document.getElementById('dragLogo').style.display = e.target.checked ? 'block' : 'none';
+        document.getElementById('fontSelect').onchange = (e) => document.getElementById('dispCall').style.fontFamily = e.target.value;
+        document.getElementById('opColor').oninput = (e) => document.getElementById('dispCall').style.color = e.target.value;
+        document.getElementById('opSize').oninput = (e) => document.getElementById('dispCall').style.fontSize = e.target.value + 'px';
+
+        document.getElementById('logoInput').onchange = (e) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => document.getElementById('opLogoImg').src = ev.target.result;
+            reader.readAsDataURL(e.target.files[0]);
+        };
+
+        let activeElement = null;
+        let offset = { x: 0, y: 0 };
+
+        function startDragging(e, el) {
+            if(e.target.getAttribute('contenteditable')) return;
+            activeElement = el;
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            const rect = el.getBoundingClientRect();
+            const scale = document.body.clientWidth < 850 ? 0.45 : 1;
+            offset.x = (clientX - rect.left) / scale;
+            offset.y = (clientY - rect.top) / scale;
+        }
+
+        function drag(e) {
+            if (!activeElement) return;
+            const container = document.getElementById('qslCapture').getBoundingClientRect();
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            const scale = document.body.clientWidth < 850 ? 0.45 : 1;
+            let x = (clientX - container.left) / scale - offset.x;
+            let y = (clientY - container.top) / scale - offset.y;
+            activeElement.style.left = x + 'px';
+            activeElement.style.top = y + 'px';
+            activeElement.style.right = 'auto';
+        }
+
+        document.querySelectorAll('.draggable').forEach(el => {
+            el.addEventListener('mousedown', (e) => startDragging(e, el));
+            el.addEventListener('touchstart', (e) => startDragging(e, el), { passive: false });
         });
 
-        // NOTA: En este estilo, el comentario largo principal se muestra sutilmente arriba si hay espacio, o se omite en favor del diseño limpio.
-        // Opcional: Dibujar comentario flotante abajo si hay texto.
-        const commText = (document.getElementById('qComment').value || "").toUpperCase();
-        if(commText) {
-             ctx.textAlign = "left";
-             ctx.fillStyle = "white";
-             ctx.shadowColor = "black"; ctx.shadowBlur = 4;
-             ctx.font = "bold 16px 'Montserrat'";
-             ctx.fillText(commText, adjustedBox.x, adjustedBox.y - 15);
-             ctx.shadowBlur = 0;
+        window.addEventListener('mousemove', drag);
+        window.addEventListener('touchmove', drag, { passive: false });
+        window.addEventListener('mouseup', () => activeElement = null);
+        window.addEventListener('touchend', () => activeElement = null);
+
+        function resetPositions() {
+            document.getElementById('dragCall').style.top = "40px";
+            document.getElementById('dragCall').style.left = "40px";
+            document.getElementById('dragBadge').style.top = "40px";
+            document.getElementById('dragBadge').style.right = "40px";
+            document.getElementById('dragBadge').style.left = "auto";
         }
 
-    } 
-    // --- ESTILOS ANTERIORES ---
-    else if (style === 'compacto') {
-        const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x + adjustedBox.w, adjustedBox.y + adjustedBox.h);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.97)');
-        gradient.addColorStop(1, 'rgba(240, 248, 255, 0.95)');
-        ctx.fillStyle = gradient;
-        
-        ctx.beginPath(); 
-        ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h, radius); 
-        ctx.fill();
-        
-        // Dividir en 2 filas: 4 columnas arriba, 3 abajo + comentario
-        const rowHeight = adjustedBox.h / 3;
-        const cols1 = 4; const step1 = adjustedBox.w / cols1;
-        const cols2 = 3; const step2 = adjustedBox.w / cols2;
-        
-        ctx.strokeStyle = colBorder; ctx.lineWidth = 1;
-        
-        // Líneas
-        ctx.beginPath(); ctx.moveTo(adjustedBox.x, adjustedBox.y + rowHeight); ctx.lineTo(adjustedBox.x + adjustedBox.w, adjustedBox.y + rowHeight); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(adjustedBox.x, adjustedBox.y + rowHeight * 2); ctx.lineTo(adjustedBox.x + adjustedBox.w, adjustedBox.y + rowHeight * 2); ctx.stroke();
-        for(let i = 1; i < cols1; i++) { ctx.beginPath(); ctx.moveTo(adjustedBox.x + step1 * i, adjustedBox.y); ctx.lineTo(adjustedBox.x + step1 * i, adjustedBox.y + rowHeight); ctx.stroke(); }
-        for(let i = 1; i < cols2; i++) { ctx.beginPath(); ctx.moveTo(adjustedBox.x + step2 * i, adjustedBox.y + rowHeight); ctx.lineTo(adjustedBox.x + step2 * i, adjustedBox.y + rowHeight * 2); ctx.stroke(); }
-        
-        // Datos fila 1
-        const labels1 = labels.slice(0, 4); const vals1 = vals.slice(0, 4);
-        labels1.forEach((l, i) => {
-            const xc = adjustedBox.x + step1 * i + step1 / 2;
-            const yTitle = adjustedBox.y + rowHeight * 0.3; const yData = adjustedBox.y + rowHeight * 0.7;
-            ctx.textAlign = "center";
-            ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`; ctx.fillStyle = colTitle; ctx.fillText(l, xc, yTitle);
-            const textVal = (vals1[i] || "").toUpperCase();
-            if(textVal) {
-                const fSize = fitText(textVal, step1 * 0.9, dataFontSize * 0.8, fontDataFamily, fontDataWeight, fontDataStyle);
-                ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`; ctx.fillStyle = colData; ctx.fillText(textVal, xc, yData);
-            }
+        function applyManualData() {
+            const op = document.getElementById('manOpCall').value.toUpperCase();
+            if(op) document.getElementById('dispCall').innerText = op;
+            const call = document.getElementById('manCall').value.toUpperCase();
+            if(call) document.getElementById('dispTo').innerText = call;
+            document.getElementById('dispToName').innerText = document.getElementById('manName').value;
+            document.getElementById('dispDate').innerText = document.getElementById('manDate').value || '---';
+            document.getElementById('dispTime').innerText = document.getElementById('manTime').value || '---';
+            document.getElementById('dispFreq').innerText = document.getElementById('manFreq').value || '---';
+            document.getElementById('dispMode').innerText = document.getElementById('manMode').value || '---';
+            document.getElementById('dispRst').innerText = document.getElementById('manRst').value || '---';
+            showToast("Datos aplicados", "success");
+        }
+
+        document.getElementById('borderColor').oninput = document.getElementById('borderOpacity').oninput = updateBorderStyle;
+
+        function updateBorderStyle() {
+            const color = document.getElementById('borderColor').value;
+            const alpha = document.getElementById('borderOpacity').value / 100;
+            document.getElementById('qslCapture').style.borderColor = `rgba(${parseInt(color.slice(1,3), 16)},${parseInt(color.slice(3,5), 16)},${parseInt(color.slice(5,7), 16)},${alpha})`;
+        }
+
+        document.getElementById('adifInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (event) => parseADIF(event.target.result);
+            reader.readAsText(file);
         });
-        
-        // Datos fila 2
-        const labels2 = labels.slice(4); const vals2 = vals.slice(4);
-        labels2.forEach((l, i) => {
-            const xc = adjustedBox.x + step2 * i + step2 / 2;
-            const yTitle = adjustedBox.y + rowHeight * 1.3; const yData = adjustedBox.y + rowHeight * 1.7;
-            ctx.textAlign = "center";
-            ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`; ctx.fillStyle = colTitle; ctx.fillText(l, xc, yTitle);
-            const textVal = (vals2[i] || "").toUpperCase();
-            if(textVal) {
-                const fSize = fitText(textVal, step2 * 0.9, dataFontSize * 0.8, fontDataFamily, fontDataWeight, fontDataStyle);
-                ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`; ctx.fillStyle = colData; ctx.fillText(textVal, xc, yData);
-            }
-        });
-        
-        // Comentario
-        ctx.textAlign = "center";
-        ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`; ctx.fillStyle = colTitle; ctx.fillText("COMENTARIOS", adjustedBox.x + adjustedBox.w / 2, adjustedBox.y + rowHeight * 2.3);
-        const commText = (document.getElementById('qComment').value || "").toUpperCase();
-        if(commText) {
-            const fSizeComm = fitText(commText, adjustedBox.w * 0.9, 24, fontDataFamily, fontDataWeight, fontDataStyle);
-            ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSizeComm}px ${fontDataFamily}`; ctx.fillStyle = colData; ctx.fillText(commText, adjustedBox.x + adjustedBox.w / 2, adjustedBox.y + rowHeight * 2.7);
-        }
-        
-        if(bSize > 0) { ctx.strokeStyle = colBorder; ctx.lineWidth = bSize; ctx.beginPath(); ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h, radius); ctx.stroke(); }
-        
-    } else {
-        // ESTILOS CLÁSICOS/OTROS
-        if (style === 'caribbean') {
-            const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x, adjustedBox.y + adjustedBox.h);
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)'); gradient.addColorStop(1, 'rgba(245, 230, 202, 0.95)'); ctx.fillStyle = gradient;
-        } else if (style === 'elegante') {
-            const gradient = ctx.createLinearGradient(adjustedBox.x, adjustedBox.y, adjustedBox.x + adjustedBox.w, adjustedBox.y + adjustedBox.h);
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.98)'); gradient.addColorStop(0.5, 'rgba(255, 249, 235, 0.95)'); gradient.addColorStop(1, 'rgba(255, 241, 214, 0.92)'); ctx.fillStyle = gradient;
-        } else {
-            ctx.fillStyle = (style === 'clasico') ? colBg : (style === 'cyber' ? "#111" : "rgba(255,255,255,0.15)");
-        }
-        
-        ctx.beginPath(); ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h, radius); ctx.fill();
 
-        if(style === 'clasico') {
-            ctx.fillStyle = colBorder;
-            ctx.beginPath(); ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h * 0.4, [radius, radius, 0, 0]); ctx.fill();
-            ctx.beginPath(); ctx.rect(adjustedBox.x, adjustedBox.y + adjustedBox.h * 0.5, adjustedBox.w, adjustedBox.h * 0.4); ctx.fill();
-        }
-
-        const cols = 7; const step = adjustedBox.w / cols; const rowH = adjustedBox.h / 2; const headH = rowH * 0.4;
-        
-        if(style !== 'compacto') {
-            ctx.strokeStyle = (style === 'cristal') ? "rgba(255,255,255,0.3)" : colBorder; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(adjustedBox.x, adjustedBox.y + rowH); ctx.lineTo(adjustedBox.x + adjustedBox.w, adjustedBox.y + rowH); ctx.stroke();
-            for(let i=1; i < cols; i++) { ctx.beginPath(); ctx.moveTo(adjustedBox.x + step*i, adjustedBox.y); ctx.lineTo(adjustedBox.x + step*i, adjustedBox.y + rowH); ctx.stroke(); }
-        }
-        
-        ctx.textAlign = "center";
-        labels.forEach((l, i) => {
-            const xc = adjustedBox.x + step*i + step/2;
-            ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`;
-            if(style !== 'clasico') { ctx.fillStyle = colTitle; } else { if(colTitle !== "#1a6b9a") ctx.fillStyle = colTitle; else ctx.fillStyle = "#ffffff"; }
-            ctx.fillText(l, xc, adjustedBox.y + headH * 0.65);
-            
-            const textVal = (vals[i] || "").toUpperCase();
-            if(textVal) {
-                const fSize = fitText(textVal, step, dataFontSize, fontDataFamily, fontDataWeight, fontDataStyle);
-                ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSize}px ${fontDataFamily}`; ctx.fillStyle = colData; ctx.fillText(textVal, xc, adjustedBox.y + rowH * 0.75);
-            }
-        });
-        
-        ctx.font = `600 ${titleFontSize}px 'Roboto Condensed'`;
-        if(style !== 'clasico' || colTitle !== "#1a6b9a") ctx.fillStyle = colTitle; else ctx.fillStyle = "#ffffff";
-        ctx.fillText("COMENTARIOS", adjustedBox.x + adjustedBox.w/2, adjustedBox.y + rowH + headH * 0.65);
-        
-        const commText = (document.getElementById('qComment').value || "").toUpperCase();
-        if(commText) {
-            const fSizeComm = fitText(commText, adjustedBox.w * 0.9, 55, fontDataFamily, fontDataWeight, fontDataStyle);
-            ctx.font = `${fontDataStyle} ${fontDataWeight} ${fSizeComm}px ${fontDataFamily}`; ctx.fillStyle = colData; ctx.fillText(commText, adjustedBox.x + adjustedBox.w/2, adjustedBox.y + rowH + rowH * 0.7);
-        }
-
-        if(bSize > 0) { ctx.strokeStyle = colBorder; ctx.lineWidth = bSize; ctx.beginPath(); ctx.roundRect(adjustedBox.x, adjustedBox.y, adjustedBox.w, adjustedBox.h, radius); ctx.stroke(); }
-        
-        if(style === 'elegante') {
-            ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.roundRect(adjustedBox.x - 2, adjustedBox.y - 2, adjustedBox.w + 4, adjustedBox.h + 4, radius + 2); ctx.stroke();
-        }
-    }
-
-    ctx.restore();
-}
-
-function setupEvents() {
-    const getPos = (e) => {
-        const rect = cv.getBoundingClientRect();
-        const sx = cv.width / rect.width, sy = cv.height / rect.height;
-        const cX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-        const cY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
-        return { x: (cX - rect.left) * sx, y: (cY - rect.top) * sy };
-    };
-
-    const start = (e) => {
-        const p = getPos(e); activeLogoIdx = -1; draggingElement = null;
-        for(let i = logos.length-1; i >= 0; i--) {
-            let l = logos[i]; 
-            if(p.x > l.x && p.x < l.x + l.w && p.y > l.y && p.y < l.y + l.h) { 
-                activeLogoIdx = i; offset.x = p.x - l.x; offset.y = p.y - l.y; return; 
+        function parseADIF(text) {
+            const records = text.split(/<eor>/i);
+            qsoList = records.filter(r => r.includes('<')).map(r => {
+                const data = {};
+                const regex = /<([^:]+):(\d+)(?::[^>]+)?>([^<]*)/gi;
+                let m;
+                while ((m = regex.exec(r)) !== null) data[m[1].toUpperCase()] = m[3].trim();
+                return data;
+            });
+            if (qsoList.length > 0) {
+                document.getElementById('logControls').classList.remove('hidden');
+                document.getElementById('logInfo').classList.remove('hidden');
+                document.getElementById('qsoCount').innerText = qsoList.length;
+                loadQSO(0);
+                showToast("ADIF cargado correctamente", "success");
             }
         }
-        if(document.getElementById('showQR').value === 'yes') {
-            const qr = elements.qrPos;
-            if(p.x > qr.x - 10 && p.x < qr.x + qr.size + 10 && p.y > qr.y - 10 && p.y < qr.y + qr.size + 10) {
-                draggingElement = qr; offset.x = p.x - qr.x; offset.y = p.y - qr.y; return;
+
+        function loadQSO(index) {
+            currentIndex = index;
+            const qso = qsoList[index];
+            document.getElementById('dispTo').innerText = qso.CALL || '---';
+            document.getElementById('dispToName').innerText = qso.NAME || '';
+            document.getElementById('dispDate').innerText = qso.QSO_DATE || '---';
+            document.getElementById('dispTime').innerText = qso.TIME_ON || '---';
+            document.getElementById('dispFreq').innerText = qso.FREQ || qso.BAND || '---';
+            document.getElementById('dispMode').innerText = qso.MODE || '---';
+            document.getElementById('dispRst').innerText = qso.RST_SENT || '---';
+            document.getElementById('qsoCounter').innerText = `QSO ${index + 1} DE ${qsoList.length}`;
+        }
+
+        document.getElementById('downloadBtn').onclick = () => exportQSL(document.getElementById('dispTo').innerText);
+
+        async function exportQSL(name) {
+            showToast("Generando imagen...");
+            const canvas = await html2canvas(document.getElementById('qslCapture'), { useCORS: true, scale: 2 });
+            const link = document.createElement('a');
+            link.download = `QSL_${name}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        document.getElementById('massExportBtn').onclick = async () => {
+            if(!qsoList.length) return;
+            for(let i=0; i < qsoList.length; i++) {
+                loadQSO(i);
+                await new Promise(r => setTimeout(r, 500));
+                await exportQSL(qsoList[i].CALL || `QSO_${i}`);
             }
-        }
-        for (let key in elements) {
-            if(key === 'qrPos') continue;
-            let el = elements[key];
-            if(key === 'secBox' && document.getElementById('secShow').value === 'no') continue;
+        };
 
-            let isBox = key === 'qsoBox' || key === 'secBox';
-            let hit = isBox ? (p.x > el.x && p.x < el.x + el.w && p.y > el.y && p.y < el.y + el.h) : (p.x > el.x && p.x < el.x + 500 && p.y > el.y - 100 && p.y < el.y + 100);
-            if (hit) { draggingElement = el; offset.x = p.x - el.x; offset.y = p.y - el.y; return; }
-        }
-    };
+        document.getElementById('nextBtn').onclick = () => { if(currentIndex < qsoList.length-1) loadQSO(currentIndex+1); };
+        document.getElementById('prevBtn').onclick = () => { if(currentIndex > 0) loadQSO(currentIndex-1); };
 
-    const move = (e) => {
-        if (!draggingElement && activeLogoIdx === -1) return;
-        if(e.cancelable) e.preventDefault();
-        const p = getPos(e);
-        if(activeLogoIdx !== -1) { 
-            logos[activeLogoIdx].x = p.x - offset.x; 
-            logos[activeLogoIdx].y = p.y - offset.y; 
-        } else if (draggingElement) { 
-            draggingElement.x = p.x - offset.x; 
-            draggingElement.y = p.y - offset.y; 
-        }
-        render();
-    };
-
-    cv.addEventListener('mousedown', start);
-    window.addEventListener('mousemove', move);
-    window.addEventListener('mouseup', () => { draggingElement = null; activeLogoIdx = -1; });
-    cv.addEventListener('touchstart', start, {passive: false});
-    window.addEventListener('touchmove', move, { passive: false });
-    
-    document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 900 && !e.target.closest('.sidebar') && !e.target.closest('.menu-toggle')) {
-            const sidebar = document.getElementById('mainSidebar');
-            sidebar.classList.remove('active');
-        }
-    });
-}
-
-function nav(d) { if(log.length) { idx = (idx+d+log.length)%log.length; sync(); } }
-
-function exportJpg() { 
-    closeSidebarOnMobile();
-    const a = document.createElement('a'); 
-    a.download = `QSL_${document.getElementById('qCall').value || 'MANUAL'}.jpg`; 
-    a.href = cv.toDataURL('image/jpeg', 0.95); a.click(); 
-}
-
-async function downloadAllZip() {
-    if(!log.length) return;
-    
-    closeSidebarOnMobile();
-    const zip = new JSZip();
-    const loading = document.getElementById('loadingOverlay');
-    const loadingMsg = document.getElementById('loadingMsg');
-    loading.style.display = 'flex';
-
-    for(let i = 0; i < log.length; i++) {
-        idx = i;
-        const q = log[i];
-        
-        document.getElementById('qCall').value = q.call;
-        document.getElementById('qDate').value = q.date;
-        document.getElementById('qTime').value = q.time;
-        document.getElementById('qBand').value = q.band;
-        document.getElementById('qFreq').value = q.freq;
-        document.getElementById('qMode').value = q.mode;
-        document.getElementById('qRst').value = q.rst;
-        document.getElementById('qComment').value = q.comment;
-
-        render(); 
-
-        const blob = await new Promise(res => cv.toBlob(res, 'image/jpeg', 0.85));
-        const filename = `${i+1}_${q.call}_${q.band}.jpg`;
-        zip.file(filename, blob);
-
-        const progress = Math.round(((i + 1) / log.length) * 100);
-        loadingMsg.innerText = progress + "%";
-        
-        if(i % 5 === 0) await new Promise(r => setTimeout(r, 10));
-    }
-
-    const content = await zip.generateAsync({type:"blob"});
-    saveAs(content, `LOG_QSL_ELITE_CARIBBEAN_ELEGANCE_${document.getElementById('myCall').value}.zip`);
-    
-    loading.style.display = 'none';
-    sync(); 
-}
-
-document.getElementById('bgInp').onchange = (e) => { 
-    const r = new FileReader(); 
-    r.onload = (ev) => { bg.src = ev.target.result; }; 
-    r.readAsDataURL(e.target.files[0]); 
-};
-
-document.getElementById('logoInp').onchange = (e) => {
-    Array.from(e.target.files).forEach(f => {
-        const r = new FileReader(); 
-        r.onload = (ev) => {
-            const i = new Image(); i.src = ev.target.result; 
-            i.onload = () => { logos.push({ img: i, x: 1400, y: 300, w: 180, h: 180 }); render(); };
-        }; 
-        r.readAsDataURL(f);
-    });
-};
-
-function formatADIFDate(dateStr) {
-    if (!dateStr || dateStr.length !== 8) return dateStr;
-    const y = dateStr.substring(2, 4);
-    const m = dateStr.substring(4, 6);
-    const d = dateStr.substring(6, 8);
-    return `${d}/${m}/${y}`;
-}
-
-function formatADIFTime(timeStr) {
-    if (!timeStr) return "";
-    let clean = timeStr.replace(/:/g, '');
-    if (clean.length >= 4) {
-        return clean.substring(0, 2) + ":" + clean.substring(2, 4);
-    }
-    return timeStr;
-}
-
-function mapMode(mode) {
-    const m = mode.toUpperCase().trim();
-    const dvModos = ["DIGITAL VOICE", "D-STAR", "C4FM", "DMR", "DSTAR"];
-    if (dvModos.includes(m)) return "DV";
-    return m;
-}
-
-document.getElementById('adiInp').onchange = (e) => {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-        const raw = ev.target.result;
-        
-        const myCallMatch = raw.match(/<(STATION_CALLSIGN|OPERATOR):\d+>([^<]*)/i);
-        if(myCallMatch && myCallMatch[2]) {
-            document.getElementById('myCall').value = myCallMatch[2].trim().toUpperCase();
+        function showToast(msg, type='info') {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.style.display = 'block';
+            t.className = `fixed bottom-5 right-5 p-4 rounded-lg text-white z-[10000] shadow-2xl ${type === 'success' ? 'bg-emerald-600' : 'bg-blue-600'}`;
+            setTimeout(() => t.style.display = 'none', 3000);
         }
 
-        const myEmailMatch = raw.match(/<(MY_EMAIL):\d+>([^<]*)/i);
-        if(myEmailMatch && myEmailMatch[2]) {
-            document.getElementById('myEmail').value = myEmailMatch[2].trim();
-        }
-
-        log = raw.split(/<eor>/i).map(c => {
-            if(c.length < 10) return null;
-            const f = (t) => { const m = c.match(new RegExp(`<${t}:\\d+>([^<]*)`, "i")); return m ? m[1].trim() : ""; };
-            return { 
-                call: f('CALL'), 
-                date: formatADIFDate(f('QSO_DATE')), 
-                time: formatADIFTime(f('TIME_ON')), 
-                band: f('BAND'), 
-                freq: f('FREQ'),
-                mode: mapMode(f('MODE')), 
-                rst: f('RST_SENT') || "599",
-                comment: f('COMMENT')
-            };
-        }).filter(x => x && x.call);
-        
-        if(log.length) { 
-            idx = 0; 
-            sync(); 
-            document.getElementById('btnZip').style.display = 'block'; 
-        }
-    };
-    reader.readAsText(e.target.files[0]);
-};
-
-function sync() {
-    const q = log[idx];
-    document.getElementById('qCall').value = q.call;
-    document.getElementById('qDate').value = q.date;
-    document.getElementById('qTime').value = q.time;
-    document.getElementById('qBand').value = q.band;
-    document.getElementById('qFreq').value = q.freq;
-    document.getElementById('qMode').value = q.mode;
-    document.getElementById('qRst').value = q.rst;
-    document.getElementById('qComment').value = q.comment;
-    
-    document.getElementById('indicator').innerText = `ADIF MODO: ${idx+1} / ${log.length}`;
-    render();
-}
-</script>
+        window.onload = () => {
+            const thumbs = ['https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=400&q=80', 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80', 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=400&q=80', 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=400&q=80'];
+            thumbs.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'h-10 w-full object-cover rounded cursor-pointer border-2 border-transparent hover:border-blue-500';
+                img.onclick = () => document.getElementById('bgLayer').style.backgroundImage = `url('${url}')`;
+                document.getElementById('thumbContainer').appendChild(img);
+            });
+            updateQR();
+        };
+    </script>
 </body>
 </html>
