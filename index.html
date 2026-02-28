@@ -250,7 +250,6 @@
                                     </div>
                                     <div class="flex items-center gap-4">
                                         <span id="lbl-qso-with">CONTACTO: <span id="target-call" class="text-yellow-300">DX_STATION</span></span>
-                                        <!-- Eliminado el onerror inline que causaba conflicto -->
                                         <img id="target-flag" src="" class="h-10 rounded shadow-md hidden">
                                     </div>
                                 </div>
@@ -510,8 +509,6 @@
             const prefixMap = {
                 // Cuba
                 'CM': 'cu', 'CO': 'cu', 'CL': 'cu', 'T4': 'cu',
-                // Chile
-               'CD': 'ch', 'CE': 'ch', 'CA': 'ch',
                 // USA
                 'K': 'us', 'W': 'us', 'N': 'us', 'AA': 'us', 'AL': 'us', 'NW': 'us',
                 // España
@@ -530,8 +527,8 @@
                 'JA': 'jp', 'JE': 'jp', 'JF': 'jp', 'JG': 'jp', 'JH': 'jp', 'JI': 'jp', 'JJ': 'jp', 'JK': 'jp', 'JL': 'jp', 'JM': 'jp', 'JN': 'jp', 'JO': 'jp', 'JP': 'jp', 'JQ': 'jp', 'JR': 'jp', 'JS': 'jp',
                 // Argentina
                 'LU': 'ar', 'AY': 'ar', 'AZ': 'ar', 'LW': 'ar',
-                // Chile
-                'CE': 'cl', 'XQ': 'cl', 'XR': 'cl',
+                // Chile (ampliado)
+                '3G': 'cl', 'CA': 'cl', 'CB': 'cl', 'CC': 'cl', 'CD': 'cl', 'CE': 'cl', 'XQ': 'cl', 'XR': 'cl',
                 // Uruguay
                 'CX': 'uy', 'CV': 'uy', 'CW': 'uy',
                 // Venezuela
@@ -660,6 +657,22 @@
                 'KG': 'gu',
                 // Samoa Americana
                 'KS': 'as',
+                // Costa Rica
+                'TI': 'cr', 'TE': 'cr',
+                // Panamá
+                'HP': 'pa',
+                // Guatemala
+                'TG': 'gt',
+                // Honduras
+                'HQ': 'hn',
+                // El Salvador
+                'YS': 'sv',
+                // Nicaragua
+                'YN': 'ni',
+                // Belice
+                'V3': 'bz',
+                // República Dominicana
+                'HI': 'do',
             };
 
             // Buscar prefijos de 3 caracteres primero, luego 2, luego 1
