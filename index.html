@@ -135,16 +135,10 @@
                             <input type="text" id="watermark-text" value="CO2KK" oninput="updatePersonalData(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 text-xl font-black uppercase focus:border-blue-500 outline-none">
                         </div>
 
-                        <!-- País / Región editable -->
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-black text-slate-400 uppercase">País / Región</label>
-                            <input type="text" id="country-tag-input" value="CUBA" oninput="updateCountryTag(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 text-sm uppercase focus:border-blue-500 outline-none">
-                        </div>
-
-                        <!-- URL del QR personalizable -->
+                        <!-- URL del QR personalizable (AHORA FIJA) -->
                         <div class="space-y-2">
                             <label class="text-[11px] font-black text-slate-400 uppercase">URL del Código QR</label>
-                            <input type="url" id="qr-url-input" value="https://www.qrz.com/db/CO2KK" oninput="updateQRUrl(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 text-sm focus:border-blue-500 outline-none">
+                            <input type="url" id="qr-url-input" value="https://cl7adv.github.io/Qsl-Caribe/" oninput="updateQRUrl(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 text-sm focus:border-blue-500 outline-none">
                         </div>
 
                         <!-- Comentario -->
@@ -340,7 +334,7 @@
                             <!-- ELEMENTOS DRAG -->
                             <div id="user-logo-container" class="qsl-element" style="top: 80px; left: 80px; width: 220px;">
                                 <img id="user-logo" src="https://upload.wikimedia.org/wikipedia/commons/b/bd/Flag_of_Cuba.svg" crossorigin="anonymous" class="w-full drop-shadow-2xl">
-                                <div id="country-tag" class="mt-2 bg-black/50 backdrop-blur text-white text-xl px-4 py-1 rounded-full inline-block font-bold">CUBA</div>
+                                <!-- EL TEXTO "CUBA" HA SIDO ELIMINADO -->
                             </div>
 
                             <div id="watermark-el" class="qsl-element font-oswald text-[180px] leading-none opacity-50 uppercase font-black" style="top: 80px; right: 80px; color: white;">
@@ -438,7 +432,7 @@
             lucide.createIcons();
             updateScale();
             window.addEventListener('resize', updateScale);
-            updateQR('https://www.qrz.com/db/CO2KK');
+            updateQR('https://cl7adv.github.io/Qsl-Caribe/');
             
             // Inicializar elementos arrastrables
             ['user-logo-container', 'table-overlay', 'qr-element', 'watermark-el', 'signature-el', 'comment-el'].forEach(id => {
@@ -466,7 +460,6 @@
         function saveToStorage() {
             const state = {
                 watermark: document.getElementById('watermark-text').value,
-                countryTag: document.getElementById('country-tag-input').value,
                 qrUrl: document.getElementById('qr-url-input').value,
                 comment: document.getElementById('comment-input').value,
                 commentOpacity: document.getElementById('comment-el').style.opacity || '1',
@@ -513,7 +506,6 @@
                 const state = JSON.parse(saved);
                 // Aplicar valores guardados
                 if (state.watermark) updatePersonalData(state.watermark);
-                if (state.countryTag) updateCountryTag(state.countryTag);
                 if (state.qrUrl) {
                     document.getElementById('qr-url-input').value = state.qrUrl;
                     updateQR(state.qrUrl);
@@ -707,14 +699,7 @@
             document.getElementById('signature-el').textContent = `73's de ${call}`;
             document.getElementById('lbl-operator').innerHTML = `OP: ${call}`;
             updateOperatorFlag(call);
-            // Actualizar URL del QR si contiene el indicativo anterior o es la predeterminada
-            const qrInput = document.getElementById('qr-url-input');
-            const oldCall = 'CO2KK';
-            if (qrInput.value.includes(oldCall) || qrInput.value === 'https://www.qrz.com/db/CO2KK') {
-                const newUrl = `https://www.qrz.com/db/${call}`;
-                qrInput.value = newUrl;
-                updateQR(newUrl);
-            }
+            // La URL del QR ya no se modifica automáticamente
             saveToStorage();
         }
 
@@ -728,11 +713,6 @@
             } else {
                 flagImg.classList.add('hidden');
             }
-        }
-
-        function updateCountryTag(text) {
-            document.getElementById('country-tag').textContent = text.toUpperCase() || 'CUBA';
-            saveToStorage();
         }
 
         function updateQRUrl(url) {
@@ -762,7 +742,6 @@
         function setBackground(url) {
             const bg = document.getElementById('qsl-bg');
             bg.src = url;
-            // Asegurar que se muestre
             bg.style.display = 'block';
             bg.onerror = function() {
                 this.parentElement.style.backgroundColor = '#1e293b';
@@ -1310,9 +1289,8 @@
         function resetAll() {
             // Restablecer valores por defecto
             updatePersonalData('CO2KK');
-            updateCountryTag('CUBA');
-            document.getElementById('qr-url-input').value = 'https://www.qrz.com/db/CO2KK';
-            updateQR('https://www.qrz.com/db/CO2KK');
+            document.getElementById('qr-url-input').value = 'https://cl7adv.github.io/Qsl-Caribe/';
+            updateQR('https://cl7adv.github.io/Qsl-Caribe/');
             updateComment('Confirmando nuestro excelente contacto.');
             updateCommentOpacity(1);
             updateCommentColor('#ffffff');
