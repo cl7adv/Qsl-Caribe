@@ -427,6 +427,621 @@
             'comment-el': { top: 300, left: 80 }
         };
 
+        // ==================== MAPA DE PREFIJOS A CÓDIGOS DE PAÍS (ISO 3166-1 alpha-2) ====================
+        // Incluye prefijos de hasta 3 caracteres (con números) para máxima precisión.
+        const prefixToCountry = {
+            // Cuba
+            'CM': 'cu', 'CO': 'cu', 'CL': 'cu', 'T4': 'cu',
+            // Estados Unidos y sus territorios
+            'K': 'us', 'W': 'us', 'N': 'us', 'AA': 'us', 'AL': 'us', 'NW': 'us',
+            'KL': 'us', 'NL': 'us', 'WL': 'us', // Alaska
+            'KH': 'us', 'WH': 'us', // Hawái
+            'KP': 'pr', 'WP': 'pr', // Puerto Rico
+            'KV': 'vi', // Islas Vírgenes
+            'KG': 'gu', // Guam
+            'KS': 'as', // Samoa Americana
+            // España
+            'EA': 'es', 'EB': 'es', 'EC': 'es', 'ED': 'es', 'EE': 'es', 'EF': 'es', 'EG': 'es', 'EH': 'es', 'AM': 'es', 'AN': 'es',
+            'EA6': 'es', 'EA8': 'es', 'EA9': 'es',
+            // Brasil
+            'PY': 'br', 'PP': 'br', 'PU': 'br', 'PT': 'br', 'PV': 'br', 'PW': 'br',
+            // Reino Unido
+            'G': 'gb', 'M': 'gb', '2': 'gb', 'V': 'gb',
+            // Italia
+            'I': 'it',
+            // Francia
+            'F': 'fr',
+            // Alemania
+            'D': 'de', 'Y': 'de',
+            // Japón
+            'JA': 'jp', 'JE': 'jp', 'JF': 'jp', 'JG': 'jp', 'JH': 'jp', 'JI': 'jp', 'JJ': 'jp', 'JK': 'jp', 'JL': 'jp', 'JM': 'jp', 'JN': 'jp', 'JO': 'jp', 'JP': 'jp', 'JQ': 'jp', 'JR': 'jp', 'JS': 'jp',
+            // Argentina
+            'LU': 'ar', 'AY': 'ar', 'AZ': 'ar', 'LW': 'ar',
+            // Chile
+            '3G': 'cl', 'CA': 'cl', 'CB': 'cl', 'CC': 'cl', 'CD': 'cl', 'CE': 'cl', 'XQ': 'cl', 'XR': 'cl',
+            // Uruguay
+            'CX': 'uy', 'CV': 'uy', 'CW': 'uy',
+            // Venezuela
+            'YV': 've', 'YX': 've', 'YY': 've',
+            // Colombia
+            'HK': 'co', 'HJ': 'co',
+            // Perú
+            'OA': 'pe', 'OB': 'pe', 'OC': 'pe',
+            // México
+            'XE': 'mx', 'XA': 'mx', 'XB': 'mx',
+            // Canadá
+            'VE': 'ca', 'VA': 'ca', 'VO': 'ca', 'VY': 'ca', 'CF': 'ca', 'CY': 'ca',
+            // Australia
+            'VK': 'au',
+            // Nueva Zelanda
+            'ZL': 'nz',
+            // Sudáfrica
+            'ZS': 'za', 'ZU': 'za', 'ZV': 'za', 'ZZ': 'za',
+            // Rusia
+            'R': 'ru', 'UA': 'ru', 'UB': 'ru', 'UC': 'ru', 'UD': 'ru', 'UE': 'ru', 'UF': 'ru', 'UG': 'ru', 'UH': 'ru', 'UI': 'ru', 'UJ': 'ru', 'UL': 'ru', 'UM': 'ru',
+            // China
+            'B': 'cn', 'B3': 'cn', 'B4': 'cn', 'B5': 'cn', 'B6': 'cn', 'B7': 'cn', 'B8': 'cn', 'B9': 'cn',
+            // India
+            'VU': 'in',
+            // Indonesia
+            'YB': 'id', 'YC': 'id', 'YD': 'id', 'YE': 'id', 'YF': 'id', 'YG': 'id', 'YH': 'id', 'YI': 'id', 'YJ': 'id', 'YK': 'id',
+            // Filipinas
+            'DU': 'ph', 'DV': 'ph', 'DW': 'ph', 'DX': 'ph',
+            // Tailandia
+            'HS': 'th',
+            // Malasia
+            '9M': 'my',
+            // Singapur
+            '9V': 'sg',
+            // Corea del Sur
+            'HL': 'kr',
+            // Taiwán
+            'BV': 'tw',
+            // Israel
+            '4X': 'il', '4Z': 'il',
+            // Turquía
+            'TA': 'tr', 'TB': 'tr', 'TC': 'tr',
+            // Grecia
+            'SV': 'gr', 'J4': 'gr',
+            // Polonia
+            'SP': 'pl', 'SQ': 'pl', 'SR': 'pl', 'SN': 'pl', 'SO': 'pl', '3Z': 'pl', 'HF': 'pl',
+            // República Checa
+            'OK': 'cz', 'OL': 'cz',
+            // Eslovaquia
+            'OM': 'sk',
+            // Hungría
+            'HA': 'hu', 'HG': 'hu',
+            // Rumania
+            'YO': 'ro', 'YP': 'ro', 'YR': 'ro',
+            // Bulgaria
+            'LZ': 'bg',
+            // Serbia
+            'YU': 'rs', 'YT': 'rs',
+            // Croacia
+            '9A': 'hr',
+            // Eslovenia
+            'S5': 'si',
+            // Bosnia
+            'E7': 'ba',
+            // Austria
+            'OE': 'at',
+            // Suiza
+            'HB': 'ch', 'HE': 'ch',
+            // Países Bajos
+            'PA': 'nl', 'PB': 'nl', 'PC': 'nl', 'PD': 'nl', 'PE': 'nl', 'PF': 'nl', 'PG': 'nl', 'PH': 'nl', 'PI': 'nl',
+            // Bélgica
+            'ON': 'be',
+            // Luxemburgo
+            'LX': 'lu',
+            // Suecia
+            'SM': 'se', 'SA': 'se', 'SB': 'se', 'SC': 'se', 'SD': 'se', 'SE': 'se', 'SF': 'se', 'SG': 'se', 'SH': 'se', 'SI': 'se', 'SJ': 'se', 'SK': 'se', 'SL': 'se', 'SN': 'se',
+            // Noruega
+            'LA': 'no', 'LB': 'no', 'LC': 'no', 'LD': 'no', 'LE': 'no', 'LF': 'no', 'LG': 'no', 'JW': 'no', 'JX': 'no',
+            // Finlandia
+            'OH': 'fi', 'OF': 'fi', 'OG': 'fi', 'OJ': 'fi',
+            // Dinamarca
+            'OU': 'dk', 'OV': 'dk', 'OW': 'dk', 'OX': 'dk', 'OY': 'dk', 'OZ': 'dk',
+            // Islandia
+            'TF': 'is',
+            // Irlanda
+            'EI': 'ie', 'EJ': 'ie',
+            // Portugal
+            'CT': 'pt', 'CQ': 'pt',
+            // Malta
+            '9H': 'mt',
+            // Chipre
+            '5B': 'cy', 'C4': 'cy',
+            // Emiratos Árabes
+            'A6': 'ae',
+            // Arabia Saudita
+            'HZ': 'sa', '7Z': 'sa', '8Z': 'sa',
+            // Egipto
+            'SU': 'eg',
+            // Marruecos
+            'CN': 'ma', '5C': 'ma', '5D': 'ma', '5E': 'ma',
+            // Argelia
+            '7X': 'dz',
+            // Túnez
+            '3V': 'tn', 'TS': 'tn',
+            // Kenia
+            '5Y': 'ke',
+            // Nigeria
+            '5N': 'ng', '5O': 'ng',
+            // Ghana
+            '9G': 'gh',
+            // Costa Rica
+            'TI': 'cr', 'TE': 'cr',
+            // Panamá
+            'HP': 'pa', 'H3': 'pa', 'H4': 'pa',
+            // Guatemala
+            'TG': 'gt',
+            // Honduras
+            'HQ': 'hn', 'HR': 'hn',
+            // El Salvador
+            'YS': 'sv',
+            // Nicaragua
+            'YN': 'ni', 'H6': 'ni', 'H7': 'ni',
+            // Belice
+            'V3': 'bz',
+            // República Dominicana
+            'HI': 'do',
+            // Ecuador
+            'HC': 'ec', 'HD': 'ec',
+            // Bolivia
+            'CP': 'bo',
+            // Paraguay
+            'ZP': 'py',
+            // Guyana
+            '8R': 'gy',
+            // Surinam
+            'PZ': 'sr',
+            // Guayana Francesa
+            'FY': 'gf',
+            // Jamaica
+            '6Y': 'jm',
+            // Bahamas
+            'C6': 'bs',
+            // Barbados
+            '8P': 'bb',
+            // Trinidad y Tobago
+            '9Y': 'tt', '9Z': 'tt',
+            // Antillas Holandesas (Curazao, etc.)
+            'PJ': 'bq', 'PJ2': 'cw', 'PJ4': 'bq', 'PJ5': 'bq', 'PJ6': 'bq', 'PJ7': 'bq',
+            // Aruba
+            'P4': 'aw',
+            // San Pedro y Miquelón
+            'FP': 'pm',
+            // Groenlandia
+            'OX': 'gl',
+            // Islas Feroe
+            'OY': 'fo',
+            // Andorra
+            'C3': 'ad',
+            // Mónaco
+            '3A': 'mc',
+            // Liechtenstein
+            'HB0': 'li',
+            // San Marino
+            'T7': 'sm',
+            // Vaticano
+            'HV': 'va',
+            // Ucrania
+            'UR': 'ua', 'UT': 'ua', 'UU': 'ua', 'UV': 'ua', 'UW': 'ua', 'UX': 'ua', 'UY': 'ua', 'UZ': 'ua',
+            // Bielorrusia
+            'EU': 'by', 'EV': 'by', 'EW': 'by',
+            // Moldavia
+            'ER': 'md',
+            // Georgia
+            '4L': 'ge',
+            // Armenia
+            'EK': 'am',
+            // Azerbaiyán
+            '4J': 'az', '4K': 'az',
+            // Kazajistán
+            'UN': 'kz', 'UL': 'kz', 'UM': 'kz',
+            // Uzbekistán
+            'UK': 'uz', 'UJ': 'uz',
+            // Turkmenistán
+            'EZ': 'tm',
+            // Kirguistán
+            'EX': 'kg',
+            // Tayikistán
+            'EY': 'tj',
+            // Mongolia
+            'JT': 'mn', 'JV': 'mn',
+            // Pakistán
+            'AP': 'pk',
+            // Sri Lanka
+            '4P': 'lk', '4Q': 'lk',
+            // Nepal
+            '9N': 'np',
+            // Bután
+            'A5': 'bt',
+            // Bangladés
+            'S2': 'bd', 'S3': 'bd',
+            // Birmania (Myanmar)
+            'XZ': 'mm',
+            // Laos
+            'XW': 'la',
+            // Camboya
+            'XU': 'kh',
+            // Vietnam
+            '3W': 'vn', 'XV': 'vn',
+            // Corea del Norte
+            'P5': 'kp',
+            // Nueva Caledonia
+            'FK': 'nc',
+            // Polinesia Francesa
+            'FO': 'pf',
+            // Fiyi
+            '3D2': 'fj',
+            // Samoa
+            '5W': 'ws',
+            // Tonga
+            'A3': 'to',
+            // Islas Cook
+            'E5': 'ck',
+            // Papúa Nueva Guinea
+            'P2': 'pg',
+            // Islas Salomón
+            'H4': 'sb',
+            // Vanuatu
+            'YJ': 'vu',
+            // Kiribati
+            'T3': 'ki', 'T30': 'ki',
+            // Nauru
+            'C2': 'nr',
+            // Tuvalu
+            'T2': 'tv',
+            // Palaos
+            'T8': 'pw',
+            // Islas Marshall
+            'V7': 'mh',
+            // Micronesia
+            'V6': 'fm',
+            // Timor Oriental
+            '4W': 'tl',
+            // Territorios y otros
+            'ZS': 'za', 'ZR': 'za', 'ZU': 'za', 'ZV': 'za', 'ZW': 'za', 'ZX': 'za', 'ZY': 'za',
+            'ZS1': 'za', 'ZS2': 'za', 'ZS3': 'za', 'ZS4': 'za', 'ZS5': 'za', 'ZS6': 'za', 'ZS7': 'za',
+            // Islas Malvinas
+            'VP8': 'fk', 'VP8F': 'fk', 'VP8M': 'fk',
+            // Gibraltar
+            'ZB': 'gi', 'ZG': 'gi',
+            // Isla de Man
+            'MD': 'im',
+            // Jersey
+            'MJ': 'je',
+            // Guernsey
+            'MU': 'gg',
+            // Isla Ascensión
+            'ZD8': 'ac',
+            // Santa Elena
+            'ZD7': 'sh',
+            // Tristán da Cunha
+            'ZD9': 'ta',
+            // Antártida
+            'KC4': 'aq', '8J1': 'aq', 'LU1Z': 'aq', 'DP0': 'aq', 'OR4': 'aq', 'RI1': 'aq', 'EM1': 'aq',
+            // Islas Canarias
+            'EA8': 'ic',
+            // Baleares
+            'EA6': 'ib',
+            // Ceuta y Melilla
+            'EA9': 'ea',
+            // Islas Aland
+            'OH0': 'ax',
+            // Islas Feroe
+            'OY': 'fo',
+            // Groenlandia
+            'OX': 'gl',
+            // Isla de Navidad
+            'VK9X': 'cx',
+            // Islas Cocos
+            'VK9C': 'cc',
+            // Isla Norfolk
+            'VK9N': 'nf',
+            // Isla Lord Howe
+            'VK9L': 'lh',
+            // Islas Ashmore y Cartier
+            'VK9A': 'ac',
+            // Isla Willis
+            'VK9W': 'wi',
+            // Isla Macquarie
+            'VK0': 'mq',
+            // Isla Heard
+            'VK0H': 'hm',
+            // Isla Bouvet
+            '3Y': 'bv',
+            // Isla Svalbard
+            'JW': 'sj',
+            // Isla Jan Mayen
+            'JX': 'jm',
+            // San Bartolomé
+            'FJ': 'bl',
+            // San Martín (francés)
+            'FS': 'mf',
+            // San Martín (neerlandés)
+            'PJ7': 'sx',
+            // San Eustaquio
+            'PJ5': 'bq',
+            // Saba
+            'PJ6': 'bq',
+            // Bonaire
+            'PJ4': 'bq',
+            // Curazao
+            'PJ2': 'cw',
+            // Aruba
+            'P4': 'aw',
+            // Islas Vírgenes Británicas
+            'VP2V': 'vg',
+            // Anguila
+            'VP2E': 'ai',
+            // Montserrat
+            'VP2M': 'ms',
+            // Islas Caimán
+            'ZF': 'ky',
+            // Bermuda
+            'VP9': 'bm',
+            // Bahamas
+            'C6': 'bs',
+            // Barbados
+            '8P': 'bb',
+            // Granada
+            'J3': 'gd',
+            // San Vicente y las Granadinas
+            'J8': 'vc',
+            // Santa Lucía
+            'J6': 'lc',
+            // Antigua y Barbuda
+            'V2': 'ag',
+            // Dominica
+            'J7': 'dm',
+            // San Cristóbal y Nieves
+            'V4': 'kn',
+            // Trinidad y Tobago
+            '9Y': 'tt', '9Z': 'tt',
+            // Guyana
+            '8R': 'gy',
+            // Surinam
+            'PZ': 'sr',
+            // Guayana Francesa
+            'FY': 'gf',
+            // San Pedro y Miquelón
+            'FP': 'pm',
+            // Islas Malvinas
+            'VP8': 'fk',
+            // Islas Georgias del Sur
+            'VP8G': 'gs',
+            // Islas Sandwich del Sur
+            'VP8S': 'gs',
+            // Isla de Pascua
+            'CE0': 'cl',
+            // Isla Juan Fernández
+            'CE0Y': 'cl',
+            // Isla San Félix
+            'CE0X': 'cl',
+            // Isla Sala y Gómez
+            'CE0Z': 'cl',
+            // Islas Chatham
+            'ZL7': 'nz',
+            // Islas Kermadec
+            'ZL8': 'nz',
+            // Islas Auckland
+            'ZL9': 'nz',
+            // Islas Campbell
+            'ZL9': 'nz',
+            // Islas Antípodas
+            'ZL9': 'nz',
+            // Islas Tokelau
+            'ZK3': 'tk',
+            // Niue
+            'ZK2': 'nu',
+            // Islas Cook
+            'E5': 'ck',
+            // Islas Pitcairn
+            'VP6': 'pn',
+            // Isla Clipperton
+            'FO/C': 'cp',
+            // Islas Midway
+            'KH4': 'um',
+            // Isla Wake
+            'KH9': 'um',
+            // Isla Johnston
+            'KH3': 'um',
+            // Isla Palmyra
+            'KH5': 'um',
+            // Isla Jarvis
+            'KH5J': 'um',
+            // Isla Howland
+            'KH5H': 'um',
+            // Isla Baker
+            'KH5B': 'um',
+            // Isla Kingman
+            'KH5K': 'um',
+            // Atolón de Navidad
+            'T3': 'ki',
+            // Islas Gilbert
+            'T3': 'ki',
+            // Islas Fénix
+            'T3': 'ki',
+            // Islas de la Línea
+            'T3': 'ki',
+            // Tuvalu
+            'T2': 'tv',
+            // Islas Wallis y Futuna
+            'FW': 'wf',
+            // Samoa
+            '5W': 'ws',
+            // Samoa Americana
+            'KH8': 'as',
+            // Tonga
+            'A3': 'to',
+            // Niue
+            'ZK2': 'nu',
+            // Islas Salomón
+            'H4': 'sb',
+            // Papúa Nueva Guinea
+            'P2': 'pg',
+            // Vanuatu
+            'YJ': 'vu',
+            // Nueva Caledonia
+            'FK': 'nc',
+            // Islas Marshall
+            'V7': 'mh',
+            // Micronesia
+            'V6': 'fm',
+            // Palaos
+            'T8': 'pw',
+            // Guam
+            'KH2': 'gu',
+            // Islas Marianas del Norte
+            'KH0': 'mp',
+            // Isla Navaza
+            'KG4': 'us',
+            // Isla Bajo Nuevo
+            'HK0': 'co',
+            // Isla Serrana
+            'HK0': 'co',
+            // Isla Aves
+            'YV0': 've',
+            // San Andrés y Providencia
+            'HK0': 'co',
+            // Isla de la Juventud
+            'T4': 'cu',
+            // Islas Caimán
+            'ZF': 'ky',
+            // Anguila
+            'VP2E': 'ai',
+            // Montserrat
+            'VP2M': 'ms',
+            // Islas Vírgenes Británicas
+            'VP2V': 'vg',
+            // Bermudas
+            'VP9': 'bm',
+            // Islas Turcas y Caicos
+            'VP5': 'tc',
+            // Bahamas
+            'C6': 'bs',
+            // Barbados
+            '8P': 'bb',
+            // San Cristóbal y Nieves
+            'V4': 'kn',
+            // Antigua y Barbuda
+            'V2': 'ag',
+            // Dominica
+            'J7': 'dm',
+            // Santa Lucía
+            'J6': 'lc',
+            // San Vicente y las Granadinas
+            'J8': 'vc',
+            // Granada
+            'J3': 'gd',
+            // Trinidad y Tobago
+            '9Y': 'tt',
+            // Isla Margarita
+            'YV': 've',
+            // Aruba
+            'P4': 'aw',
+            // Curazao
+            'PJ2': 'cw',
+            // Bonaire
+            'PJ4': 'bq',
+            // San Eustaquio
+            'PJ5': 'bq',
+            // Saba
+            'PJ6': 'bq',
+            // San Martín (neerlandés)
+            'PJ7': 'sx',
+            // San Martín (francés)
+            'FS': 'mf',
+            // San Bartolomé
+            'FJ': 'bl',
+            // Guadalupe
+            'FG': 'gp',
+            // Martinica
+            'FM': 'mq',
+            // Isla de la Reunión
+            'FR': 're',
+            // Mayotte
+            'FH': 'yt',
+            // Comoras
+            'D6': 'km',
+            // Seychelles
+            'S7': 'sc',
+            // Mauricio
+            '3B8': 'mu',
+            // Rodrigues
+            '3B9': 'mu',
+            // Maldivas
+            '8Q': 'mv',
+            // Islas Chagos
+            'VQ9': 'io',
+            // Isla de Navidad
+            'VK9X': 'cx',
+            // Islas Cocos
+            'VK9C': 'cc',
+            // Isla Norfolk
+            'VK9N': 'nf',
+            // Isla Lord Howe
+            'VK9L': 'lh',
+            // Isla Willis
+            'VK9W': 'wi',
+            // Islas Ashmore y Cartier
+            'VK9A': 'ac',
+            // Isla Macquarie
+            'VK0': 'mq',
+            // Isla Heard
+            'VK0H': 'hm',
+            // Isla Bouvet
+            '3Y': 'bv',
+            // Isla Svalbard
+            'JW': 'sj',
+            // Isla Jan Mayen
+            'JX': 'jm',
+            // Islas Aland
+            'OH0': 'ax',
+            // Islas Feroe
+            'OY': 'fo',
+            // Groenlandia
+            'OX': 'gl',
+            // Isla de Man
+            'MD': 'im',
+            // Jersey
+            'MJ': 'je',
+            // Guernsey
+            'MU': 'gg',
+            // Gibraltar
+            'ZB': 'gi',
+            // Isla Ascensión
+            'ZD8': 'ac',
+            // Santa Elena
+            'ZD7': 'sh',
+            // Tristán da Cunha
+            'ZD9': 'ta',
+            // Antártida
+            'KC4': 'aq', '8J1': 'aq', 'LU1Z': 'aq', 'DP0': 'aq', 'OR4': 'aq', 'RI1': 'aq', 'EM1': 'aq',
+            // Islas Canarias
+            'EA8': 'ic',
+            // Baleares
+            'EA6': 'ib',
+            // Ceuta y Melilla
+            'EA9': 'ea',
+        };
+
+        // ==================== FUNCIÓN MEJORADA PARA OBTENER CÓDIGO DE PAÍS ====================
+        function getCountryCode(call) {
+            if (!call) return null;
+            const upperCall = call.toUpperCase();
+            // Probar primero con 3 caracteres (incluyendo números)
+            for (let len = 3; len >= 1; len--) {
+                const prefix = upperCall.substring(0, len);
+                if (prefixToCountry[prefix]) {
+                    return prefixToCountry[prefix];
+                }
+            }
+            return null;
+        }
+
         // ==================== INICIALIZACIÓN ====================
         window.onload = () => {
             lucide.createIcons();
@@ -864,297 +1479,6 @@
                 RST_SENT: rst
             };
             applyQSO(qso);
-        }
-
-        // ==================== MAPA DE PREFIJOS (AMPLIADO) ====================
-        function getCountryCode(call) {
-            if (!call) return null;
-            const c = call.toUpperCase().replace(/[0-9]/g, '');
-            
-            const prefixMap = {
-                // Cuba
-                'CM': 'cu', 'CO': 'cu', 'CL': 'cu', 'T4': 'cu',
-                // USA y territorios
-                'K': 'us', 'W': 'us', 'N': 'us', 'AA': 'us', 'AL': 'us', 'NW': 'us',
-                'KL': 'us', 'NL': 'us', 'WL': 'us', // Alaska
-                'KH': 'us', // Hawái
-                'KP': 'pr', 'WP': 'pr', // Puerto Rico
-                'KV': 'vi', // Islas Vírgenes
-                'KG': 'gu', // Guam
-                'KS': 'as', // Samoa Americana
-                // España
-                'EA': 'es', 'EB': 'es', 'EC': 'es', 'ED': 'es', 'EE': 'es', 'EF': 'es', 'EG': 'es', 'EH': 'es', 'AM': 'es', 'AN': 'es',
-                'EA6': 'es', 'EA8': 'es', 'EA9': 'es',
-                // Brasil
-                'PY': 'br', 'PP': 'br', 'PU': 'br', 'PT': 'br', 'PV': 'br', 'PW': 'br',
-                // Reino Unido
-                'G': 'gb', 'M': 'gb', '2': 'gb', 'V': 'gb',
-                // Italia
-                'I': 'it',
-                // Francia
-                'F': 'fr',
-                // Alemania
-                'D': 'de', 'Y': 'de',
-                // Japón
-                'JA': 'jp', 'JE': 'jp', 'JF': 'jp', 'JG': 'jp', 'JH': 'jp', 'JI': 'jp', 'JJ': 'jp', 'JK': 'jp', 'JL': 'jp', 'JM': 'jp', 'JN': 'jp', 'JO': 'jp', 'JP': 'jp', 'JQ': 'jp', 'JR': 'jp', 'JS': 'jp',
-                // Argentina
-                'LU': 'ar', 'AY': 'ar', 'AZ': 'ar', 'LW': 'ar',
-                // Chile
-                '3G': 'cl', 'CA': 'cl', 'CB': 'cl', 'CC': 'cl', 'CD': 'cl', 'CE': 'cl', 'XQ': 'cl', 'XR': 'cl',
-                // Uruguay
-                'CX': 'uy', 'CV': 'uy', 'CW': 'uy',
-                // Venezuela
-                'YV': 've', 'YX': 've', 'YY': 've',
-                // Colombia
-                'HK': 'co', 'HJ': 'co',
-                // Perú
-                'OA': 'pe', 'OB': 'pe', 'OC': 'pe',
-                // México
-                'XE': 'mx', 'XA': 'mx', 'XB': 'mx',
-                // Canadá
-                'VE': 'ca', 'VA': 'ca', 'VO': 'ca', 'VY': 'ca', 'CF': 'ca', 'CY': 'ca',
-                // Australia
-                'VK': 'au',
-                // Nueva Zelanda
-                'ZL': 'nz',
-                // Sudáfrica
-                'ZS': 'za', 'ZU': 'za', 'ZV': 'za', 'ZZ': 'za',
-                // Rusia
-                'R': 'ru', 'UA': 'ru', 'UB': 'ru', 'UC': 'ru', 'UD': 'ru', 'UE': 'ru', 'UF': 'ru', 'UG': 'ru', 'UH': 'ru', 'UI': 'ru', 'UJ': 'ru', 'UL': 'ru', 'UM': 'ru',
-                // China
-                'B': 'cn',
-                // India
-                'VU': 'in',
-                // Indonesia
-                'YB': 'id', 'YC': 'id', 'YD': 'id', 'YE': 'id', 'YF': 'id', 'YG': 'id', 'YH': 'id', 'YI': 'id', 'YJ': 'id', 'YK': 'id',
-                // Filipinas
-                'DU': 'ph', 'DV': 'ph', 'DW': 'ph', 'DX': 'ph',
-                // Tailandia
-                'HS': 'th',
-                // Malasia
-                '9M': 'my',
-                // Singapur
-                '9V': 'sg',
-                // Corea del Sur
-                'HL': 'kr',
-                // Taiwán
-                'BV': 'tw',
-                // Israel
-                '4X': 'il',
-                // Turquía
-                'TA': 'tr', 'TB': 'tr', 'TC': 'tr',
-                // Grecia
-                'SV': 'gr',
-                // Polonia
-                'SP': 'pl',
-                // República Checa
-                'OK': 'cz',
-                // Eslovaquia
-                'OM': 'sk',
-                // Hungría
-                'HA': 'hu',
-                // Rumania
-                'YO': 'ro',
-                // Bulgaria
-                'LZ': 'bg',
-                // Serbia
-                'YU': 'rs',
-                // Croacia
-                '9A': 'hr',
-                // Eslovenia
-                'S5': 'si',
-                // Bosnia
-                'E7': 'ba',
-                // Austria
-                'OE': 'at',
-                // Suiza
-                'HB': 'ch',
-                // Países Bajos
-                'PA': 'nl', 'PB': 'nl', 'PC': 'nl', 'PD': 'nl', 'PE': 'nl', 'PF': 'nl', 'PG': 'nl', 'PH': 'nl', 'PI': 'nl',
-                // Bélgica
-                'ON': 'be',
-                // Luxemburgo
-                'LX': 'lu',
-                // Suecia
-                'SM': 'se',
-                // Noruega
-                'LA': 'no', 'LB': 'no', 'LC': 'no', 'LD': 'no', 'LE': 'no', 'LF': 'no', 'LG': 'no',
-                // Finlandia
-                'OH': 'fi',
-                // Dinamarca
-                'OU': 'dk', 'OV': 'dk', 'OW': 'dk', 'OX': 'dk', 'OY': 'dk', 'OZ': 'dk',
-                // Islandia
-                'TF': 'is',
-                // Irlanda
-                'EI': 'ie', 'EJ': 'ie',
-                // Portugal
-                'CT': 'pt',
-                // Malta
-                '9H': 'mt',
-                // Chipre
-                '5B': 'cy',
-                // Emiratos Árabes
-                'A6': 'ae',
-                // Arabia Saudita
-                'HZ': 'sa',
-                // Egipto
-                'SU': 'eg',
-                // Marruecos
-                'CN': 'ma',
-                // Argelia
-                '7X': 'dz',
-                // Túnez
-                '3V': 'tn',
-                // Kenia
-                '5Y': 'ke',
-                // Nigeria
-                '5N': 'ng',
-                // Ghana
-                '9G': 'gh',
-                // Costa Rica
-                'TI': 'cr', 'TE': 'cr',
-                // Panamá
-                'HP': 'pa',
-                // Guatemala
-                'TG': 'gt',
-                // Honduras
-                'HQ': 'hn',
-                // El Salvador
-                'YS': 'sv',
-                // Nicaragua
-                'YN': 'ni',
-                // Belice
-                'V3': 'bz',
-                // República Dominicana
-                'HI': 'do',
-                // Ecuador
-                'HC': 'ec', 'HD': 'ec',
-                // Bolivia
-                'CP': 'bo',
-                // Paraguay
-                'ZP': 'py',
-                // Guyana
-                '8R': 'gy',
-                // Surinam
-                'PZ': 'sr',
-                // Guayana Francesa
-                'FY': 'gf',
-                // Jamaica
-                '6Y': 'jm',
-                // Bahamas
-                'C6': 'bs',
-                // Barbados
-                '8P': 'bb',
-                // Trinidad y Tobago
-                '9Y': 'tt',
-                // Antillas Holandesas
-                'PJ': 'bq',
-                // Curazao
-                'PJ2': 'cw',
-                // Aruba
-                'P4': 'aw',
-                // San Pedro y Miquelón
-                'FP': 'pm',
-                // Groenlandia
-                'OX': 'gl',
-                // Islas Feroe
-                'OY': 'fo',
-                // Andorra
-                'C3': 'ad',
-                // Mónaco
-                '3A': 'mc',
-                // Liechtenstein
-                'HB0': 'li',
-                // San Marino
-                'T7': 'sm',
-                // Vaticano
-                'HV': 'va',
-                // Ucrania
-                'UR': 'ua', 'UT': 'ua', 'UU': 'ua', 'UV': 'ua', 'UW': 'ua', 'UX': 'ua', 'UY': 'ua', 'UZ': 'ua',
-                // Bielorrusia
-                'EU': 'by', 'EV': 'by', 'EW': 'by',
-                // Moldavia
-                'ER': 'md',
-                // Georgia
-                '4L': 'ge',
-                // Armenia
-                'EK': 'am',
-                // Azerbaiyán
-                '4J': 'az',
-                // Kazajistán
-                'UN': 'kz',
-                // Uzbekistán
-                'UK': 'uz',
-                // Turkmenistán
-                'EZ': 'tm',
-                // Kirguistán
-                'EX': 'kg',
-                // Tayikistán
-                'EY': 'tj',
-                // Mongolia
-                'JT': 'mn', 'JV': 'mn',
-                // Pakistán
-                'AP': 'pk',
-                // Sri Lanka
-                '4P': 'lk', '4Q': 'lk',
-                // Nepal
-                '9N': 'np',
-                // Bután
-                'A5': 'bt',
-                // Bangladés
-                'S2': 'bd',
-                // Birmania
-                'XZ': 'mm',
-                // Laos
-                'XW': 'la',
-                // Camboya
-                'XU': 'kh',
-                // Vietnam
-                '3W': 'vn', 'XV': 'vn',
-                // Corea del Norte
-                'P5': 'kp',
-                // Nueva Caledonia
-                'FK': 'nc',
-                // Polinesia Francesa
-                'FO': 'pf',
-                // Fiyi
-                '3D2': 'fj',
-                // Samoa
-                '5W': 'ws',
-                // Tonga
-                'A3': 'to',
-                // Islas Cook
-                'E5': 'ck',
-                // Papúa Nueva Guinea
-                'P2': 'pg',
-                // Islas Salomón
-                'H4': 'sb',
-                // Vanuatu
-                'YJ': 'vu',
-                // Kiribati
-                'T3': 'ki',
-                // Nauru
-                'C2': 'nr',
-                // Tuvalu
-                'T2': 'tv',
-                // Palaos
-                'T8': 'pw',
-                // Islas Marshall
-                'V7': 'mh',
-                // Micronesia
-                'V6': 'fm',
-                // Timor Oriental
-                '4W': 'tl',
-            };
-
-            let prefix = c.substring(0,3);
-            if (prefixMap[prefix]) return prefixMap[prefix];
-            prefix = c.substring(0,2);
-            if (prefixMap[prefix]) return prefixMap[prefix];
-            prefix = c.substring(0,1);
-            if (prefixMap[prefix]) return prefixMap[prefix];
-            
-            return null;
         }
 
         function updateFlag(call) {
