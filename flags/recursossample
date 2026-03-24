@@ -1,1 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>QSL Caribe con Banderas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      text-align: center;
+      padding: 20px;
+    }
+    #indicativo {
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    #bandera {
+      display: none;
+      width: 60px;
+      height: auto;
+      margin-top: 10px;
+      border: 2px solid #333;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>QSL Caribe - Bandera Automática</h1>
+  <input type="text" id="indicativo" placeholder="Escribe tu indicativo">
+  <br>
+  <img id="bandera" src="" alt="Bandera">
+
+  <script>
+    // Mapeo indicativos → banderas (puedes mover esto a flags.json)
+    const flagsMap = {
+      "CL7ADV": "cuba.png",
+      "XE2JJC": "mexico.png",
+      "KP4XYZ": "puerto_rico.png",
+      "EA8ABC": "canarias.png",
+      "LU1ABC": "argentina.png",
+      "PY2XYZ": "brasil.png"
+    };
+
+    // Función para mostrar bandera
+    function mostrarBandera(indicativo) {
+      const bandera = flagsMap[indicativo];
+      if (bandera) {
+        document.getElementById('bandera').src = "flags/" + bandera;
+        document.getElementById('bandera').style.display = 'block';
+      } else {
+        document.getElementById('bandera').style.display = 'none';
+      }
+    }
+
+    // Evento: cuando el usuario escribe
+    document.getElementById('indicativo').addEventListener('input', function() {
+      const valor = this.value.trim().toUpperCase();
+      mostrarBandera(valor);
+    });
+  </script>
+</body>
+</html>
 
