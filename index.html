@@ -148,6 +148,31 @@
                             </div>
                         </div>
 
+                        <!-- NUEVA SECCIÓN: CONTROL DEL WATERMARK (INDICATIVO SUPERIOR) -->
+                        <div class="space-y-4 border-t border-slate-200 pt-4">
+                            <label class="text-[11px] font-black text-slate-400 uppercase">Watermark (Indicativo superior)</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <span class="text-[9px] text-slate-400 uppercase font-bold">Color</span>
+                                    <input type="color" id="watermark-color" value="#ffffff" oninput="updateWatermarkColor(this.value)" class="w-full h-8 cursor-pointer rounded">
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-[9px] text-slate-400 uppercase font-bold">Opacidad</span>
+                                    <input type="range" id="watermark-opacity" min="0" max="1" step="0.05" value="0.5" oninput="updateWatermarkOpacity(this.value)" class="w-full">
+                                </div>
+                                <div class="col-span-2 space-y-1">
+                                    <span class="text-[9px] text-slate-400 uppercase font-bold">Relieve (sombra)</span>
+                                    <select id="watermark-relief" onchange="updateWatermarkRelief(this.value)" class="w-full p-2 bg-slate-100 rounded-xl text-[10px] font-bold uppercase cursor-pointer">
+                                        <option value="none">Ninguno</option>
+                                        <option value="soft">Sombra suave</option>
+                                        <option value="strong">Sombra fuerte</option>
+                                        <option value="engrave">Relieve grabado</option>
+                                        <option value="glow">Resplandor</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="space-y-4">
                             <label class="text-[11px] font-black text-slate-400 uppercase">Tipografía y Bordes</label>
                             <div class="grid grid-cols-2 gap-2">
@@ -164,13 +189,13 @@
                         </div>
 
                         <div class="space-y-4">
-                            <label class="text-[11px] font-black text-slate-400 uppercase">Color de Elementos</label>
+                            <label class="text-[11px] font-black text-slate-400 uppercase">Color del Borde</label>
                             <div class="flex gap-2 flex-wrap">
-                                <button onclick="updateColor('rgba(255,255,255,0.4)')" class="w-8 h-8 rounded-full bg-white border border-slate-200 shadow-sm"></button>
-                                <button onclick="updateColor('rgba(212,175,55,0.7)')" class="w-8 h-8 rounded-full bg-yellow-500"></button>
-                                <button onclick="updateColor('rgba(37,99,235,0.7)')" class="w-8 h-8 rounded-full bg-blue-600"></button>
-                                <button onclick="updateColor('rgba(239,68,68,0.7)')" class="w-8 h-8 rounded-full bg-red-500"></button>
-                                <button onclick="updateColor('rgba(0,0,0,0.6)')" class="w-8 h-8 rounded-full bg-black"></button>
+                                <button onclick="updateBorderColor('rgba(255,255,255,0.4)')" class="w-8 h-8 rounded-full bg-white border border-slate-200 shadow-sm"></button>
+                                <button onclick="updateBorderColor('rgba(212,175,55,0.7)')" class="w-8 h-8 rounded-full bg-yellow-500"></button>
+                                <button onclick="updateBorderColor('rgba(37,99,235,0.7)')" class="w-8 h-8 rounded-full bg-blue-600"></button>
+                                <button onclick="updateBorderColor('rgba(239,68,68,0.7)')" class="w-8 h-8 rounded-full bg-red-500"></button>
+                                <button onclick="updateBorderColor('rgba(0,0,0,0.6)')" class="w-8 h-8 rounded-full bg-black"></button>
                             </div>
                         </div>
 
@@ -265,7 +290,8 @@
                                 <img id="user-logo" src="https://upload.wikimedia.org/wikipedia/commons/b/bd/Flag_of_Cuba.svg" crossorigin="anonymous" class="w-full drop-shadow-2xl">
                             </div>
 
-                            <div id="watermark-el" class="qsl-element font-oswald text-[180px] leading-none opacity-50 uppercase font-black" style="top: 80px; left: 1070px; color: white;">CO2KK</div>
+                            <!-- Watermark sin clase fija de opacidad, ahora controlado por JS -->
+                            <div id="watermark-el" class="qsl-element font-oswald text-[180px] leading-none uppercase font-black" style="top: 80px; left: 1070px; color: white; opacity: 0.5; text-shadow: none;">CO2KK</div>
 
                             <div id="comment-el" class="qsl-element font-sans text-4xl italic font-bold max-w-[600px]" style="top: 300px; left: 80px; color: white; text-shadow: 2px 2px 5px rgba(0,0,0,0.5);">Confirmando nuestro excelente contacto.</div>
 
@@ -282,8 +308,7 @@
                                 </div>
                                 <table class="w-full text-center text-3xl font-bold border-collapse">
                                     <thead><tr class="text-slate-500 text-xl border-b-2 border-slate-100"><th class="pb-4 px-6">FECHA</th><th class="pb-4 px-6">HORA UTC</th><th class="pb-4 px-6">BANDA</th><th class="pb-4 px-6">MODO</th><th class="pb-4 px-6">RST</th></tr></thead>
-                                    <tbody><tr><td class="pt-6 px-6" id="td-date">2026-04-06</td><td class="pt-6 px-6" id="td-time">22:15</td><td class="pt-6 px-6" id="td-band">20M</td><td class="pt-6 px-6" id="td-mode">SSB</td><td class="pt-6 px-6 text-blue-600" id="td-rst">59</td></tr>
-                                    </tbody>
+                                    <tbody><tr><td class="pt-6 px-6" id="td-date">2026-04-06</td><td class="pt-6 px-6" id="td-time">22:15</td><td class="pt-6 px-6" id="td-band">20M</td><td class="pt-6 px-6" id="td-mode">SSB</td><td class="pt-6 px-6 text-blue-600" id="td-rst">59</td></tr></tbody>
                                 </table>
                             </div>
                         </div>
@@ -360,13 +385,10 @@
             return null; 
         }
 
-        // ========== NUEVA FUNCIÓN CON PNG (flagcdn.com) - 100% CONFiable ==========
         function updateFlagImage(imgElement, countryCode) {
             if(!imgElement) return;
             if(countryCode) {
-                // Usamos PNG en lugar de SVG para garantizar la exportación
                 const url = `https://flagcdn.com/w80/${countryCode}.png`;
-                // Configurar CORS y evitar cambios innecesarios
                 imgElement.setAttribute('crossorigin', 'anonymous');
                 if (imgElement.src !== url) {
                     imgElement.src = url;
@@ -382,7 +404,6 @@
             }
         }
 
-        // Espera robusta a que todas las imágenes (especialmente las banderas) estén listas
         async function waitForAllImages() {
             const area = document.getElementById('qsl-render-area');
             const images = Array.from(area.querySelectorAll('img')).filter(img => img.src && img.src !== '');
@@ -395,7 +416,6 @@
                 });
             });
             await Promise.all(promises);
-            // Pequeño retraso adicional para que html2canvas estabilice el renderizado
             await new Promise(r => setTimeout(r, 200));
         }
 
@@ -488,7 +508,11 @@
                 font: document.getElementById('watermark-el').className.match(/font-[^\s]+/)?.[0] || 'font-oswald',
                 borderVisible: document.getElementById('qsl-border').style.display !== 'none',
                 tableStyle: document.querySelector('select[onchange="updateTableStyle(this.value)"]').value,
-                color: document.getElementById('watermark-el').style.color || 'white',
+                borderColor: document.getElementById('qsl-border').style.borderColor,
+                // Nuevos campos watermark
+                watermarkColor: document.getElementById('watermark-el').style.color,
+                watermarkOpacity: document.getElementById('watermark-el').style.opacity,
+                watermarkRelief: document.getElementById('watermark-relief').value,
                 tableBgColor: document.getElementById('table-bg-color').value,
                 tableHeaderColor: document.getElementById('table-header-color').value,
                 tableTextColor: document.getElementById('table-text-color').value,
@@ -525,7 +549,11 @@
                 if (state.font) updateFont(state.font);
                 if (state.borderVisible !== undefined) document.getElementById('qsl-border').style.display = state.borderVisible ? 'block' : 'none';
                 if (state.tableStyle) updateTableStyle(state.tableStyle);
-                if (state.color) updateColor(state.color);
+                if (state.borderColor) document.getElementById('qsl-border').style.borderColor = state.borderColor;
+                // Cargar nuevos parámetros del watermark
+                if (state.watermarkColor) updateWatermarkColor(state.watermarkColor);
+                if (state.watermarkOpacity) updateWatermarkOpacity(parseFloat(state.watermarkOpacity));
+                if (state.watermarkRelief) { document.getElementById('watermark-relief').value = state.watermarkRelief; updateWatermarkRelief(state.watermarkRelief); }
                 if (state.tableBgColor) { document.getElementById('table-bg-color').value = state.tableBgColor; updateTableBgColor(state.tableBgColor); }
                 if (state.tableHeaderColor) { document.getElementById('table-header-color').value = state.tableHeaderColor; updateTableHeaderColor(state.tableHeaderColor); }
                 if (state.tableTextColor) { document.getElementById('table-text-color').value = state.tableTextColor; updateTableTextColor(state.tableTextColor); }
@@ -551,12 +579,46 @@
 
         function switchTab(tab) { document.getElementById('tab-design').classList.toggle('hidden', tab !== 'design'); document.getElementById('tab-data').classList.toggle('hidden', tab !== 'data'); document.getElementById('btn-design').className = tab === 'design' ? 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest tab-active' : 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest text-slate-400'; document.getElementById('btn-data').className = tab === 'data' ? 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest tab-active' : 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest text-slate-400'; lucide.createIcons(); }
         function updateFont(fontClass) { const wm = document.getElementById('watermark-el'); wm.classList.remove('font-oswald','font-serif','font-sans','font-mono','font-signature'); wm.classList.add(fontClass); saveToStorage(); }
-        function updateColor(color) { document.getElementById('watermark-el').style.color = color; document.getElementById('qsl-border').style.borderColor = color; saveToStorage(); }
+        // Función solo para el borde
+        function updateBorderColor(color) { document.getElementById('qsl-border').style.borderColor = color; saveToStorage(); }
         function toggleBorder() { const b = document.getElementById('qsl-border'); b.style.display = (b.style.display === 'none') ? 'block' : 'none'; saveToStorage(); }
         function togglePostcardFrame(active) { document.getElementById('postcard-frame').style.display = active ? 'block' : 'none'; saveToStorage(); }
         function updateComment(text) { document.getElementById('comment-el').textContent = text; saveToStorage(); }
         function updateCommentOpacity(val) { document.getElementById('comment-el').style.opacity = val; saveToStorage(); }
         function updateCommentColor(val) { document.getElementById('comment-el').style.color = val; saveToStorage(); }
+        
+        // Nuevas funciones para el watermark
+        function updateWatermarkColor(color) {
+            document.getElementById('watermark-el').style.color = color;
+            saveToStorage();
+        }
+        function updateWatermarkOpacity(opacity) {
+            document.getElementById('watermark-el').style.opacity = opacity;
+            saveToStorage();
+        }
+        function updateWatermarkRelief(style) {
+            const wm = document.getElementById('watermark-el');
+            switch(style) {
+                case 'none':
+                    wm.style.textShadow = 'none';
+                    break;
+                case 'soft':
+                    wm.style.textShadow = '2px 2px 8px rgba(0,0,0,0.6)';
+                    break;
+                case 'strong':
+                    wm.style.textShadow = '4px 4px 12px black';
+                    break;
+                case 'engrave':
+                    wm.style.textShadow = '1px 1px 0px white, -1px -1px 0px rgba(0,0,0,0.7)';
+                    break;
+                case 'glow':
+                    wm.style.textShadow = '0 0 15px cyan, 0 0 5px darkblue';
+                    break;
+                default: wm.style.textShadow = 'none';
+            }
+            saveToStorage();
+        }
+        
         function updateTableStyle(style) { const table = document.getElementById('table-overlay'); const header = document.getElementById('table-header'); const opacity = document.getElementById('table-overlay').style.backgroundColor?.match(/[\d.]+\)$/)?.[0] || '0.95'; if (style === 'minimal') { table.style.background = 'transparent'; table.style.boxShadow = 'none'; table.style.backdropFilter = 'none'; header.style.backgroundColor = 'transparent'; header.style.color = document.getElementById('table-header-text-color').value; } else if (style === 'classic') { table.style.background = `rgba(255,255,255,${opacity})`; table.style.backdropFilter = 'blur(30px)'; header.style.backgroundColor = '#1e293b'; header.style.color = '#ffffff'; } else if (style === 'elegant') { table.style.background = `rgba(255,255,255,${opacity})`; table.style.backdropFilter = 'blur(10px)'; header.style.backgroundColor = '#b8860b'; header.style.color = '#ffffff'; table.style.border = '2px solid #b8860b'; } else { table.style.background = `rgba(255,255,255,${opacity})`; table.style.backdropFilter = 'blur(10px)'; header.style.backgroundColor = document.getElementById('table-header-color').value; header.style.color = document.getElementById('table-header-text-color').value; } saveToStorage(); }
         function updateTableBgColor(color) { const table = document.getElementById('table-overlay'); const opacity = document.getElementById('table-overlay').style.backgroundColor?.match(/[\d.]+\)$/)?.[0] || '0.95'; table.style.backgroundColor = hexToRgba(color, opacity); saveToStorage(); }
         function updateTableHeaderColor(color) { document.getElementById('table-header').style.backgroundColor = color; saveToStorage(); }
@@ -577,17 +639,13 @@
         function applyManualFull() { const call = document.getElementById('manual-call').value.toUpperCase() || 'DX_STATION'; let dateRaw = document.getElementById('manual-date').value; let timeRaw = document.getElementById('manual-time').value; const band = document.getElementById('manual-band').value || '40M'; const mode = document.getElementById('manual-mode').value || 'FT8'; const rst = document.getElementById('manual-rst').value || '-01'; if(!/^\d{4}-\d{2}-\d{2}$/.test(dateRaw)) dateRaw = new Date().toISOString().split('T')[0]; const qsoDate = dateRaw.replace(/-/g,''); timeRaw = timeRaw.replace(/[^0-9]/g,'').padStart(4,'0').substring(0,4); if(!/^\d{4}$/.test(timeRaw)) timeRaw='0000'; const qso = { CALL: call, QSO_DATE: qsoDate, TIME_ON: timeRaw, BAND: band, MODE: mode, RST_SENT: rst }; applyQSO(qso); }
         function updateFlag(call) { const flagImg = document.getElementById('target-flag'); const code = getCountryCode(call); updateFlagImage(flagImg, code); }
         
-        // ========== EXPORTACIONES CORREGIDAS ==========
         async function downloadSingleQSL() { 
             const area = document.getElementById('qsl-render-area'); 
             const call = document.getElementById('target-call').textContent; 
             const station = document.getElementById('watermark-el').textContent; 
             const scale = parseInt(document.getElementById('export-scale').value) || 2; 
             const format = document.getElementById('export-format').value; 
-            
-            // Esperar a que todas las imágenes (banderas) estén listas
             await waitForAllImages();
-            
             const canvas = await html2canvas(area, { scale: scale, useCORS: true, logging: false, backgroundColor: null, imageTimeout: 0 }); 
             const link = document.createElement('a'); 
             link.download = `QSL_${station}_${call}.${format === 'png' ? 'png' : 'jpg'}`; 
@@ -607,7 +665,6 @@
             const ext = format === 'png' ? 'png' : 'jpg'; 
             for(let i=0; i<allQsos.length; i++) { 
                 applyQSO(allQsos[i]); 
-                // Dar tiempo a que las nuevas banderas se actualicen
                 await new Promise(r => setTimeout(r, 300));
                 await waitForAllImages();
                 const canvas = await html2canvas(area, { scale: scale, useCORS: true }); 
@@ -621,7 +678,47 @@
         }
 
         function resetPositions() { for (const [id, pos] of Object.entries(defaultPositions)) { const el = document.getElementById(id); if(!el) continue; el.style.top = pos.top + 'px'; el.style.left = pos.left + 'px'; el.style.bottom = ''; el.style.right = ''; } saveToStorage(); }
-        function resetAll() { updatePersonalData('CO2KK'); document.getElementById('qr-url-input').value = 'https://cl7adv.github.io/Qsl-Caribe/'; updateQR('https://cl7adv.github.io/Qsl-Caribe/'); updateComment('Confirmando nuestro excelente contacto.'); updateCommentOpacity(1); updateCommentColor('#ffffff'); updateFont('font-oswald'); document.getElementById('qsl-border').style.display = 'block'; updateColor('white'); document.getElementById('table-bg-color').value = '#ffffff'; document.getElementById('table-header-color').value = '#2563eb'; document.getElementById('table-text-color').value = '#000000'; document.getElementById('table-header-text-color').value = '#ffffff'; updateTableBgOpacity(0.95); updateTableStyle('modern'); setBackground('https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=1650'); document.getElementById('postcard-frame-checkbox').checked = false; togglePostcardFrame(false); document.getElementById('vis-logo').checked = true; document.getElementById('vis-watermark').checked = true; document.getElementById('vis-comment').checked = true; document.getElementById('vis-signature').checked = true; document.getElementById('vis-qr').checked = true; document.getElementById('vis-table').checked = true; toggleVisibility('user-logo-container', true); toggleVisibility('watermark-el', true); toggleVisibility('comment-el', true); toggleVisibility('signature-el', true); toggleVisibility('qr-element', true); toggleVisibility('table-overlay', true); resetPositions(); localStorage.removeItem('qslConfig'); }
+        function resetAll() { 
+            updatePersonalData('CO2KK'); 
+            document.getElementById('qr-url-input').value = 'https://cl7adv.github.io/Qsl-Caribe/'; 
+            updateQR('https://cl7adv.github.io/Qsl-Caribe/'); 
+            updateComment('Confirmando nuestro excelente contacto.'); 
+            updateCommentOpacity(1); 
+            updateCommentColor('#ffffff'); 
+            updateFont('font-oswald'); 
+            document.getElementById('qsl-border').style.display = 'block'; 
+            updateBorderColor('rgba(255,255,255,0.3)'); 
+            // Resetear watermark
+            updateWatermarkColor('#ffffff');
+            updateWatermarkOpacity(0.5);
+            updateWatermarkRelief('none');
+            document.getElementById('watermark-relief').value = 'none';
+            document.getElementById('watermark-color').value = '#ffffff';
+            document.getElementById('watermark-opacity').value = '0.5';
+            document.getElementById('table-bg-color').value = '#ffffff'; 
+            document.getElementById('table-header-color').value = '#2563eb'; 
+            document.getElementById('table-text-color').value = '#000000'; 
+            document.getElementById('table-header-text-color').value = '#ffffff'; 
+            updateTableBgOpacity(0.95); 
+            updateTableStyle('modern'); 
+            setBackground('https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=1650'); 
+            document.getElementById('postcard-frame-checkbox').checked = false; 
+            togglePostcardFrame(false); 
+            document.getElementById('vis-logo').checked = true; 
+            document.getElementById('vis-watermark').checked = true; 
+            document.getElementById('vis-comment').checked = true; 
+            document.getElementById('vis-signature').checked = true; 
+            document.getElementById('vis-qr').checked = true; 
+            document.getElementById('vis-table').checked = true; 
+            toggleVisibility('user-logo-container', true); 
+            toggleVisibility('watermark-el', true); 
+            toggleVisibility('comment-el', true); 
+            toggleVisibility('signature-el', true); 
+            toggleVisibility('qr-element', true); 
+            toggleVisibility('table-overlay', true); 
+            resetPositions(); 
+            localStorage.removeItem('qslConfig'); 
+        }
     </script>
 </body>
 </html>
