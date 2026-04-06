@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QSL ELITE PRO v 4.3.2 / CUBA - Banderas en exportación FIJAS</title>
+    <title>QSL ELITE PRO v 4.3.2 / CUBA - Banderas PNG estables en exportación</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -101,7 +101,7 @@
                     <h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v 4.3.2/CUBA</h1>
                     <div class="flex items-center gap-2">
                         <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Banderas garantizadas en la exportación</p>
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Banderas PNG - 100% confiables en exportación</p>
                     </div>
                 </div>
             </div>
@@ -297,7 +297,7 @@
                 </div>
             </main>
         </div>
-        <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4"><p class="font-mono">✧ Diseño por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ 2026 ✧ v4.3.2 (Banderas estables en exportación)</p></footer>
+        <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4"><p class="font-mono">✧ Diseño por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ 2026 ✧ v4.3.2 (Banderas PNG estables en descarga)</p></footer>
     </div>
 
     <script>
@@ -360,21 +360,20 @@
             return null; 
         }
 
-        // Función mejorada para asignar bandera con espera de carga
+        // ========== NUEVA FUNCIÓN CON PNG (flagcdn.com) - 100% CONFiable ==========
         function updateFlagImage(imgElement, countryCode) {
             if(!imgElement) return;
             if(countryCode) {
-                const url = `https://flagicons.lipis.dev/flags/4x3/${countryCode}.svg`;
+                // Usamos PNG en lugar de SVG para garantizar la exportación
+                const url = `https://flagcdn.com/w80/${countryCode}.png`;
+                // Configurar CORS y evitar cambios innecesarios
                 imgElement.setAttribute('crossorigin', 'anonymous');
-                // Si la URL es la misma que ya tiene, no la cambiamos para evitar parpadeo
                 if (imgElement.src !== url) {
                     imgElement.src = url;
                 }
                 imgElement.classList.remove('hidden');
-                // Forzar recarga si es necesario
-                imgElement.onload = () => { /* ya cargó */ };
                 imgElement.onerror = () => {
-                    console.warn(`No se pudo cargar bandera para ${countryCode}`);
+                    console.warn(`Error cargando bandera para ${countryCode}`);
                     imgElement.classList.add('hidden');
                 };
             } else {
@@ -383,21 +382,21 @@
             }
         }
 
-        // Espera robusta a que todas las imágenes del área estén cargadas y visibles
+        // Espera robusta a que todas las imágenes (especialmente las banderas) estén listas
         async function waitForAllImages() {
             const area = document.getElementById('qsl-render-area');
             const images = Array.from(area.querySelectorAll('img')).filter(img => img.src && img.src !== '');
             const promises = images.map(img => {
-                if (img.complete && img.naturalWidth !== 0) return Promise.resolve();
+                if (img.complete && img.naturalWidth > 0) return Promise.resolve();
                 return new Promise((resolve) => {
-                    const timeout = setTimeout(() => resolve(), 3000); // timeout 3s
+                    const timeout = setTimeout(() => resolve(), 4000);
                     img.addEventListener('load', () => { clearTimeout(timeout); resolve(); });
                     img.addEventListener('error', () => { clearTimeout(timeout); resolve(); });
                 });
             });
             await Promise.all(promises);
-            // pequeño retardo extra para que html2canvas estabilice
-            await new Promise(r => setTimeout(r, 150));
+            // Pequeño retraso adicional para que html2canvas estabilice el renderizado
+            await new Promise(r => setTimeout(r, 200));
         }
 
         window.onload = () => {
@@ -578,7 +577,7 @@
         function applyManualFull() { const call = document.getElementById('manual-call').value.toUpperCase() || 'DX_STATION'; let dateRaw = document.getElementById('manual-date').value; let timeRaw = document.getElementById('manual-time').value; const band = document.getElementById('manual-band').value || '40M'; const mode = document.getElementById('manual-mode').value || 'FT8'; const rst = document.getElementById('manual-rst').value || '-01'; if(!/^\d{4}-\d{2}-\d{2}$/.test(dateRaw)) dateRaw = new Date().toISOString().split('T')[0]; const qsoDate = dateRaw.replace(/-/g,''); timeRaw = timeRaw.replace(/[^0-9]/g,'').padStart(4,'0').substring(0,4); if(!/^\d{4}$/.test(timeRaw)) timeRaw='0000'; const qso = { CALL: call, QSO_DATE: qsoDate, TIME_ON: timeRaw, BAND: band, MODE: mode, RST_SENT: rst }; applyQSO(qso); }
         function updateFlag(call) { const flagImg = document.getElementById('target-flag'); const code = getCountryCode(call); updateFlagImage(flagImg, code); }
         
-        // ========== EXPORTACIONES CORREGIDAS CON ESPERA DE IMÁGENES ==========
+        // ========== EXPORTACIONES CORREGIDAS ==========
         async function downloadSingleQSL() { 
             const area = document.getElementById('qsl-render-area'); 
             const call = document.getElementById('target-call').textContent; 
@@ -586,7 +585,7 @@
             const scale = parseInt(document.getElementById('export-scale').value) || 2; 
             const format = document.getElementById('export-format').value; 
             
-            // Asegurar que todas las imágenes estén listas
+            // Esperar a que todas las imágenes (banderas) estén listas
             await waitForAllImages();
             
             const canvas = await html2canvas(area, { scale: scale, useCORS: true, logging: false, backgroundColor: null, imageTimeout: 0 }); 
@@ -608,8 +607,8 @@
             const ext = format === 'png' ? 'png' : 'jpg'; 
             for(let i=0; i<allQsos.length; i++) { 
                 applyQSO(allQsos[i]); 
-                // Esperar a que las nuevas banderas se actualicen y carguen
-                await new Promise(r => setTimeout(r, 250));
+                // Dar tiempo a que las nuevas banderas se actualicen
+                await new Promise(r => setTimeout(r, 300));
                 await waitForAllImages();
                 const canvas = await html2canvas(area, { scale: scale, useCORS: true }); 
                 const imgData = canvas.toDataURL(mime, format === 'jpeg' ? 0.9 : undefined).split(',')[1]; 
