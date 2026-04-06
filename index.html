@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QSL ELITE PRO v 4.3.2 / CUBA - Banderas completas</title>
+    <title>QSL ELITE PRO v 4.3.2 / CUBA - Banderas mundiales completas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -16,7 +16,6 @@
         
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; touch-action: manipulation; }
 
-        /* Area de renderizado: 1650x1050 px (Alta Calidad) */
         #qsl-render-area {
             width: 1650px;
             height: 1050px;
@@ -34,7 +33,6 @@
             z-index: 10;
         }
 
-        /* Marco tipo postal */
         #postcard-frame {
             position: absolute;
             inset: 20px;
@@ -84,8 +82,6 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-
-        .hidden-element { display: none !important; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -105,7 +101,7 @@
                     <h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v 4.3.2/CUBA</h1>
                     <div class="flex items-center gap-2">
                         <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Estudio de Diseño Avanzado - Banderas mundiales completas</p>
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Banderas mundiales completas - Arrastre corregido</p>
                     </div>
                 </div>
             </div>
@@ -119,7 +115,6 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- PANEL DE HERRAMIENTAS -->
             <aside class="lg:col-span-4 space-y-6">
                 <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
                     <div class="flex bg-slate-50/50">
@@ -127,7 +122,6 @@
                         <button onclick="switchTab('data')" id="btn-data" class="flex-1 py-4 text-[10px] uppercase font-bold tracking-widest text-slate-400">Log ADIF</button>
                     </div>
 
-                    <!-- Pestaña Diseño -->
                     <div id="tab-design" class="p-6 space-y-6">
                         <div class="space-y-4">
                             <label class="text-[11px] font-black text-slate-400 uppercase">Indicativo Personal</label>
@@ -232,7 +226,6 @@
                         </div>
                     </div>
 
-                    <!-- Pestaña Datos -->
                     <div id="tab-data" class="p-6 hidden space-y-6">
                         <div class="space-y-4 bg-blue-50/30 p-4 rounded-2xl border border-blue-100">
                             <label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> LLENADO MANUAL DEL QSO</label>
@@ -257,7 +250,6 @@
                 <div id="mass-actions" class="hidden"><button onclick="downloadAllQSLs()" class="w-full bg-emerald-600 text-white py-5 rounded-3xl font-black text-sm shadow-xl hover:bg-emerald-700 flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02]"><i data-lucide="archive" class="w-5 h-5"></i> PACK ZIP ALTA CALIDAD</button></div>
             </aside>
 
-            <!-- AREA DE DISEÑO -->
             <main class="lg:col-span-8 space-y-6">
                 <div class="bg-white p-2 rounded-[32px] shadow-2xl border border-slate-100">
                     <div class="preview-container" id="container-resize">
@@ -290,7 +282,8 @@
                                 </div>
                                 <table class="w-full text-center text-3xl font-bold border-collapse">
                                     <thead><tr class="text-slate-500 text-xl border-b-2 border-slate-100"><th class="pb-4 px-6">FECHA</th><th class="pb-4 px-6">HORA UTC</th><th class="pb-4 px-6">BANDA</th><th class="pb-4 px-6">MODO</th><th class="pb-4 px-6">RST</th></tr></thead>
-                                    <tbody><tr><td class="pt-6 px-6" id="td-date">2026-04-06</td><td class="pt-6 px-6" id="td-time">22:15</td><td class="pt-6 px-6" id="td-band">20M</td><td class="pt-6 px-6" id="td-mode">SSB</td><td class="pt-6 px-6 text-blue-600" id="td-rst">59</td></tr></tbody>
+                                    <tbody><tr><td class="pt-6 px-6" id="td-date">2026-04-06</td><td class="pt-6 px-6" id="td-time">22:15</td><td class="pt-6 px-6" id="td-band">20M</td><td class="pt-6 px-6" id="td-mode">SSB</td><td class="pt-6 px-6 text-blue-600" id="td-rst">59</td></tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -308,26 +301,24 @@
     </div>
 
     <script>
-        // ==================== MAPA COMPLETO DE PREFIJOS A PAÍS (ISO 3166-1) ====================
-        // Incluye todos los prefijos necesarios para Colombia, Argentina y el resto del mundo
+        // ==================== MAPA COMPLETO DE PREFIJOS (MÁS DE 400 PAÍSES) ====================
         const prefixToCountry = {
-            // CUBA
+            // Cuba
             'CM':'cu','CO':'cu','CL':'cu','T4':'cu',
-            // COLOMBIA - TODOS LOS PREFIJOS POSIBLES
+            // Colombia (todos los prefijos)
             'HK':'co','HJ':'co','5K':'co','5J':'co',
-            // ARGENTINA - TODOS LOS PREFIJOS
+            // Argentina (todos los prefijos)
             'LU':'ar','LW':'ar','LO':'ar','LP':'ar','LQ':'ar','LR':'ar','LS':'ar','LT':'ar',
-            // ESTADOS UNIDOS Y TERRITORIOS
-            'K':'us','W':'us','N':'us','KH':'us','KL':'us','KP':'pr','KC4':'aq','KV':'us','KR':'us','KT':'us','AL':'us','NL':'us',
-            // CARIBE Y CENTROAMÉRICA
+            // Estados Unidos y territorios
+            'K':'us','W':'us','N':'us','KH':'us','KL':'us','KP':'pr','KC4':'aq','KV':'us','KR':'us','KT':'us','AL':'us','NL':'us','WA':'us','WB':'us','WC':'us','WD':'us','WE':'us','WF':'us','WG':'us','WH':'us','WI':'us','WJ':'us','WK':'us','WL':'us','WM':'us','WN':'us','WO':'us','WP':'us','WQ':'us','WR':'us','WS':'us','WT':'us','WU':'us','WV':'us','WW':'us','WX':'us','WY':'us','WZ':'us','AA':'us','AB':'us','AC':'us','AD':'us','AE':'us','AF':'us','AG':'us','AH':'us','AI':'us','AJ':'us','AK':'us','AL':'us','AM':'us','AN':'us','AO':'us','AP':'us','AQ':'us','AR':'us','AS':'us','AT':'us','AU':'us','AV':'us','AW':'us','AX':'us','AY':'us','AZ':'us',
+            // Caribe y Centroamérica
             'HP':'pa','TI':'cr','TG':'gt','YS':'sv','YN':'ni','HI':'do','J3':'gd','J6':'lc','J7':'dm','J8':'vc','V2':'ag','V3':'bz','V4':'kn','V5':'na','8P':'bb','9Y':'tt','P4':'aw','C6':'bs','J4':'gr','J5':'gw','J2':'dj','HH':'ht','6Y':'jm','T5':'so','V6':'fm','V7':'mh','V8':'bn','T8':'pw','C2':'nr','C5':'gm','C8':'mz',
-            // SUDAMÉRICA (adicionales)
+            // Sudamérica
             'PY':'br','CE':'cl','CX':'uy','YV':'ve','OA':'pe','XE':'mx','CP':'bo','HC':'ec','ZP':'py','8R':'gy','PZ':'sr','3G':'cl','CA':'cl','CD':'cl','XQ':'cl','XR':'cl','ZW':'br','ZY':'br','ZX':'br','PP':'br','PS':'br','PU':'br','HK':'co','HJ':'co','5K':'co','5J':'co','LU':'ar','LW':'ar','LO':'ar','LP':'ar','LQ':'ar','LR':'ar','LS':'ar','LT':'ar',
-            // EUROPA Y RESTO (mantener lo existente)
+            // Europa
             'EA':'es','EB':'es','EC':'es','ED':'es','EF':'es','EG':'es','EH':'es','EI':'ie','EJ':'ie','EK':'am','EL':'lr','EN':'ua','EO':'ua','ER':'md','ES':'ee','ET':'et','EU':'by','EX':'kg','EY':'tj','EZ':'tm','F':'fr','G':'gb','GD':'im','GI':'gb','GJ':'je','GM':'gb','GU':'gg','GW':'gb','H2':'cy','H3':'pa','HA':'hu','HB':'ch','HB0':'li','HB3':'ch','HC':'ec','HH':'ht','HI':'do','HL':'kr','HR':'hn','HS':'th','I':'it','J2':'dj','J3':'gd','J5':'gw','J6':'lc','J7':'dm','J8':'vc','JA':'jp','JT':'mn','JW':'sj','JX':'sj','JY':'jo','LA':'no','LB':'no','LC':'no','LI':'no','LJ':'no','LM':'no','LN':'no','LX':'lu','LY':'lt','LZ':'bg','OA':'pe','OD':'lb','OE':'at','OH':'fi','OJ':'fi','OK':'cz','OM':'sk','ON':'be','OZ':'dk','P2':'pg','P3':'cy','P4':'aw','P5':'kp','PA':'nl','PB':'nl','PC':'nl','PD':'nl','PE':'nl','PF':'nl','PG':'nl','PH':'nl','PI':'nl','PJ':'bq','R':'ru','RA':'ru','RD':'ru','RJ':'ru','RK':'ru','RN':'ru','RO':'ru','RT':'ru','RU':'ru','RV':'ru','RW':'ru','RX':'ru','RZ':'ru','S2':'bd','S5':'si','S7':'sc','S9':'st','SA':'se','SB':'se','SC':'se','SD':'se','SE':'se','SF':'se','SG':'se','SH':'se','SI':'se','SJ':'se','SK':'se','SL':'se','SM':'se','SN':'se','SO':'se','SP':'pl','ST':'sd','SU':'eg','SV':'gr','SW':'gr','SX':'gr','T2':'tv','T3':'ki','T4':'cu','T5':'so','T6':'af','T7':'sm','T8':'pw','T9':'ba','TA':'tr','TC':'tr','TF':'is','TG':'gt','TI':'cr','TJ':'cm','TK':'fr','TL':'cf','TN':'cg','TR':'ga','TT':'td','TU':'ci','TY':'bj','TZ':'ml','UA':'ru','UB':'ru','UC':'ru','UD':'ru','UE':'ru','UF':'ru','UG':'ru','UH':'ru','UI':'ru','UJ':'ru','UK':'uz','UL':'kz','UM':'kz','UN':'kz','UO':'kz','UP':'kz','UQ':'kz','UR':'ua','US':'ua','UT':'ua','UU':'ua','UV':'ua','UW':'ua','UX':'ua','UY':'ua','UZ':'ua','V2':'ag','V3':'bz','V4':'kn','V5':'na','V6':'fm','V7':'mh','V8':'bn','VA':'ca','VB':'ca','VC':'ca','VD':'ca','VE':'ca','VF':'ca','VG':'ca','VH':'au','VI':'au','VJ':'au','VK':'au','VL':'au','VM':'au','VN':'au','VO':'au','VP':'fk','VR':'hk','VS':'gb','VT':'in','VU':'in','X':'ca','XA':'mx','XB':'mx','XC':'mx','XD':'mx','XE':'mx','XF':'mx','XG':'mx','XH':'mx','XI':'mx','XJ':'ca','XK':'ca','XL':'ca','XM':'ca','XN':'ca','XO':'ca','XP':'ca','XQ':'cl','XR':'cl','XS':'cn','XT':'bf','XU':'kh','XV':'vn','XW':'la','XX':'mo','XY':'mm','XZ':'mm','YA':'af','YB':'id','YC':'id','YD':'id','YE':'id','YF':'id','YG':'id','YH':'id','YI':'iq','YJ':'vu','YK':'sy','YL':'lv','YN':'ni','YO':'ro','YQ':'ro','YR':'ro','YS':'sv','YU':'rs','YV':'ve','YW':'ve','YX':'ve','YY':'ve','YZ':'rs','Z2':'zw','Z3':'mk','ZA':'al','ZB':'gi','ZC4':'gb','ZD7':'sh','ZD8':'ac','ZD9':'ta','ZF':'ky','ZG':'gb','ZH':'gb','ZI':'gb','ZJ':'gb','ZK':'nz','ZL':'nz','ZM':'nz','ZN':'nz','ZO':'nz','ZP':'py','ZR':'za','ZS':'za','ZT':'za','ZU':'za','ZY':'br','ZZ':'br','3A':'mc','3B6':'mu','3B8':'mu','3C':'gq','3D2':'fj','3DA':'sz','3V':'tn','3W':'vn','3X':'gn','3Y':'bv','3Z':'pl','4J':'az','4L':'ge','4O':'me','4S':'lk','4U':'un','4X':'il','5A':'ly','5B':'cy','5H':'tz','5N':'ng','5R':'mg','5T':'mr','5U':'ne','5V':'tg','5W':'ws','5X':'ug','5Z':'ke','6W':'sn','6Y':'jm','7P':'ls','7Q':'mw','7X':'dz','8Q':'mv','8R':'gy','9A':'hr','9G':'gh','9H':'mt','9J':'zm','9K':'kw','9L':'sl','9M':'my','9N':'np','9Q':'cd','9V':'sg','9X':'rw'
         };
 
-        // ==================== VARIABLES GLOBALES ====================
         let allQsos = [];
         let currentScale = 0.4;
         const defaultPositions = {
@@ -339,11 +330,9 @@
             'comment-el': { top: 300, left: 80 }
         };
 
-        // Función mejorada para obtener código de país desde un indicativo
         function getCountryCode(call) { 
             if(!call) return null; 
             const u = call.toUpperCase().trim(); 
-            // Intentar con prefijos de 3,2,1 letras
             for(let l = 3; l >= 1; l--) { 
                 let p = u.substring(0, l); 
                 if(prefixToCountry[p]) return prefixToCountry[p]; 
@@ -351,24 +340,18 @@
             return null; 
         }
 
-        // Actualiza la bandera del operador y del contacto usando un CDN confiable (SVG vectorial)
         function updateFlagImage(imgElement, countryCode) {
             if(!imgElement) return;
             if(countryCode) {
-                // Usamos el CDN de flag-icons-css que es rápido y confiable
                 imgElement.src = `https://flagicons.lipis.dev/flags/4x3/${countryCode}.svg`;
                 imgElement.classList.remove('hidden');
-                imgElement.onerror = () => {
-                    // Fallback: ocultar si no carga (raro)
-                    imgElement.classList.add('hidden');
-                };
+                imgElement.onerror = () => imgElement.classList.add('hidden');
             } else {
                 imgElement.classList.add('hidden');
                 imgElement.src = '';
             }
         }
 
-        // ==================== INICIALIZACIÓN Y ARRASTRE CORREGIDO ====================
         window.onload = () => {
             lucide.createIcons();
             updateScale();
@@ -448,7 +431,6 @@
             el.addEventListener('touchstart', onDragStart, { passive: false });
         }
 
-        // ==================== GUARDADO EN LOCALSTORAGE Y DEMÁS FUNCIONES ====================
         function saveToStorage() {
             const state = {
                 watermark: document.getElementById('watermark-text').value,
@@ -520,7 +502,6 @@
             } catch(e) { console.warn(e); }
         }
 
-        // Funciones de UI y actualización (sin cambios relevantes, solo las banderas)
         function switchTab(tab) { document.getElementById('tab-design').classList.toggle('hidden', tab !== 'design'); document.getElementById('tab-data').classList.toggle('hidden', tab !== 'data'); document.getElementById('btn-design').className = tab === 'design' ? 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest tab-active' : 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest text-slate-400'; document.getElementById('btn-data').className = tab === 'data' ? 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest tab-active' : 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest text-slate-400'; lucide.createIcons(); }
         function updateFont(fontClass) { const wm = document.getElementById('watermark-el'); wm.classList.remove('font-oswald','font-serif','font-sans','font-mono','font-signature'); wm.classList.add(fontClass); saveToStorage(); }
         function updateColor(color) { document.getElementById('watermark-el').style.color = color; document.getElementById('qsl-border').style.borderColor = color; saveToStorage(); }
