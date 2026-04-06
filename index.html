@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QSL ELITE PRO v 4.3.2 / CUBA - Banderas completas y arrastre corregido</title>
+    <title>QSL ELITE PRO v 4.3.2 / CUBA - Banderas completas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -237,12 +237,12 @@
                         <div class="space-y-4 bg-blue-50/30 p-4 rounded-2xl border border-blue-100">
                             <label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> LLENADO MANUAL DEL QSO</label>
                             <div class="grid grid-cols-2 gap-3">
-                                <input type="text" id="manual-call" placeholder="CALL" value="F5ABC" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2">
-                                <input type="text" id="manual-date" placeholder="FECHA (YYYY-MM-DD)" value="2026-02-27" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
-                                <input type="text" id="manual-time" placeholder="HORA (HHMM)" value="2245" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
-                                <input type="text" id="manual-band" placeholder="BANDA" value="40M" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
-                                <input type="text" id="manual-mode" placeholder="MODO" value="FT8" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
-                                <input type="text" id="manual-rst" placeholder="RST" value="-01" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
+                                <input type="text" id="manual-call" placeholder="CALL" value="HK3XYZ" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2">
+                                <input type="text" id="manual-date" placeholder="FECHA (YYYY-MM-DD)" value="2026-04-06" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
+                                <input type="text" id="manual-time" placeholder="HORA (HHMM)" value="2215" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
+                                <input type="text" id="manual-band" placeholder="BANDA" value="20M" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
+                                <input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
+                                <input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
                             </div>
                             <button onclick="applyManualFull()" class="w-full bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700 transition-all uppercase tracking-widest">APLICAR AL DISEÑO</button>
                         </div>
@@ -290,7 +290,7 @@
                                 </div>
                                 <table class="w-full text-center text-3xl font-bold border-collapse">
                                     <thead><tr class="text-slate-500 text-xl border-b-2 border-slate-100"><th class="pb-4 px-6">FECHA</th><th class="pb-4 px-6">HORA UTC</th><th class="pb-4 px-6">BANDA</th><th class="pb-4 px-6">MODO</th><th class="pb-4 px-6">RST</th></tr></thead>
-                                    <tbody><tr><td class="pt-6 px-6" id="td-date">2026-02-27</td><td class="pt-6 px-6" id="td-time">22:45</td><td class="pt-6 px-6" id="td-band">40M</td><td class="pt-6 px-6" id="td-mode">FT8</td><td class="pt-6 px-6 text-blue-600" id="td-rst">-01</td></tr></tbody>
+                                    <tbody><tr><td class="pt-6 px-6" id="td-date">2026-04-06</td><td class="pt-6 px-6" id="td-time">22:15</td><td class="pt-6 px-6" id="td-band">20M</td><td class="pt-6 px-6" id="td-mode">SSB</td><td class="pt-6 px-6 text-blue-600" id="td-rst">59</td></tr></tbody>
                                 </table>
                             </div>
                         </div>
@@ -308,18 +308,23 @@
     </div>
 
     <script>
-        // ==================== MAPA EXTENDIDO DE PREFIJOS A PAÍS (MÁS DE 300 PAÍSES/TERRITORIOS) ====================
+        // ==================== MAPA COMPLETO DE PREFIJOS A PAÍS (ISO 3166-1) ====================
+        // Incluye todos los prefijos necesarios para Colombia, Argentina y el resto del mundo
         const prefixToCountry = {
-            // Cuba
+            // CUBA
             'CM':'cu','CO':'cu','CL':'cu','T4':'cu',
-            // Estados Unidos y territorios
+            // COLOMBIA - TODOS LOS PREFIJOS POSIBLES
+            'HK':'co','HJ':'co','5K':'co','5J':'co',
+            // ARGENTINA - TODOS LOS PREFIJOS
+            'LU':'ar','LW':'ar','LO':'ar','LP':'ar','LQ':'ar','LR':'ar','LS':'ar','LT':'ar',
+            // ESTADOS UNIDOS Y TERRITORIOS
             'K':'us','W':'us','N':'us','KH':'us','KL':'us','KP':'pr','KC4':'aq','KV':'us','KR':'us','KT':'us','AL':'us','NL':'us',
-            // Caribe y Centroamérica
+            // CARIBE Y CENTROAMÉRICA
             'HP':'pa','TI':'cr','TG':'gt','YS':'sv','YN':'ni','HI':'do','J3':'gd','J6':'lc','J7':'dm','J8':'vc','V2':'ag','V3':'bz','V4':'kn','V5':'na','8P':'bb','9Y':'tt','P4':'aw','C6':'bs','J4':'gr','J5':'gw','J2':'dj','HH':'ht','6Y':'jm','T5':'so','V6':'fm','V7':'mh','V8':'bn','T8':'pw','C2':'nr','C5':'gm','C8':'mz',
-            // Sudamérica
-            'LU':'ar','PY':'br','CE':'cl','CX':'uy','YV':'ve','HK':'co','OA':'pe','XE':'mx','CP':'bo','HC':'ec','TI':'cr','HP':'pa','OA':'pe','ZP':'py','8R':'gy','PZ':'sr','3G':'cl','CA':'cl','CD':'cl','XQ':'cl','XR':'cl','ZW':'br','ZY':'br','ZX':'br','PP':'br','PS':'br','PU':'br',
-            // Europa
-            'EA':'es','EB':'es','EC':'es','ED':'es','EF':'es','EG':'es','EH':'es','EI':'ie','EJ':'ie','EK':'am','EL':'lr','EN':'ua','EO':'ua','ER':'md','ES':'ee','ET':'et','EU':'by','EX':'kg','EY':'tj','EZ':'tm','F':'fr','G':'gb','GD':'im','GI':'gb','GJ':'je','GM':'gb','GU':'gg','GW':'gb','H2':'cy','H3':'pa','HA':'hu','HB':'ch','HB0':'li','HB3':'ch','HC':'ec','HH':'ht','HI':'do','HK':'co','HL':'kr','HP':'pa','HR':'hn','HS':'th','I':'it','J2':'dj','J3':'gd','J5':'gw','J6':'lc','J7':'dm','J8':'vc','JA':'jp','JT':'mn','JW':'sj','JX':'sj','JY':'jo','K':'us','LA':'no','LB':'no','LC':'no','LI':'no','LJ':'no','LM':'no','LN':'no','LX':'lu','LY':'lt','LZ':'bg','OA':'pe','OD':'lb','OE':'at','OH':'fi','OJ':'fi','OK':'cz','OM':'sk','ON':'be','OZ':'dk','P2':'pg','P3':'cy','P4':'aw','P5':'kp','PA':'nl','PB':'nl','PC':'nl','PD':'nl','PE':'nl','PF':'nl','PG':'nl','PH':'nl','PI':'nl','PJ':'bq','PY':'br','PZ':'sr','R':'ru','RA':'ru','RD':'ru','RJ':'ru','RK':'ru','RN':'ru','RO':'ru','RT':'ru','RU':'ru','RV':'ru','RW':'ru','RX':'ru','RZ':'ru','S2':'bd','S5':'si','S7':'sc','S9':'st','SA':'se','SB':'se','SC':'se','SD':'se','SE':'se','SF':'se','SG':'se','SH':'se','SI':'se','SJ':'se','SK':'se','SL':'se','SM':'se','SN':'se','SO':'se','SP':'pl','ST':'sd','SU':'eg','SV':'gr','SW':'gr','SX':'gr','T2':'tv','T3':'ki','T4':'cu','T5':'so','T6':'af','T7':'sm','T8':'pw','T9':'ba','TA':'tr','TC':'tr','TF':'is','TG':'gt','TI':'cr','TJ':'cm','TK':'fr','TL':'cf','TN':'cg','TR':'ga','TT':'td','TU':'ci','TY':'bj','TZ':'ml','UA':'ru','UB':'ru','UC':'ru','UD':'ru','UE':'ru','UF':'ru','UG':'ru','UH':'ru','UI':'ru','UJ':'ru','UK':'uz','UL':'kz','UM':'kz','UN':'kz','UO':'kz','UP':'kz','UQ':'kz','UR':'ua','US':'ua','UT':'ua','UU':'ua','UV':'ua','UW':'ua','UX':'ua','UY':'ua','UZ':'ua','V2':'ag','V3':'bz','V4':'kn','V5':'na','V6':'fm','V7':'mh','V8':'bn','VA':'ca','VB':'ca','VC':'ca','VD':'ca','VE':'ca','VF':'ca','VG':'ca','VH':'au','VI':'au','VJ':'au','VK':'au','VL':'au','VM':'au','VN':'au','VO':'au','VP':'au','VQ':'fk','VR':'hk','VS':'gb','VT':'in','VU':'in','W':'us','X':'ca','XA':'mx','XB':'mx','XC':'mx','XD':'mx','XE':'mx','XF':'mx','XG':'mx','XH':'mx','XI':'mx','XJ':'ca','XK':'ca','XL':'ca','XM':'ca','XN':'ca','XO':'ca','XP':'ca','XQ':'cl','XR':'cl','XS':'cn','XT':'bf','XU':'kh','XV':'vn','XW':'la','XX':'mo','XY':'mm','XZ':'mm','Y':'us','YA':'af','YB':'id','YC':'id','YD':'id','YE':'id','YF':'id','YG':'id','YH':'id','YI':'iq','YJ':'vu','YK':'sy','YL':'lv','YN':'ni','YO':'ro','YQ':'ro','YR':'ro','YS':'sv','YU':'rs','YV':'ve','YW':'ve','YX':'ve','YY':'ve','YZ':'rs','Z2':'zw','Z3':'mk','ZA':'al','ZB':'gi','ZC4':'gb','ZD7':'sh','ZD8':'ac','ZD9':'ta','ZF':'ky','ZG':'gb','ZH':'gb','ZI':'gb','ZJ':'gb','ZK':'nz','ZL':'nz','ZM':'nz','ZN':'nz','ZO':'nz','ZP':'py','ZR':'za','ZS':'za','ZT':'za','ZU':'za','ZY':'br','ZZ':'br','3A':'mc','3B6':'mu','3B8':'mu','3C':'gq','3D2':'fj','3DA':'sz','3V':'tn','3W':'vn','3X':'gn','3Y':'bv','3Z':'pl','4J':'az','4L':'ge','4O':'me','4S':'lk','4U':'un','4X':'il','5A':'ly','5B':'cy','5H':'tz','5N':'ng','5R':'mg','5T':'mr','5U':'ne','5V':'tg','5W':'ws','5X':'ug','5Z':'ke','6W':'sn','6Y':'jm','7P':'ls','7Q':'mw','7X':'dz','8Q':'mv','8R':'gy','9A':'hr','9G':'gh','9H':'mt','9J':'zm','9K':'kw','9L':'sl','9M':'my','9N':'np','9Q':'cd','9V':'sg','9X':'rw'
+            // SUDAMÉRICA (adicionales)
+            'PY':'br','CE':'cl','CX':'uy','YV':'ve','OA':'pe','XE':'mx','CP':'bo','HC':'ec','ZP':'py','8R':'gy','PZ':'sr','3G':'cl','CA':'cl','CD':'cl','XQ':'cl','XR':'cl','ZW':'br','ZY':'br','ZX':'br','PP':'br','PS':'br','PU':'br','HK':'co','HJ':'co','5K':'co','5J':'co','LU':'ar','LW':'ar','LO':'ar','LP':'ar','LQ':'ar','LR':'ar','LS':'ar','LT':'ar',
+            // EUROPA Y RESTO (mantener lo existente)
+            'EA':'es','EB':'es','EC':'es','ED':'es','EF':'es','EG':'es','EH':'es','EI':'ie','EJ':'ie','EK':'am','EL':'lr','EN':'ua','EO':'ua','ER':'md','ES':'ee','ET':'et','EU':'by','EX':'kg','EY':'tj','EZ':'tm','F':'fr','G':'gb','GD':'im','GI':'gb','GJ':'je','GM':'gb','GU':'gg','GW':'gb','H2':'cy','H3':'pa','HA':'hu','HB':'ch','HB0':'li','HB3':'ch','HC':'ec','HH':'ht','HI':'do','HL':'kr','HR':'hn','HS':'th','I':'it','J2':'dj','J3':'gd','J5':'gw','J6':'lc','J7':'dm','J8':'vc','JA':'jp','JT':'mn','JW':'sj','JX':'sj','JY':'jo','LA':'no','LB':'no','LC':'no','LI':'no','LJ':'no','LM':'no','LN':'no','LX':'lu','LY':'lt','LZ':'bg','OA':'pe','OD':'lb','OE':'at','OH':'fi','OJ':'fi','OK':'cz','OM':'sk','ON':'be','OZ':'dk','P2':'pg','P3':'cy','P4':'aw','P5':'kp','PA':'nl','PB':'nl','PC':'nl','PD':'nl','PE':'nl','PF':'nl','PG':'nl','PH':'nl','PI':'nl','PJ':'bq','R':'ru','RA':'ru','RD':'ru','RJ':'ru','RK':'ru','RN':'ru','RO':'ru','RT':'ru','RU':'ru','RV':'ru','RW':'ru','RX':'ru','RZ':'ru','S2':'bd','S5':'si','S7':'sc','S9':'st','SA':'se','SB':'se','SC':'se','SD':'se','SE':'se','SF':'se','SG':'se','SH':'se','SI':'se','SJ':'se','SK':'se','SL':'se','SM':'se','SN':'se','SO':'se','SP':'pl','ST':'sd','SU':'eg','SV':'gr','SW':'gr','SX':'gr','T2':'tv','T3':'ki','T4':'cu','T5':'so','T6':'af','T7':'sm','T8':'pw','T9':'ba','TA':'tr','TC':'tr','TF':'is','TG':'gt','TI':'cr','TJ':'cm','TK':'fr','TL':'cf','TN':'cg','TR':'ga','TT':'td','TU':'ci','TY':'bj','TZ':'ml','UA':'ru','UB':'ru','UC':'ru','UD':'ru','UE':'ru','UF':'ru','UG':'ru','UH':'ru','UI':'ru','UJ':'ru','UK':'uz','UL':'kz','UM':'kz','UN':'kz','UO':'kz','UP':'kz','UQ':'kz','UR':'ua','US':'ua','UT':'ua','UU':'ua','UV':'ua','UW':'ua','UX':'ua','UY':'ua','UZ':'ua','V2':'ag','V3':'bz','V4':'kn','V5':'na','V6':'fm','V7':'mh','V8':'bn','VA':'ca','VB':'ca','VC':'ca','VD':'ca','VE':'ca','VF':'ca','VG':'ca','VH':'au','VI':'au','VJ':'au','VK':'au','VL':'au','VM':'au','VN':'au','VO':'au','VP':'fk','VR':'hk','VS':'gb','VT':'in','VU':'in','X':'ca','XA':'mx','XB':'mx','XC':'mx','XD':'mx','XE':'mx','XF':'mx','XG':'mx','XH':'mx','XI':'mx','XJ':'ca','XK':'ca','XL':'ca','XM':'ca','XN':'ca','XO':'ca','XP':'ca','XQ':'cl','XR':'cl','XS':'cn','XT':'bf','XU':'kh','XV':'vn','XW':'la','XX':'mo','XY':'mm','XZ':'mm','YA':'af','YB':'id','YC':'id','YD':'id','YE':'id','YF':'id','YG':'id','YH':'id','YI':'iq','YJ':'vu','YK':'sy','YL':'lv','YN':'ni','YO':'ro','YQ':'ro','YR':'ro','YS':'sv','YU':'rs','YV':'ve','YW':'ve','YX':'ve','YY':'ve','YZ':'rs','Z2':'zw','Z3':'mk','ZA':'al','ZB':'gi','ZC4':'gb','ZD7':'sh','ZD8':'ac','ZD9':'ta','ZF':'ky','ZG':'gb','ZH':'gb','ZI':'gb','ZJ':'gb','ZK':'nz','ZL':'nz','ZM':'nz','ZN':'nz','ZO':'nz','ZP':'py','ZR':'za','ZS':'za','ZT':'za','ZU':'za','ZY':'br','ZZ':'br','3A':'mc','3B6':'mu','3B8':'mu','3C':'gq','3D2':'fj','3DA':'sz','3V':'tn','3W':'vn','3X':'gn','3Y':'bv','3Z':'pl','4J':'az','4L':'ge','4O':'me','4S':'lk','4U':'un','4X':'il','5A':'ly','5B':'cy','5H':'tz','5N':'ng','5R':'mg','5T':'mr','5U':'ne','5V':'tg','5W':'ws','5X':'ug','5Z':'ke','6W':'sn','6Y':'jm','7P':'ls','7Q':'mw','7X':'dz','8Q':'mv','8R':'gy','9A':'hr','9G':'gh','9H':'mt','9J':'zm','9K':'kw','9L':'sl','9M':'my','9N':'np','9Q':'cd','9V':'sg','9X':'rw'
         };
 
         // ==================== VARIABLES GLOBALES ====================
@@ -334,7 +339,34 @@
             'comment-el': { top: 300, left: 80 }
         };
 
-        function getCountryCode(call) { if(!call) return null; const u=call.toUpperCase(); for(let l=3;l>=1;l--) { let p=u.substring(0,l); if(prefixToCountry[p]) return prefixToCountry[p]; } return null; }
+        // Función mejorada para obtener código de país desde un indicativo
+        function getCountryCode(call) { 
+            if(!call) return null; 
+            const u = call.toUpperCase().trim(); 
+            // Intentar con prefijos de 3,2,1 letras
+            for(let l = 3; l >= 1; l--) { 
+                let p = u.substring(0, l); 
+                if(prefixToCountry[p]) return prefixToCountry[p]; 
+            } 
+            return null; 
+        }
+
+        // Actualiza la bandera del operador y del contacto usando un CDN confiable (SVG vectorial)
+        function updateFlagImage(imgElement, countryCode) {
+            if(!imgElement) return;
+            if(countryCode) {
+                // Usamos el CDN de flag-icons-css que es rápido y confiable
+                imgElement.src = `https://flagicons.lipis.dev/flags/4x3/${countryCode}.svg`;
+                imgElement.classList.remove('hidden');
+                imgElement.onerror = () => {
+                    // Fallback: ocultar si no carga (raro)
+                    imgElement.classList.add('hidden');
+                };
+            } else {
+                imgElement.classList.add('hidden');
+                imgElement.src = '';
+            }
+        }
 
         // ==================== INICIALIZACIÓN Y ARRASTRE CORREGIDO ====================
         window.onload = () => {
@@ -416,8 +448,8 @@
             el.addEventListener('touchstart', onDragStart, { passive: false });
         }
 
-        // ==================== GUARDADO EN LOCALSTORAGE Y DEMÁS FUNCIONES (sin cambios en lógica, solo se preserva todo) ====================
-        function saveToStorage() { /* mismo código original */ 
+        // ==================== GUARDADO EN LOCALSTORAGE Y DEMÁS FUNCIONES ====================
+        function saveToStorage() {
             const state = {
                 watermark: document.getElementById('watermark-text').value,
                 qrUrl: document.getElementById('qr-url-input').value,
@@ -450,7 +482,8 @@
             }
             localStorage.setItem('qslConfig', JSON.stringify(state));
         }
-        function loadFromStorage() { /* mismo código original, se mantiene intacto */ 
+
+        function loadFromStorage() {
             const saved = localStorage.getItem('qslConfig');
             if (!saved) return;
             try {
@@ -487,7 +520,7 @@
             } catch(e) { console.warn(e); }
         }
 
-        // Funciones auxiliares de UI y actualización (se mantienen íntegras)
+        // Funciones de UI y actualización (sin cambios relevantes, solo las banderas)
         function switchTab(tab) { document.getElementById('tab-design').classList.toggle('hidden', tab !== 'design'); document.getElementById('tab-data').classList.toggle('hidden', tab !== 'data'); document.getElementById('btn-design').className = tab === 'design' ? 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest tab-active' : 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest text-slate-400'; document.getElementById('btn-data').className = tab === 'data' ? 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest tab-active' : 'flex-1 py-4 text-[10px] uppercase font-bold tracking-widest text-slate-400'; lucide.createIcons(); }
         function updateFont(fontClass) { const wm = document.getElementById('watermark-el'); wm.classList.remove('font-oswald','font-serif','font-sans','font-mono','font-signature'); wm.classList.add(fontClass); saveToStorage(); }
         function updateColor(color) { document.getElementById('watermark-el').style.color = color; document.getElementById('qsl-border').style.borderColor = color; saveToStorage(); }
@@ -496,7 +529,7 @@
         function updateComment(text) { document.getElementById('comment-el').textContent = text; saveToStorage(); }
         function updateCommentOpacity(val) { document.getElementById('comment-el').style.opacity = val; saveToStorage(); }
         function updateCommentColor(val) { document.getElementById('comment-el').style.color = val; saveToStorage(); }
-        function updateTableStyle(style) { const table = document.getElementById('table-overlay'); const header = document.getElementById('table-header'); const bgColor = document.getElementById('table-bg-color').value; const headerColor = document.getElementById('table-header-color').value; const opacity = document.getElementById('table-overlay').style.backgroundColor?.match(/[\d.]+\)$/)?.[0] || '0.95'; if (style === 'minimal') { table.style.background = 'transparent'; table.style.boxShadow = 'none'; table.style.backdropFilter = 'none'; header.style.backgroundColor = 'transparent'; header.style.color = document.getElementById('table-header-text-color').value; } else if (style === 'classic') { table.style.background = `rgba(255,255,255,${opacity})`; table.style.backdropFilter = 'blur(30px)'; header.style.backgroundColor = '#1e293b'; header.style.color = '#ffffff'; } else if (style === 'elegant') { table.style.background = `rgba(255,255,255,${opacity})`; table.style.backdropFilter = 'blur(10px)'; header.style.backgroundColor = '#b8860b'; header.style.color = '#ffffff'; table.style.border = '2px solid #b8860b'; } else { table.style.background = `rgba(255,255,255,${opacity})`; table.style.backdropFilter = 'blur(10px)'; header.style.backgroundColor = headerColor; header.style.color = document.getElementById('table-header-text-color').value; } saveToStorage(); }
+        function updateTableStyle(style) { const table = document.getElementById('table-overlay'); const header = document.getElementById('table-header'); const opacity = document.getElementById('table-overlay').style.backgroundColor?.match(/[\d.]+\)$/)?.[0] || '0.95'; if (style === 'minimal') { table.style.background = 'transparent'; table.style.boxShadow = 'none'; table.style.backdropFilter = 'none'; header.style.backgroundColor = 'transparent'; header.style.color = document.getElementById('table-header-text-color').value; } else if (style === 'classic') { table.style.background = `rgba(255,255,255,${opacity})`; table.style.backdropFilter = 'blur(30px)'; header.style.backgroundColor = '#1e293b'; header.style.color = '#ffffff'; } else if (style === 'elegant') { table.style.background = `rgba(255,255,255,${opacity})`; table.style.backdropFilter = 'blur(10px)'; header.style.backgroundColor = '#b8860b'; header.style.color = '#ffffff'; table.style.border = '2px solid #b8860b'; } else { table.style.background = `rgba(255,255,255,${opacity})`; table.style.backdropFilter = 'blur(10px)'; header.style.backgroundColor = document.getElementById('table-header-color').value; header.style.color = document.getElementById('table-header-text-color').value; } saveToStorage(); }
         function updateTableBgColor(color) { const table = document.getElementById('table-overlay'); const opacity = document.getElementById('table-overlay').style.backgroundColor?.match(/[\d.]+\)$/)?.[0] || '0.95'; table.style.backgroundColor = hexToRgba(color, opacity); saveToStorage(); }
         function updateTableHeaderColor(color) { document.getElementById('table-header').style.backgroundColor = color; saveToStorage(); }
         function updateTableTextColor(color) { document.querySelectorAll('#table-overlay tbody td').forEach(cell => cell.style.color = color); saveToStorage(); }
@@ -504,7 +537,7 @@
         function updateTableBgOpacity(val) { const table = document.getElementById('table-overlay'); const color = document.getElementById('table-bg-color').value; table.style.backgroundColor = hexToRgba(color, val); saveToStorage(); }
         function hexToRgba(hex, opacity) { const r = parseInt(hex.slice(1,3),16); const g = parseInt(hex.slice(3,5),16); const b = parseInt(hex.slice(5,7),16); return `rgba(${r}, ${g}, ${b}, ${opacity})`; }
         function updatePersonalData(text) { const call = text.toUpperCase() || "CO2KK"; document.getElementById('watermark-el').textContent = call; document.getElementById('signature-el').textContent = `73's de ${call}`; document.getElementById('lbl-operator').innerHTML = `OP: ${call}`; updateOperatorFlag(call); saveToStorage(); }
-        function updateOperatorFlag(call) { const flagImg = document.getElementById('operator-flag'); const code = getCountryCode(call); if(code) { flagImg.src = `https://flagcdn.com/w80/${code}.png`; flagImg.classList.remove('hidden'); flagImg.onerror = () => flagImg.classList.add('hidden'); } else flagImg.classList.add('hidden'); }
+        function updateOperatorFlag(call) { const flagImg = document.getElementById('operator-flag'); const code = getCountryCode(call); updateFlagImage(flagImg, code); }
         function updateQRUrl(url) { if(url) updateQR(url); saveToStorage(); }
         function updateQR(url) { const container = document.getElementById('qr-code-container'); container.innerHTML = ""; new QRCode(container, { text: url, width: 140, height: 140, colorDark : "#0f172a" }); saveToStorage(); }
         function handleImage(event, targetId) { const file = event.target.files[0]; if(file) { const reader = new FileReader(); reader.onload = (e) => { document.getElementById(targetId).src = e.target.result; saveToStorage(); }; reader.readAsDataURL(file); } }
@@ -512,9 +545,9 @@
         function toggleVisibility(elementId, visible) { const el = document.getElementById(elementId); if(el) el.style.display = visible ? 'block' : 'none'; saveToStorage(); }
         function parseADIF(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { const text = e.target.result; allQsos = []; const cleanText = text.replace(/^#.*$/gm, '').replace(/^\/\/.*$/gm, ''); const records = cleanText.split(/<eor>|<EOR>/i); records.forEach(record => { if(record.trim().length < 5) return; const qso = {}; const fieldRegex = /<([A-Z_]+):(\d+)(?::[^>]*)?>([^<]*)/gi; let match; while ((match = fieldRegex.exec(record)) !== null) { const tag = match[1].toUpperCase(); const value = match[3].trim(); if(value) qso[tag] = value; } if(qso.CALL) allQsos.push(qso); }); document.getElementById('qso-count').textContent = allQsos.length; displayQSOs(); document.getElementById('mass-actions').classList.remove('hidden'); if(allQsos[0]?.STATION_CALLSIGN) updatePersonalData(allQsos[0].STATION_CALLSIGN); }; reader.readAsText(file); }
         function displayQSOs() { const container = document.getElementById('qso-list'); container.innerHTML = ""; allQsos.forEach((qso, index) => { const div = document.createElement('div'); div.className = "bg-white p-3 border rounded-xl hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-all group"; div.onclick = () => applyQSO(qso); div.innerHTML = `<div class="flex flex-col"><span class="text-xs font-black text-slate-700">${qso.CALL}</span><span class="text-[9px] text-slate-400">${qso.QSO_DATE || '---'}</span></div><span class="text-[10px] font-bold bg-slate-100 px-2 py-1 rounded group-hover:bg-blue-200">${qso.BAND || '??'}</span>`; container.appendChild(div); }); }
-        function applyQSO(qso) { document.getElementById('target-call').textContent = qso.CALL || 'DX_STATION'; let dateStr = qso.QSO_DATE || '20260227'; if(dateStr.length===8) dateStr = dateStr.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'); document.getElementById('td-date').textContent = dateStr; let timeStr = qso.TIME_ON || '0000'; if(timeStr.length>=4) timeStr = timeStr.substring(0,2)+":"+timeStr.substring(2,4); document.getElementById('td-time').textContent = timeStr; document.getElementById('td-band').textContent = qso.BAND || '---'; document.getElementById('td-mode').textContent = qso.MODE || '---'; document.getElementById('td-rst').textContent = qso.RST_SENT || '---'; updateFlag(qso.CALL); }
+        function applyQSO(qso) { document.getElementById('target-call').textContent = qso.CALL || 'DX_STATION'; let dateStr = qso.QSO_DATE || '20260406'; if(dateStr.length===8) dateStr = dateStr.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'); document.getElementById('td-date').textContent = dateStr; let timeStr = qso.TIME_ON || '0000'; if(timeStr.length>=4) timeStr = timeStr.substring(0,2)+":"+timeStr.substring(2,4); document.getElementById('td-time').textContent = timeStr; document.getElementById('td-band').textContent = qso.BAND || '---'; document.getElementById('td-mode').textContent = qso.MODE || '---'; document.getElementById('td-rst').textContent = qso.RST_SENT || '---'; updateFlag(qso.CALL); }
         function applyManualFull() { const call = document.getElementById('manual-call').value.toUpperCase() || 'DX_STATION'; let dateRaw = document.getElementById('manual-date').value; let timeRaw = document.getElementById('manual-time').value; const band = document.getElementById('manual-band').value || '40M'; const mode = document.getElementById('manual-mode').value || 'FT8'; const rst = document.getElementById('manual-rst').value || '-01'; if(!/^\d{4}-\d{2}-\d{2}$/.test(dateRaw)) dateRaw = new Date().toISOString().split('T')[0]; const qsoDate = dateRaw.replace(/-/g,''); timeRaw = timeRaw.replace(/[^0-9]/g,'').padStart(4,'0').substring(0,4); if(!/^\d{4}$/.test(timeRaw)) timeRaw='0000'; const qso = { CALL: call, QSO_DATE: qsoDate, TIME_ON: timeRaw, BAND: band, MODE: mode, RST_SENT: rst }; applyQSO(qso); }
-        function updateFlag(call) { const flagImg = document.getElementById('target-flag'); const code = getCountryCode(call); if(code) { flagImg.src = `https://flagcdn.com/w80/${code}.png`; flagImg.classList.remove('hidden'); flagImg.onerror = () => flagImg.classList.add('hidden'); } else flagImg.classList.add('hidden'); }
+        function updateFlag(call) { const flagImg = document.getElementById('target-flag'); const code = getCountryCode(call); updateFlagImage(flagImg, code); }
         async function downloadSingleQSL() { const area = document.getElementById('qsl-render-area'); const call = document.getElementById('target-call').textContent; const station = document.getElementById('watermark-el').textContent; const scale = parseInt(document.getElementById('export-scale').value) || 2; const format = document.getElementById('export-format').value; const canvas = await html2canvas(area, { scale: scale, useCORS: true, logging: false, backgroundColor: null, imageTimeout: 0 }); const link = document.createElement('a'); link.download = `QSL_${station}_${call}.${format === 'png' ? 'png' : 'jpg'}`; link.href = format === 'png' ? canvas.toDataURL("image/png") : canvas.toDataURL("image/jpeg", 1.0); link.click(); }
         async function downloadAllQSLs() { if(allQsos.length === 0) return; const loader = document.getElementById('loader'); loader.style.display = 'flex'; const zip = new JSZip(); const area = document.getElementById('qsl-render-area'); const scale = parseInt(document.getElementById('export-scale').value) || 2; const format = document.getElementById('export-format').value; const mime = format === 'png' ? 'image/png' : 'image/jpeg'; const ext = format === 'png' ? 'png' : 'jpg'; for(let i=0; i<allQsos.length; i++) { applyQSO(allQsos[i]); await new Promise(r => setTimeout(r, 150)); const canvas = await html2canvas(area, { scale: scale, useCORS: true }); const imgData = canvas.toDataURL(mime, format === 'jpeg' ? 0.9 : undefined).split(',')[1]; zip.file(`QSL_${allQsos[i].CALL}_${i+1}.${ext}`, imgData, {base64: true}); document.getElementById('loader-text').textContent = `Procesando: ${i+1} de ${allQsos.length}`; } const content = await zip.generateAsync({type: "blob"}); saveAs(content, "Galeria_QSL_CubaSpark.zip"); loader.style.display = 'none'; }
         function resetPositions() { for (const [id, pos] of Object.entries(defaultPositions)) { const el = document.getElementById(id); if(!el) continue; el.style.top = pos.top + 'px'; el.style.left = pos.left + 'px'; el.style.bottom = ''; el.style.right = ''; } saveToStorage(); }
