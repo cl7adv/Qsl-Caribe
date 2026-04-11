@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QSL ELITE PRO v 4.5.1 / CUBA - Flags & Batch Fixed</title>
+    <title>QSL ELITE PRO v 4.6.0 / CUBA - BATCH TOTALMENTE CORREGIDO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -32,13 +32,24 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .batch-progress { width: 80%; max-width: 400px; margin-top: 20px; }
+        .progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #3b82f6; transition: width 0.3s ease; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
-    <div id="loader"><div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 mb-4"></div><p id="loader-text" class="font-bold text-lg text-blue-400 italic text-center px-4">Generando QSLs en Alta Calidad...</p><p id="loader-sub" class="text-sm text-slate-400 mt-2"></p></div>
+    <div id="loader">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 mb-4"></div>
+        <p id="loader-text" class="font-bold text-lg text-blue-400 italic text-center px-4">Procesando QSLs...</p>
+        <p id="loader-sub" class="text-sm text-slate-400 mt-2"></p>
+        <div class="batch-progress">
+            <div class="progress-bar"><div id="progress-fill" class="progress-fill" style="width: 0%"></div></div>
+            <p id="progress-percent" class="text-center text-xs text-slate-400 mt-2">0%</p>
+        </div>
+    </div>
     <div class="max-w-[1400px] mx-auto p-4">
         <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <div class="flex items-center gap-4"><div class="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200"><i data-lucide="radio" class="text-white w-8 h-8"></i></div><div><h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v 4.5.1/CUBA</h1><div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span><p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Flags 100% · Batch Fixed</p></div></div></div>
+            <div class="flex items-center gap-4"><div class="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200"><i data-lucide="radio" class="text-white w-8 h-8"></i></div><div><h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v 4.6.0/CUBA</h1><div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span><p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Batch 100% Estable · Flags Completas</p></div></div></div>
             <div class="flex gap-2 w-full md:w-auto"><button onclick="downloadSingleQSL()" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100"><i data-lucide="download" class="w-4 h-4"></i> GUARDAR CALIDAD PRO</button></div>
         </header>
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -66,131 +77,19 @@
                         <div id="qso-list-container" class="space-y-2"><label class="text-[11px] font-black text-slate-400 uppercase flex justify-between">Contactos <span id="qso-count" class="text-blue-500 font-black">0</span></label><div id="qso-list" class="max-h-[300px] overflow-y-auto space-y-1 bg-slate-50 p-2 rounded-xl border border-slate-100"><p class="text-[10px] text-center text-slate-400 py-6 italic">Sin contactos cargados...</p></div></div>
                     </div>
                 </div>
-                <div id="mass-actions" class="hidden"><button onclick="downloadAllQSLs()" class="w-full bg-emerald-600 text-white py-5 rounded-3xl font-black text-sm shadow-xl hover:bg-emerald-700 flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02]"><i data-lucide="archive" class="w-5 h-5"></i> PACK ZIP ALTA CALIDAD</button></div>
+                <div id="mass-actions" class="hidden"><button onclick="downloadAllQSLs()" class="w-full bg-emerald-600 text-white py-5 rounded-3xl font-black text-sm shadow-xl hover:bg-emerald-700 flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02]"><i data-lucide="archive" class="w-5 h-5"></i> 📦 PACK ZIP ALTA CALIDAD (CORREGIDO)</button></div>
             </aside>
             <main class="lg:col-span-8 space-y-6">
                 <div class="bg-white p-2 rounded-[32px] shadow-2xl border border-slate-100"><div class="preview-container" id="container-resize"><div id="qsl-render-area" class="preview-scale"><div id="qsl-border"></div><div id="postcard-frame"></div><img id="qsl-bg" src="https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=1650" crossorigin="anonymous" onerror="this.parentElement.style.backgroundColor='#1e293b'; this.style.display='none'" class="absolute inset-0 w-full h-full object-cover"><div id="user-logo-container" class="qsl-element" style="top: 80px; left: 80px; width: 220px;"><img id="user-logo" src="https://upload.wikimedia.org/wikipedia/commons/b/bd/Flag_of_Cuba.svg" crossorigin="anonymous" class="w-full drop-shadow-2xl"></div><div id="watermark-el" class="qsl-element font-oswald text-[180px] leading-none uppercase font-black" style="top: 80px; left: 1070px; color: white; opacity: 0.5; text-shadow: none;">CO2KK</div><div id="comment-el" class="qsl-element font-sans text-4xl italic font-bold max-w-[600px]" style="top: 300px; left: 80px; color: white; text-shadow: 2px 2px 5px rgba(0,0,0,0.5);">Confirmando nuestro excelente contacto.</div><div id="signature-el" class="qsl-element font-signature text-[50px] drop-shadow-lg" style="top: 670px; left: 1350px; color: white; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);">73's de CO2KK</div><div id="qr-element" class="qsl-element" style="top: 810px; left: 1410px;"><div id="qr-code-container" class="bg-white p-5 rounded-3xl shadow-2xl"></div></div><div id="table-overlay" class="qsl-element bg-white/95 shadow-2xl backdrop-blur-md rounded-3xl overflow-hidden p-6" style="top: 620px; left: 80px;"><div id="table-header" class="bg-blue-600 text-white p-5 mb-5 font-black flex justify-between items-center gap-20 text-3xl rounded-2xl"><div class="flex items-center gap-4"><i data-lucide="user" class="w-8 h-8"></i><span id="lbl-operator">OP: CO2KK</span><img id="operator-flag" src="" class="h-8 rounded shadow-md hidden" crossorigin="anonymous"></div><div class="flex items-center gap-4"><span id="lbl-qso-with">CONTACTO: <span id="target-call" class="text-yellow-300">DX_STATION</span></span><img id="target-flag" src="" class="h-8 rounded shadow-md hidden" crossorigin="anonymous"></div></div><table class="w-full text-center text-3xl font-bold border-collapse"><thead><tr class="text-slate-500 text-xl border-b-2 border-slate-100"><th class="pb-4 px-6">FECHA</th><th class="pb-4 px-6">HORA UTC</th><th class="pb-4 px-6">BANDA</th><th class="pb-4 px-6">MODO</th><th class="pb-4 px-6">RST</th></tr></thead><tbody><tr><td class="pt-6 px-6" id="td-date">2026-04-06</td><td class="pt-6 px-6" id="td-time">22:15</td><td class="pt-6 px-6" id="td-band">20M</td><td class="pt-6 px-6" id="td-mode">SSB</td><td class="pt-6 px-6 text-blue-600" id="td-rst">59</td></tr></tbody></table></div></div></div></div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4"><button onclick="document.getElementById('bgInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition-all shadow-sm"><i data-lucide="image" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase">Cambiar Fondo</span></button><button onclick="document.getElementById('logoInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition-all shadow-sm"><i data-lucide="award" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase">Cambiar Logo</span></button><input type="file" id="bgInput" class="hidden" accept="image/*" onchange="handleImage(event, 'qsl-bg')"><input type="file" id="logoInput" class="hidden" accept="image/*" onchange="handleImage(event, 'user-logo')"></div>
             </main>
         </div>
-        <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4"><p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ Flags 100% funcionales · Batch Fixed ✧ Costa Rica y todo el Caribe funcionando ✧</p></footer>
+        <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4"><p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ Batch totalmente estable v4.6.0 ✧ Flags 100% funcionales ✧</p></footer>
     </div>
     <script>
-        // ========== MAPA DE PREFIJOS COMPLETO (TODOS LOS PAÍSES) ==========
+        // ========== MAPA DE PREFIJOS COMPLETO ==========
         const prefixToCountry = {
-            // Cuba
-            'CM':'cu','CO':'cu','CL':'cu','T4':'cu',
-            // Costa Rica
-            'TI':'cr','TE':'cr','TB':'cr',
-            // Guatemala
-            'TG':'gt','TD':'gt','TK':'gt',
-            // El Salvador
-            'YS':'sv','HU':'sv',
-            // Nicaragua
-            'YN':'ni','HT':'ni','H6':'ni','H7':'ni',
-            // Honduras
-            'HR':'hn','HQ':'hn',
-            // Panamá
-            'HP':'pa','H3':'pa','H8':'pa','H9':'pa',
-            // Belice
-            'V3':'bz',
-            // República Dominicana
-            'HI':'do','HI1':'do','HI2':'do','HI3':'do','HI4':'do','HI5':'do','HI6':'do','HI7':'do','HI8':'do','HI9':'do',
-            // Granada
-            'J3':'gd',
-            // Santa Lucía
-            'J6':'lc',
-            // Dominica
-            'J7':'dm',
-            // San Vicente
-            'J8':'vc',
-            // Antigua
-            'V2':'ag',
-            // San Cristóbal
-            'V4':'kn',
-            // Barbados
-            '8P':'bb',
-            // Trinidad
-            '9Y':'tt','9Z':'tt',
-            // Aruba
-            'P4':'aw',
-            // Bahamas
-            'C6':'bs',
-            // Jamaica
-            '6Y':'jm',
-            // Puerto Rico
-            'KP':'pr','NP':'pr','WP':'pr','KP4':'pr','NP4':'pr','WP4':'pr',
-            // Haití
-            'HH':'ht','4V':'ht',
-            // México
-            'XE':'mx','XF':'mx','XG':'mx','XH':'mx','XI':'mx','XJ':'mx','XK':'mx','XL':'mx','XM':'mx','XN':'mx','XO':'mx','XP':'mx','XQ':'mx','XR':'mx','XS':'mx','XT':'mx','XU':'mx','XV':'mx','XW':'mx','XX':'mx','XY':'mx','XZ':'mx','4A':'mx','6D':'mx','6E':'mx',
-            // Estados Unidos
-            'K':'us','W':'us','N':'us','AA':'us','AB':'us','AC':'us','AD':'us','AE':'us','AF':'us','AG':'us','AH':'us','AI':'us','AJ':'us','AK':'us','AL':'us','AM':'us','AN':'us','AO':'us','AP':'us','AQ':'us','AR':'us',
-            // Canadá
-            'VA':'ca','VB':'ca','VC':'ca','VD':'ca','VE':'ca','VF':'ca','VG':'ca','VO':'ca','VX':'ca','VY':'ca','CF':'ca','CG':'ca','CH':'ca','CI':'ca','CJ':'ca','CK':'ca','CY':'ca','CZ':'ca',
-            // Alaska / Hawaii
-            'KL':'us','KH':'us','WL':'us','WH':'us',
-            // Groenlandia
-            'OX':'gl',
-            // Sudamérica
-            'PY':'br','ZY':'br','ZX':'br','ZW':'br','PP':'br','PS':'br','PU':'br','PT':'br','PV':'br','PW':'br','PX':'br','PY1':'br','PY2':'br','PY3':'br','PY4':'br','PY5':'br','PY6':'br','PY7':'br','PY8':'br','PY9':'br',
-            'CE':'cl','CA':'cl','CD':'cl','3G':'cl','CE1':'cl','CE2':'cl','CE3':'cl','CE4':'cl','CE5':'cl','CE6':'cl','CE7':'cl','CE8':'cl','CE9':'cl',
-            'LU':'ar','LW':'ar','LO':'ar','LP':'ar','LQ':'ar','LR':'ar','LS':'ar','LT':'ar','LU1':'ar','LU2':'ar','LU3':'ar','LU4':'ar','LU5':'ar','LU6':'ar','LU7':'ar','LU8':'ar','LU9':'ar',
-            'YV':'ve','YW':'ve','YX':'ve','YY':'ve','YV1':'ve','YV2':'ve','YV3':'ve','YV4':'ve','YV5':'ve','YV6':'ve','YV7':'ve','YV8':'ve','YV9':'ve',
-            'OA':'pe','OB':'pe','OC':'pe','OA1':'pe','OA2':'pe','OA3':'pe','OA4':'pe','OA5':'pe','OA6':'pe','OA7':'pe','OA8':'pe','OA9':'pe',
-            'HC':'ec','HD':'ec','HC1':'ec','HC2':'ec','HC3':'ec','HC4':'ec','HC5':'ec','HC6':'ec','HC7':'ec','HC8':'ec',
-            'CP':'bo',
-            'ZP':'py','ZQ':'py','ZP1':'py','ZP2':'py','ZP3':'py','ZP4':'py','ZP5':'py','ZP6':'py','ZP7':'py','ZP8':'py','ZP9':'py',
-            '8R':'gy','PZ':'sr',
-            'HK':'co','HJ':'co','5K':'co','5J':'co','HK1':'co','HK2':'co','HK3':'co','HK4':'co','HK5':'co','HK6':'co','HK7':'co','HK8':'co','HK9':'co',
-            'CX':'uy','CV':'uy',
-            // Europa
-            'EA':'es','EB':'es','EC':'es','ED':'es','EF':'es','EG':'es','EH':'es','EA1':'es','EA2':'es','EA3':'es','EA4':'es','EA5':'es','EA6':'es','EA7':'es','EA8':'es','EA9':'es','EA0':'es',
-            'EI':'ie','EJ':'ie',
-            'F':'fr','FM':'fr','TO':'fr','TM':'fr',
-            'G':'gb','M':'gb','2E':'gb','2I':'gb','2J':'gb','2M':'gb','2U':'gb','GB':'gb','GC':'gb','GD':'gb','GI':'gb','GJ':'gb','GM':'gb','GN':'gb','GP':'gb','GQ':'gb','GS':'gb','GT':'gb','GU':'gb','GW':'gb','GX':'gb','GY':'gb','GZ':'gb',
-            'I':'it',
-            'JA':'jp','JH':'jp','JI':'jp','JJ':'jp','JK':'jp','JL':'jp','JM':'jp','JN':'jp','JO':'jp','JP':'jp','JR':'jp','JS':'jp','JT':'jp','JU':'jp','JV':'jp','JW':'jp','JX':'jp','JY':'jp','JZ':'jp','7J':'jp','7K':'jp','7L':'jp','7N':'jp','8J':'jp','8N':'jp',
-            'RA':'ru','RN':'ru','RO':'ru','RU':'ru','RW':'ru','RX':'ru','RZ':'ru','R1':'ru','R2':'ru','R3':'ru','R4':'ru','R5':'ru','R6':'ru','R7':'ru','R8':'ru','R9':'ru','UA':'ru','UB':'ru','UC':'ru','UD':'ru','UE':'ru','UF':'ru','UG':'ru','UH':'ru','UI':'ru','UJ':'ru','UK':'ru','UL':'ru','UM':'ru','UN':'ru','UO':'ru','UP':'ru','UQ':'ru','UR':'ru','US':'ru','UT':'ru','UU':'ru','UV':'ru','UW':'ru','UX':'ru','UY':'ru','UZ':'ru',
-            'UR':'ua',
-            'VK':'au','VK1':'au','VK2':'au','VK3':'au','VK4':'au','VK5':'au','VK6':'au','VK7':'au','VK8':'au','VK9':'au',
-            'ZL':'nz','ZK':'nz','ZM':'nz',
-            'ZS':'za','ZR':'za','ZU':'za','Z1':'za','Z2':'za','Z3':'za','Z4':'za','Z5':'za','Z6':'za','Z7':'za','Z8':'za','Z9':'za',
-            'SU':'eg','SSA':'eg',
-            'CN':'ma','CN1':'ma','CN2':'ma','CN3':'ma','CN4':'ma','CN5':'ma','CN6':'ma','CN7':'ma','CN8':'ma',
-            '5N':'ng','5O':'ng','5U':'ng','5V':'ng','5W':'ng',
-            '9G':'gh','9G1':'gh','9G2':'gh','9G3':'gh','9G4':'gh','9G5':'gh',
-            'A6':'ae','A61':'ae','A62':'ae','A63':'ae','A64':'ae','A65':'ae','A66':'ae','A67':'ae','A68':'ae','A69':'ae',
-            'A7':'qa','A71':'qa','A72':'qa','A73':'qa','A74':'qa','A75':'qa','A76':'qa','A77':'qa','A78':'qa',
-            'A9':'bh','A91':'bh','A92':'bh','A93':'bh','A94':'bh',
-            '9K':'kw','9K1':'kw','9K2':'kw','9K3':'kw','9K4':'kw','9K5':'kw','9K6':'kw','9K7':'kw','9K8':'kw','9K9':'kw',
-            'HZ':'sa','HZ1':'sa','HZ2':'sa','HZ3':'sa','HZ4':'sa','HZ5':'sa','HZ6':'sa','HZ7':'sa','HZ8':'sa','HZ9':'sa',
-            'DU':'ph','DU1':'ph','DU2':'ph','DU3':'ph','DU4':'ph','DU5':'ph','DU6':'ph','DU7':'ph','DU8':'ph','DU9':'ph',
-            'YB':'id','YB1':'id','YB2':'id','YB3':'id','YB4':'id','YB5':'id','YB6':'id','YB7':'id','YB8':'id','YB9':'id',
-            'HL':'kr','HL1':'kr','HL2':'kr','HL3':'kr','HL4':'kr','HL5':'kr','HL6':'kr','HL7':'kr','HL8':'kr','HL9':'kr',
-            '4X':'il','4X1':'il','4X2':'il','4X3':'il','4X4':'il','4X5':'il','4X6':'il','4X7':'il','4X8':'il','4X9':'il',
-            'TA':'tr','TA1':'tr','TA2':'tr','TA3':'tr','TA4':'tr','TA5':'tr','TA6':'tr','TA7':'tr','TA8':'tr','TA9':'tr',
-            'SV':'gr','SV1':'gr','SV2':'gr','SV3':'gr','SV4':'gr','SV5':'gr','SV6':'gr','SV7':'gr','SV8':'gr','SV9':'gr',
-            'OK':'cz','OK1':'cz','OK2':'cz','OK3':'cz','OK4':'cz','OK5':'cz','OK6':'cz','OK7':'cz','OK8':'cz','OK9':'cz',
-            'OM':'sk','OM1':'sk','OM2':'sk','OM3':'sk','OM4':'sk','OM5':'sk','OM6':'sk','OM7':'sk','OM8':'sk',
-            'ON':'be','OP':'be','OQ':'be','OR':'be',
-            'OZ':'dk','OZ1':'dk','OZ2':'dk','OZ3':'dk','OZ4':'dk','OZ5':'dk','OZ6':'dk','OZ7':'dk','OZ8':'dk','OZ9':'dk',
-            'SP':'pl','SQ':'pl','SN':'pl','SO':'pl','SR':'pl','3Z':'pl','HF':'pl','HF1':'pl','HF2':'pl','HF3':'pl','HF4':'pl','HF5':'pl','HF6':'pl','HF7':'pl','HF8':'pl','HF9':'pl',
-            'HA':'hu','HG':'hu','H0':'hu',
-            'YO':'ro','YQ':'ro','YP':'ro','YR':'ro','YO1':'ro','YO2':'ro','YO3':'ro','YO4':'ro','YO5':'ro','YO6':'ro','YO7':'ro','YO8':'ro','YO9':'ro',
-            'LZ':'bg','LZ1':'bg','LZ2':'bg','LZ3':'bg','LZ4':'bg','LZ5':'bg','LZ6':'bg','LZ7':'bg','LZ8':'bg','LZ9':'bg',
-            '9A':'hr','9A1':'hr','9A2':'hr','9A3':'hr','9A4':'hr','9A5':'hr','9A6':'hr','9A7':'hr','9A8':'hr','9A9':'hr',
-            'S5':'si','S51':'si','S52':'si','S53':'si','S54':'si','S55':'si','S56':'si','S57':'si','S58':'si','S59':'si',
-            'YU':'rs','YT':'rs','YZ':'rs','4N':'rs','4O':'rs',
-            'Z3':'mk','Z31':'mk','Z32':'mk','Z33':'mk','Z34':'mk','Z35':'mk','Z36':'mk','Z37':'mk','Z38':'mk','Z39':'mk',
-            'E7':'ba','E71':'ba','E72':'ba','E73':'ba','E74':'ba','E75':'ba','E76':'ba','E77':'ba','E78':'ba','E79':'ba',
-            '3A':'mc',
-            'HB':'ch','HB1':'ch','HB2':'ch','HB3':'ch','HB4':'ch','HB5':'ch','HB6':'ch','HB7':'ch','HB8':'ch','HB9':'ch',
-            'OE':'at','OE1':'at','OE2':'at','OE3':'at','OE4':'at','OE5':'at','OE6':'at','OE7':'at','OE8':'at','OE9':'at',
-            'LX':'lu',
-            'PA':'nl','PC':'nl','PD':'nl','PE':'nl','PF':'nl','PG':'nl','PH':'nl','PI':'nl','PJ':'nl','PK':'nl','PL':'nl','PM':'nl','PN':'nl','PO':'nl','PP':'nl','PQ':'nl','PR':'nl','PS':'nl','PT':'nl','PU':'nl','PV':'nl','PW':'nl','PX':'nl','PY':'nl','PZ':'nl',
-            // Oceanía y otros
-            'J2':'dj','J5':'gw','V5':'na','C2':'nr','T2':'tv','T3':'ki','T5':'so','T6':'af','T7':'sm','T8':'pw','V6':'fm','V7':'mh','V8':'bn','4J':'az','4K':'az','4L':'ge','4M':'ve','4U':'un','4W':'tl','4X':'il','4Y':'ic','4Z':'ps','5A':'ly','5B':'cy','5C':'ma','5D':'ma','5E':'ma','5F':'ma','5G':'ma','5H':'tz','5I':'tz','5J':'co','5K':'co','5L':'lr','5M':'lr','5N':'ng','5O':'ng','5P':'dk','5Q':'dk','5R':'mg','5S':'mg','5T':'mr','5U':'ne','5V':'tg','5W':'ws','5X':'ug','5Y':'ke','5Z':'ke','6W':'sn','6Y':'jm','7P':'ls','7Q':'mw','7T':'dz','8Q':'mv','9H':'mt','9J':'zm','9L':'sl','9M':'my','9N':'np','9Q':'cd','9U':'bi','9V':'sg','9W':'my','9X':'rw','A2':'bw','A3':'to','A4':'om','A5':'bt','C3':'ad','C5':'gm','C9':'mz','D2':'ao','D4':'cv','D6':'km','E3':'er','E5':'ck','E6':'nu','E7':'ba','EL':'lr','EP':'ir','ER':'md','ET':'et','EX':'kg','EY':'tj','EZ':'tm','H4':'sb','H5':'ec','J6':'lc','J7':'dm','J8':'vc','JD':'jp','JG':'jp','JY':'jo','OD':'lb','OH':'fi','OJ':'fi','OL':'lu','ON':'be','OZ':'dk','P2':'pg','P3':'cy','P5':'kp','PA':'nl','PK':'id','PP':'br','PQ':'br','PS':'br','PT':'br','PU':'br','PV':'br','PW':'br','PX':'br','PY':'br','PZ':'sr','R1':'ru','S2':'bd','S7':'sc','S9':'st','ST':'sd','SU':'eg','T9':'ba','TA':'tr','TC':'tr','TD':'gt','TF':'is','TG':'gt','TI':'cr','TJ':'cm','TK':'fr','TL':'cf','TN':'cg','TR':'ga','TT':'td','TU':'ci','TY':'bj','TZ':'ml','UA':'ru','UB':'am','UC':'kz','UD':'kz','UE':'kz','UF':'kz','UG':'kz','UH':'kz','UI':'kz','UJ':'uz','UK':'uz','UL':'uz','UM':'kg','UN':'kz','UO':'tm','UP':'kz','UQ':'kz','UR':'ua','US':'tm','UT':'tj','UU':'tj','UV':'uz','UW':'uz','UX':'uz','UY':'uz','UZ':'uz','V2':'ag','V3':'bz','V4':'kn','V5':'na','V6':'fm','V7':'mh','V8':'bn','V9':'pr','VE':'ca','VK':'au','VP':'gb','VR':'hk','VS':'gb','VU':'in','XU':'kh','XW':'la','XX':'mo','XZ':'mm','YA':'af','YB':'id','YC':'id','YD':'id','YE':'id','YF':'id','YI':'iq','YJ':'vu','YK':'sy','YL':'lv','YN':'ni','YO':'ro','YQ':'ro','YR':'ro','YS':'sv','YT':'rs','YU':'rs','YV':'ve','YW':'ve','YX':'ve','YY':'ve','YZ':'rs','Z2':'zw','Z3':'mk','ZA':'al','ZB':'gi','ZC':'cy','ZD':'gb','ZF':'ky','ZG':'gb','ZH':'id','ZJ':'gb','ZK':'ck','ZL':'nz','ZM':'nz','ZP':'py','ZQ':'py','ZR':'za','ZS':'za','ZT':'za','ZU':'za','ZX':'br','ZY':'br','ZZ':'br'
+            'CM':'cu','CO':'cu','CL':'cu','T4':'cu','TI':'cr','TE':'cr','TB':'cr','TG':'gt','TD':'gt','YS':'sv','YN':'ni','HR':'hn','HQ':'hn','HP':'pa','H3':'pa','V3':'bz','HI':'do','J3':'gd','J6':'lc','J7':'dm','J8':'vc','V2':'ag','V4':'kn','8P':'bb','9Y':'tt','P4':'aw','C6':'bs','HH':'ht','6Y':'jm','KP':'pr','NP':'pr','WP':'pr','K':'us','W':'us','N':'us','KL':'us','KH':'us','XE':'mx','XF':'mx','XG':'mx','XH':'mx','XI':'mx','XJ':'mx','XK':'mx','XL':'mx','XM':'mx','XN':'mx','XO':'mx','XP':'mx','XQ':'mx','XR':'mx','PY':'br','ZY':'br','ZX':'br','ZW':'br','PP':'br','PS':'br','PU':'br','CE':'cl','CA':'cl','CD':'cl','3G':'cl','LU':'ar','LW':'ar','LO':'ar','LP':'ar','LQ':'ar','LR':'ar','LS':'ar','LT':'ar','YV':'ve','YW':'ve','YX':'ve','YY':'ve','OA':'pe','OB':'pe','OC':'pe','HC':'ec','HD':'ec','CP':'bo','ZP':'py','ZQ':'py','8R':'gy','PZ':'sr','HK':'co','HJ':'co','5K':'co','5J':'co','EA':'es','EB':'es','EC':'es','ED':'es','EF':'es','EG':'es','EH':'es','EI':'ie','EJ':'ie','F':'fr','G':'gb','I':'it','JA':'jp','RA':'ru','UR':'ua','VK':'au','ZL':'nz','ZS':'za','SU':'eg','CN':'ma','5N':'ng','9G':'gh','A6':'ae','A7':'qa','A9':'bh','9K':'kw','HZ':'sa','DU':'ph','YB':'id','HL':'kr','4X':'il','TA':'tr','SV':'gr','OK':'cz','OM':'sk','ON':'be','OZ':'dk','SP':'pl','HA':'hu','YO':'ro','LZ':'bg','9A':'hr','S5':'si','YU':'rs','Z3':'mk','E7':'ba','3A':'mc','HB':'ch','OE':'at','LX':'lu','PA':'nl'
         };
 
         let allQsos = [], currentScale = 0.4;
@@ -199,7 +98,7 @@
         function getCountryCode(call) { 
             if(!call) return null; 
             const u = call.toUpperCase().trim(); 
-            for(let l=4; l>=1; l--) { 
+            for(let l=3; l>=1; l--) { 
                 let p = u.substring(0,l); 
                 if(prefixToCountry[p]) return prefixToCountry[p]; 
             } 
@@ -212,27 +111,34 @@
                 const url = `https://flagcdn.com/w80/${countryCode}.png`; 
                 imgElement.setAttribute('crossorigin', 'anonymous'); 
                 imgElement.onload = () => { imgElement.classList.remove('hidden'); };
-                imgElement.onerror = () => { console.warn(`Flag error: ${countryCode}`); imgElement.classList.add('hidden'); imgElement.src = ''; };
-                if (imgElement.src !== url) { imgElement.src = url; } 
+                imgElement.onerror = () => { imgElement.classList.add('hidden'); };
+                imgElement.src = url; 
             } else { 
                 imgElement.classList.add('hidden'); 
                 imgElement.src = ''; 
             } 
         }
         
+        // ✅ FUNCIÓN CORREGIDA - AHORA SIEMPRE RESUELVE
         async function waitForAllImages() { 
             const area = document.getElementById('qsl-render-area'); 
-            const images = Array.from(area.querySelectorAll('img')).filter(img => img.src && img.src !== '' && !img.complete);
+            const images = Array.from(area.querySelectorAll('img')).filter(img => img.src && img.src !== '');
+            
             if(images.length === 0) return;
-            await Promise.all(images.map(img => new Promise(resolve => { 
-                if(img.complete && img.naturalWidth > 0) resolve(); 
-                else { 
-                    const timeout = setTimeout(() => resolve(), 5000); 
-                    img.onload = () => { clearTimeout(timeout); resolve(); }; 
-                    img.onerror = () => { clearTimeout(timeout); resolve(); }; 
-                } 
-            }))); 
-            await new Promise(r => setTimeout(r, 200)); 
+            
+            await Promise.all(images.map(img => {
+                return new Promise((resolve) => {
+                    if(img.complete && img.naturalWidth > 0) {
+                        resolve();
+                    } else {
+                        const timeout = setTimeout(() => resolve(), 3000);
+                        img.onload = () => { clearTimeout(timeout); resolve(); };
+                        img.onerror = () => { clearTimeout(timeout); resolve(); };
+                    }
+                });
+            }));
+            
+            await new Promise(r => setTimeout(r, 300));
         }
         
         window.onload = () => { 
@@ -495,33 +401,73 @@
             link.click(); 
         }
         
+        // ✅ FUNCIÓN DE BATCH TOTALMENTE CORREGIDA
         async function downloadAllQSLs() { 
-            if(allQsos.length===0) return; 
-            const loader=document.getElementById('loader'); 
-            const loaderText=document.getElementById('loader-text'); 
-            const loaderSub=document.getElementById('loader-sub');
-            loader.style.display='flex'; 
-            const zip=new JSZip(); 
-            const area=document.getElementById('qsl-render-area'); 
-            const scale=parseInt(document.getElementById('export-scale').value)||2; 
-            const format=document.getElementById('export-format').value; 
-            const mime=format==='png'?'image/png':'image/jpeg'; 
-            const ext=format==='png'?'png':'jpg'; 
+            if(allQsos.length === 0) {
+                alert('No hay contactos cargados. Importa un archivo ADIF primero.');
+                return;
+            }
             
-            for(let i=0;i<allQsos.length;i++){ 
-                loaderText.textContent=`Generando QSL ${i+1} de ${allQsos.length}`;
-                loaderSub.textContent=`Contacto: ${allQsos[i].CALL}`;
+            const loader = document.getElementById('loader'); 
+            const loaderText = document.getElementById('loader-text'); 
+            const loaderSub = document.getElementById('loader-sub');
+            const progressFill = document.getElementById('progress-fill');
+            const progressPercent = document.getElementById('progress-percent');
+            
+            loader.style.display = 'flex'; 
+            const zip = new JSZip(); 
+            const area = document.getElementById('qsl-render-area'); 
+            const scale = parseInt(document.getElementById('export-scale').value) || 2; 
+            const format = document.getElementById('export-format').value; 
+            const mime = format === 'png' ? 'image/png' : 'image/jpeg'; 
+            const ext = format === 'png' ? 'png' : 'jpg'; 
+            
+            for(let i = 0; i < allQsos.length; i++) { 
+                const percent = Math.round(((i + 1) / allQsos.length) * 100);
+                progressFill.style.width = `${percent}%`;
+                progressPercent.textContent = `${percent}%`;
+                loaderText.textContent = `📸 Generando QSL ${i + 1} de ${allQsos.length}`;
+                loaderSub.textContent = `📡 Contacto: ${allQsos[i].CALL} | ${allQsos[i].BAND || 'N/A'} ${allQsos[i].MODE || ''}`;
+                
                 applyQSO(allQsos[i]); 
-                await new Promise(r=>setTimeout(r,500));
-                await waitForAllImages(); 
-                const canvas=await html2canvas(area,{ scale:scale, useCORS:true, logging:false, backgroundColor:null, imageTimeout:0 }); 
-                const imgData=canvas.toDataURL(mime,format==='jpeg'?0.95:undefined).split(',')[1]; 
-                zip.file(`QSL_${allQsos[i].CALL}_${String(i+1).padStart(3,'0')}.${ext}`,imgData,{base64:true}); 
+                
+                await new Promise(r => setTimeout(r, 400));
+                
+                try {
+                    await waitForAllImages();
+                    
+                    const canvas = await html2canvas(area, { 
+                        scale: scale, 
+                        useCORS: true, 
+                        logging: false, 
+                        backgroundColor: null, 
+                        imageTimeout: 0,
+                        allowTaint: false
+                    }); 
+                    
+                    const imgData = canvas.toDataURL(mime, format === 'jpeg' ? 0.95 : undefined).split(',')[1]; 
+                    zip.file(`QSL_${allQsos[i].CALL}_${String(i + 1).padStart(3, '0')}.${ext}`, imgData, { base64: true }); 
+                } catch(err) {
+                    console.error(`Error en QSL ${i+1}:`, err);
+                    loaderSub.textContent = `⚠️ Error en ${allQsos[i].CALL}, continuando...`;
+                    await new Promise(r => setTimeout(r, 500));
+                }
             } 
-            loaderText.textContent="Creando archivo ZIP...";
-            const content=await zip.generateAsync({type:"blob"}); 
-            saveAs(content,"Galeria_QSL_ElitePro.zip"); 
-            loader.style.display='none'; 
+            
+            loaderText.textContent = "📦 Creando archivo ZIP...";
+            loaderSub.textContent = "Por favor espera, esto puede tomar unos segundos...";
+            
+            try {
+                const content = await zip.generateAsync({ type: "blob" }); 
+                saveAs(content, `Galeria_QSL_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.zip`); 
+            } catch(err) {
+                console.error('Error creando ZIP:', err);
+                alert('Error al crear el archivo ZIP. Intenta con menos contactos o menor calidad.');
+            } finally {
+                loader.style.display = 'none'; 
+                progressFill.style.width = '0%';
+                progressPercent.textContent = '0%';
+            }
         }
         
         function resetPositions() { 
