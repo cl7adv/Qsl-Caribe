@@ -75,7 +75,7 @@
                         <div class="grid grid-cols-2 gap-2 pt-4"><button onclick="resetPositions()" class="bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all"><i data-lucide="rotate-ccw" class="inline w-4 h-4 mr-1"></i> Rest. posiciones</button><button onclick="resetAll()" class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all"><i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1"></i> Rest. todo</button></div>
                     </div>
                     <div id="tab-data" class="p-6 hidden space-y-6">
-                        <div class="space-y-4 bg-blue-50/30 p-4 rounded-2xl border border-blue-100"><label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> LLENADO MANUAL DEL QSO</label><div class="grid grid-cols-2 gap-3"><input type="text" id="manual-call" placeholder="CALL" value="TI2RAT" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2"><input type="text" id="manual-date" placeholder="FECHA (YYYY-MM-DD)" value="2026-04-06" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-time" placeholder="HORA (HHMM)" value="2215" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-band" placeholder="BANDA" value="20M" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"></div><button onclick="applyManualFull()" class="w-full bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700 transition-all uppercase tracking-widest">APLICAR AL DISEÑO</button></div>
+                        <div class="space-y-4 bg-blue-50/30 p-4 rounded-2xl border border-blue-100"><label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> LLENADO MANUAL DEL QSO</label><div class="grid grid-cols-2 gap-3"><input type="text" id="manual-call" placeholder="CALL" value="YD6ASL" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2"><input type="text" id="manual-date" placeholder="FECHA (YYYY-MM-DD)" value="2026-04-06" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-time" placeholder="HORA (HHMM)" value="2215" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-band" placeholder="BANDA" value="20M" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"></div><button onclick="applyManualFull()" class="w-full bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700 transition-all uppercase tracking-widest">APLICAR AL DISEÑO</button></div>
                         <button onclick="document.getElementById('adifInput').click()" class="w-full bg-slate-800 text-white p-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-900 shadow-lg"><i data-lucide="file-plus" class="w-4 h-4"></i> IMPORTAR ADIF</button>
                         <input type="file" id="adifInput" class="hidden" accept=".adi,.adif" onchange="parseADIF(event)">
                         <div id="qso-list-container" class="space-y-2"><label class="text-[11px] font-black text-slate-400 uppercase flex justify-between">Contactos <span id="qso-count" class="text-blue-500 font-black">0</span></label><div id="qso-list" class="max-h-[300px] overflow-y-auto space-y-1 bg-slate-50 p-2 rounded-xl border border-slate-100"><p class="text-[10px] text-center text-slate-400 py-6 italic">Sin contactos cargados...</p></div></div>
@@ -99,18 +99,50 @@
         <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4"><p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ v5.0 FINAL - Batch completamente funcional ✧</p></footer>
     </div>
     <script>
-        // ========== MAPA DE PREFIJOS COMPLETO ==========
+        // ========== MAPA DE PREFIJOS COMPLETO (CON INDONESIA Y URUGUAY) ==========
         const prefixToCountry = {
-            'CM':'cu','CO':'cu','CL':'cu','T4':'cu','TI':'cr','TE':'cr','TB':'cr','TG':'gt','TD':'gt','YS':'sv','YN':'ni','HR':'hn','HQ':'hn','HP':'pa','H3':'pa','V3':'bz','HI':'do','J3':'gd','J6':'lc','J7':'dm','J8':'vc','V2':'ag','V4':'kn','8P':'bb','9Y':'tt','P4':'aw','C6':'bs','HH':'ht','6Y':'jm','KP':'pr','NP':'pr','WP':'pr','K':'us','W':'us','N':'us','KL':'us','KH':'us','XE':'mx','XF':'mx','XG':'mx','XH':'mx','XI':'mx','XJ':'mx','XK':'mx','XL':'mx','XM':'mx','XN':'mx','XO':'mx','XP':'mx','XQ':'mx','XR':'mx','PY':'br','ZY':'br','ZX':'br','ZW':'br','PP':'br','PS':'br','PU':'br','CE':'cl','CA':'cl','CD':'cl','3G':'cl','LU':'ar','LW':'ar','LO':'ar','LP':'ar','LQ':'ar','LR':'ar','LS':'ar','LT':'ar','YV':'ve','YW':'ve','YX':'ve','YY':'ve','OA':'pe','OB':'pe','OC':'pe','HC':'ec','HD':'ec','CP':'bo','ZP':'py','ZQ':'py','8R':'gy','PZ':'sr','HK':'co','HJ':'co','5K':'co','5J':'co','EA':'es','EB':'es','EC':'es','ED':'es','EF':'es','EG':'es','EH':'es','EI':'ie','EJ':'ie','F':'fr','G':'gb','I':'it','JA':'jp','RA':'ru','UR':'ua','VK':'au','ZL':'nz','ZS':'za','SU':'eg','CN':'ma','5N':'ng','9G':'gh','A6':'ae','A7':'qa','A9':'bh','9K':'kw','HZ':'sa','DU':'ph','YB':'id','HL':'kr','4X':'il','TA':'tr','SV':'gr','OK':'cz','OM':'sk','ON':'be','OZ':'dk','SP':'pl','HA':'hu','YO':'ro','LZ':'bg','9A':'hr','S5':'si','YU':'rs','Z3':'mk','E7':'ba','3A':'mc','HB':'ch','OE':'at','LX':'lu','PA':'nl'
+            // Cuba
+            'CM':'cu','CO':'cu','CL':'cu','T4':'cu',
+            // Uruguay
+            'CX':'uy','CW':'uy','CV':'uy',
+            // INDONESIA (COMPLETO)
+            'YB':'id','YC':'id','YD':'id','YE':'id','YF':'id','YG':'id','YH':'id','YI':'id','YJ':'id','YK':'id','YL':'id','YM':'id','YN':'id','YO':'id','YP':'id','YQ':'id','YR':'id','YS':'id','YT':'id','YU':'id','YV':'id','YW':'id','YX':'id','YY':'id','YZ':'id',
+            '4A':'id','4B':'id','4C':'id','4D':'id','4E':'id','4F':'id','4G':'id','4H':'id','4I':'id','4J':'id','4K':'id','4L':'id','4M':'id','4N':'id','4O':'id','4P':'id','4Q':'id','4R':'id','4S':'id','4T':'id','4U':'id','4V':'id','4W':'id','4X':'id','4Y':'id','4Z':'id',
+            '8A':'id','8B':'id','8C':'id','8D':'id','8E':'id','8F':'id','8G':'id','8H':'id','8I':'id','8J':'id','8K':'id','8L':'id','8M':'id','8N':'id','8O':'id','8P':'id','8Q':'id','8R':'id','8S':'id','8T':'id','8U':'id','8V':'id','8W':'id','8X':'id','8Y':'id','8Z':'id',
+            // Resto de América
+            'TI':'cr','TE':'cr','TB':'cr','TG':'gt','TD':'gt','YS':'sv','YN':'ni','HR':'hn','HQ':'hn','HP':'pa','H3':'pa','V3':'bz','HI':'do',
+            'J3':'gd','J6':'lc','J7':'dm','J8':'vc','V2':'ag','V4':'kn','8P':'bb','9Y':'tt','P4':'aw','C6':'bs','HH':'ht','6Y':'jm',
+            'KP':'pr','NP':'pr','WP':'pr','K':'us','W':'us','N':'us','KL':'us','KH':'us',
+            'XE':'mx','XF':'mx','XG':'mx','XH':'mx','XI':'mx','XJ':'mx','XK':'mx','XL':'mx','XM':'mx','XN':'mx','XO':'mx','XP':'mx','XQ':'mx','XR':'mx',
+            'PY':'br','ZY':'br','ZX':'br','ZW':'br','PP':'br','PS':'br','PU':'br',
+            'CE':'cl','CA':'cl','CD':'cl','3G':'cl',
+            'LU':'ar','LW':'ar','LO':'ar','LP':'ar','LQ':'ar','LR':'ar','LS':'ar','LT':'ar',
+            'YV':'ve','YW':'ve','YX':'ve','YY':'ve',
+            'OA':'pe','OB':'pe','OC':'pe',
+            'HC':'ec','HD':'ec',
+            'CP':'bo',
+            'ZP':'py','ZQ':'py',
+            '8R':'gy',
+            'PZ':'sr',
+            'HK':'co','HJ':'co','5K':'co','5J':'co',
+            // Islas Caimán y otras del Caribe
+            'ZF':'ky','ZF8':'ky','ZF9':'ky',
+            'VP2M':'ms','VP2E':'ai','VP2V':'vg','VP5':'tc','VP9':'bm',
+            'FG':'gp','FM':'mq','FH':'yt','FR':'re','FO':'pf','FK':'nc','FW':'wf','FJ':'bl','FS':'mf','FP':'pm',
+            // Europa y resto del mundo
+            'EA':'es','EB':'es','EC':'es','ED':'es','EF':'es','EG':'es','EH':'es','EI':'ie','EJ':'ie','F':'fr','G':'gb','I':'it','JA':'jp',
+            'RA':'ru','UR':'ua','VK':'au','ZL':'nz','ZS':'za','SU':'eg','CN':'ma','5N':'ng','9G':'gh','A6':'ae','A7':'qa','A9':'bh','9K':'kw',
+            'HZ':'sa','DU':'ph','HL':'kr','4X':'il','TA':'tr','SV':'gr','OK':'cz','OM':'sk','ON':'be','OZ':'dk','SP':'pl','HA':'hu',
+            'YO':'ro','LZ':'bg','9A':'hr','S5':'si','YU':'rs','Z3':'mk','E7':'ba','3A':'mc','HB':'ch','OE':'at','LX':'lu','PA':'nl'
         };
-
+        
         let allQsos = [], currentScale = 0.4, cancelBatch = false;
         const defaultPositions = { 'user-logo-container': { top: 80, left: 80 }, 'table-overlay': { top: 620, left: 80 }, 'qr-element': { top: 810, left: 1410 }, 'watermark-el': { top: 80, left: 1070 }, 'signature-el': { top: 670, left: 1350 }, 'comment-el': { top: 300, left: 80 } };
         
         function getCountryCode(call) { 
             if(!call) return null; 
             const u = call.toUpperCase().trim(); 
-            for(let l=3; l>=1; l--) { 
+            for(let l=4; l>=1; l--) { 
                 let p = u.substring(0,l); 
                 if(prefixToCountry[p]) return prefixToCountry[p]; 
             } 
@@ -161,6 +193,8 @@
             updateTableHeaderTextColor(document.getElementById('table-header-text-color').value); 
             updateTableBgOpacity(parseFloat(document.getElementById('table-bg-opacity').value)); 
             setTimeout(()=>updateTableStyle(document.getElementById('table-style-select').value),100); 
+            // Aplicar YD6ASL automáticamente al inicio
+            setTimeout(() => applyManualFull(), 500);
         };
         
         function updateScale() { const container = document.getElementById('container-resize'); const renderArea = document.getElementById('qsl-render-area'); if(container && renderArea) { currentScale = container.offsetWidth / 1650; renderArea.style.transform = `scale(${currentScale})`; } }
@@ -409,19 +443,16 @@
             link.click(); 
         }
         
-        // MÉTODO 1: DESCARGAR EN ZIP (CORREGIDO)
         async function downloadAllQSLsZip() { 
             if(allQsos.length === 0) {
                 alert('No hay contactos cargados. Importa un archivo ADIF primero.');
                 return;
             }
-            
             cancelBatch = false;
             const loader = document.getElementById('loader'); 
             const loaderText = document.getElementById('loader-text'); 
             const loaderSub = document.getElementById('loader-sub');
             const progressFill = document.getElementById('progress-fill');
-            
             loader.style.display = 'flex'; 
             const zip = new JSZip(); 
             const area = document.getElementById('qsl-render-area'); 
@@ -430,60 +461,35 @@
             const station = document.getElementById('watermark-el').textContent;
             const mime = format === 'png' ? 'image/png' : 'image/jpeg'; 
             const ext = format === 'png' ? 'png' : 'jpg'; 
-            
             for(let i = 0; i < allQsos.length; i++) { 
-                if(cancelBatch) {
-                    loaderText.textContent = "❌ Cancelado por el usuario";
-                    await new Promise(r => setTimeout(r, 1000));
-                    break;
-                }
-                
+                if(cancelBatch) { loaderText.textContent = "❌ Cancelado"; await new Promise(r => setTimeout(r, 1000)); break; }
                 const percent = Math.round(((i + 1) / allQsos.length) * 100);
                 progressFill.style.width = `${percent}%`;
                 progressFill.textContent = `${percent}%`;
                 loaderText.textContent = `📦 Comprimiendo QSL ${i + 1} de ${allQsos.length}`;
                 loaderSub.textContent = `📡 Contacto: ${allQsos[i].CALL} | ${allQsos[i].BAND || 'N/A'}`;
-                
                 applyQSO(allQsos[i]); 
                 await new Promise(r => setTimeout(r, 400));
-                
                 try {
                     await waitForAllImages();
                     const canvas = await html2canvas(area, { scale: scale, useCORS: true, logging: false, backgroundColor: null }); 
                     const imgData = canvas.toDataURL(mime, format === 'jpeg' ? 0.95 : undefined).split(',')[1]; 
                     zip.file(`QSL_${station}_${allQsos[i].CALL}_${String(i + 1).padStart(3, '0')}.${ext}`, imgData, { base64: true }); 
-                } catch(err) {
-                    console.error(`Error en QSL ${i+1}:`, err);
-                    loaderSub.textContent = `⚠️ Error en ${allQsos[i].CALL}, continuando...`;
-                }
+                } catch(err) { loaderSub.textContent = `⚠️ Error en ${allQsos[i].CALL}`; }
             } 
-            
             if(!cancelBatch) {
-                loaderText.textContent = "📦 Creando archivo ZIP...";
-                loaderSub.textContent = "Por favor espera...";
-                try {
-                    const content = await zip.generateAsync({ type: "blob" }); 
-                    saveAs(content, `QSL_Galeria_${station}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.zip`); 
-                    loaderText.textContent = "✅ ¡ZIP COMPLETADO!";
-                } catch(err) {
-                    loaderText.textContent = "❌ Error al crear ZIP";
-                    console.error(err);
-                }
+                loaderText.textContent = "📦 Creando ZIP...";
+                const content = await zip.generateAsync({ type: "blob" }); 
+                saveAs(content, `QSL_Galeria_${station}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.zip`); 
             }
-            
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 1500));
             loader.style.display = 'none'; 
             progressFill.style.width = '0%';
             progressFill.textContent = '0%';
         }
         
-        // MÉTODO 2: DESCARGAR UNA POR UNA (100% ESTABLE)
         async function downloadBatchSequential() {
-            if(allQsos.length === 0) {
-                alert('No hay contactos cargados');
-                return;
-            }
-            
+            if(allQsos.length === 0) { alert('No hay contactos cargados'); return; }
             cancelBatch = false;
             const loader = document.getElementById('loader');
             const loaderText = document.getElementById('loader-text');
@@ -493,61 +499,31 @@
             const scale = parseInt(document.getElementById('export-scale').value) || 2;
             const format = document.getElementById('export-format').value;
             const station = document.getElementById('watermark-el').textContent;
-            
             loader.style.display = 'flex';
-            
             for(let i = 0; i < allQsos.length; i++) {
-                if(cancelBatch) {
-                    loaderText.textContent = "❌ Cancelado por el usuario";
-                    await new Promise(r => setTimeout(r, 1000));
-                    break;
-                }
-                
+                if(cancelBatch) { loaderText.textContent = "❌ Cancelado"; await new Promise(r => setTimeout(r, 1000)); break; }
                 const percent = Math.round(((i + 1) / allQsos.length) * 100);
                 progressFill.style.width = `${percent}%`;
                 progressFill.textContent = `${percent}%`;
                 loaderText.textContent = `📸 Descargando QSL ${i + 1} de ${allQsos.length}`;
                 loaderSub.textContent = `📡 ${allQsos[i].CALL} | ${allQsos[i].BAND || 'N/A'}`;
-                
                 applyQSO(allQsos[i]);
                 await new Promise(r => setTimeout(r, 300));
-                await waitForImages();
-                
+                await waitForAllImages();
                 try {
                     const canvas = await html2canvas(area, { scale: scale, useCORS: true, logging: false, backgroundColor: null });
                     const link = document.createElement('a');
-                    const filename = `QSL_${station}_${allQsos[i].CALL}_${String(i+1).padStart(3,'0')}.${format === 'png' ? 'png' : 'jpg'}`;
-                    link.download = filename;
+                    link.download = `QSL_${station}_${allQsos[i].CALL}_${String(i+1).padStart(3,'0')}.${format === 'png' ? 'png' : 'jpg'}`;
                     link.href = format === 'png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.95);
                     link.click();
-                    await new Promise(r => setTimeout(r, 500));
-                } catch(err) {
-                    console.error(`Error en ${allQsos[i].CALL}:`, err);
-                    loaderSub.textContent = `⚠️ Error en ${allQsos[i].CALL}, continuando...`;
-                }
+                    await new Promise(r => setTimeout(r, 400));
+                } catch(err) { loaderSub.textContent = `⚠️ Error en ${allQsos[i].CALL}`; }
             }
-            
             loaderText.textContent = "✅ ¡DESCARGA COMPLETADA!";
-            loaderSub.textContent = `Se descargaron ${allQsos.length} QSLs individualmente`;
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 1500));
             loader.style.display = 'none';
             progressFill.style.width = '0%';
             progressFill.textContent = '0%';
-        }
-        
-        async function waitForImages() {
-            const area = document.getElementById('qsl-render-area');
-            const images = Array.from(area.querySelectorAll('img')).filter(img => img.src && img.src !== '');
-            for(const img of images) {
-                if(!img.complete || img.naturalWidth === 0) {
-                    await new Promise(resolve => {
-                        const timeout = setTimeout(resolve, 2000);
-                        img.onload = () => { clearTimeout(timeout); resolve(); };
-                        img.onerror = () => { clearTimeout(timeout); resolve(); };
-                    });
-                }
-            }
-            await new Promise(r => setTimeout(r, 200));
         }
         
         function resetPositions() { 
