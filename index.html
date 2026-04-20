@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QSL ELITE PRO v 5.0 FINAL - COMPLETO + BATCH CORREGIDO</title>
+    <title>QSL ELITE PRO v 5.0 FINAL - COMPLETO + BATCH + ENVÍO EMAIL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -37,6 +37,9 @@
         .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); transition: width 0.3s ease; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold; }
         .batch-options { display: flex; gap: 10px; margin-top: 10px; }
         .batch-options button { flex: 1; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 11px; }
+        .email-input { font-size: 10px; padding: 4px 8px; border-radius: 8px; border: 1px solid #e2e8f0; width: 140px; }
+        .btn-email { background-color: #10b981; color: white; padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .btn-email:hover { background-color: #059669; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -53,7 +56,7 @@
     </div>
     <div class="max-w-[1400px] mx-auto p-4">
         <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <div class="flex items-center gap-4"><div class="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200"><i data-lucide="radio" class="text-white w-8 h-8"></i></div><div><h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v 5.0 FINAL</h1><div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span><p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">COMPLETO + BATCH CORREGIDO</p></div></div></div>
+            <div class="flex items-center gap-4"><div class="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200"><i data-lucide="radio" class="text-white w-8 h-8"></i></div><div><h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v 6.0</h1><div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span><p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">COMPLETO + BATCH + ENVÍO EMAIL</p></div></div></div>
             <div class="flex gap-2 w-full md:w-auto"><button onclick="downloadSingleQSL()" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100"><i data-lucide="download" class="w-4 h-4"></i> GUARDAR CALIDAD PRO</button></div>
         </header>
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -75,7 +78,7 @@
                         <div class="grid grid-cols-2 gap-2 pt-4"><button onclick="resetPositions()" class="bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all"><i data-lucide="rotate-ccw" class="inline w-4 h-4 mr-1"></i> Rest. posiciones</button><button onclick="resetAll()" class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all"><i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1"></i> Rest. todo</button></div>
                     </div>
                     <div id="tab-data" class="p-6 hidden space-y-6">
-                        <div class="space-y-4 bg-blue-50/30 p-4 rounded-2xl border border-blue-100"><label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> LLENADO MANUAL DEL QSO</label><div class="grid grid-cols-2 gap-3"><input type="text" id="manual-call" placeholder="CALL" value="AJ8B" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2"><input type="text" id="manual-date" placeholder="FECHA (YYYY-MM-DD)" value="2026-04-06" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-time" placeholder="HORA (HHMM)" value="2215" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-band" placeholder="BANDA" value="20M" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"></div><button onclick="applyManualFull()" class="w-full bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700 transition-all uppercase tracking-widest">APLICAR AL DISEÑO</button></div>
+                        <div class="space-y-4 bg-blue-50/30 p-4 rounded-2xl border border-blue-100"><label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> LLENADO MANUAL DEL QSO</label><div class="grid grid-cols-2 gap-3"><input type="text" id="manual-call" placeholder="CALL" value="..." class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2"><input type="email" id="manual-email" placeholder="EMAIL del corresponsal" value="ejemplo@radioaficionado.com" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2"><input type="text" id="manual-date" placeholder="FECHA (YYYY-MM-DD)" value="2026-04-06" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-time" placeholder="HORA (HHMM)" value="2215" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-band" placeholder="BANDA" value="20M" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"><input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400"></div><button onclick="applyManualFull()" class="w-full bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700 transition-all uppercase tracking-widest">APLICAR AL DISEÑO</button></div>
                         <button onclick="document.getElementById('adifInput').click()" class="w-full bg-slate-800 text-white p-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-900 shadow-lg"><i data-lucide="file-plus" class="w-4 h-4"></i> IMPORTAR ADIF</button>
                         <input type="file" id="adifInput" class="hidden" accept=".adi,.adif" onchange="parseADIF(event)">
                         <div id="qso-list-container" class="space-y-2"><label class="text-[11px] font-black text-slate-400 uppercase flex justify-between">Contactos <span id="qso-count" class="text-blue-500 font-black">0</span></label><div id="qso-list" class="max-h-[300px] overflow-y-auto space-y-1 bg-slate-50 p-2 rounded-xl border border-slate-100"><p class="text-[10px] text-center text-slate-400 py-6 italic">Sin contactos cargados...</p></div></div>
@@ -83,12 +86,12 @@
                 </div>
                 <div id="mass-actions" class="hidden space-y-3">
                     <button onclick="downloadAllQSLsZip()" class="w-full bg-emerald-600 text-white py-5 rounded-3xl font-black text-sm shadow-xl hover:bg-emerald-700 flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02]">
-                        <i data-lucide="archive" class="w-5 h-5"></i> 📦 DESCARGAR TODO EN ZIP (CORREGIDO)
+                        <i data-lucide="archive" class="w-5 h-5"></i> 📦 DESCARGAR TODO EN ZIP
                     </button>
                     <button onclick="downloadBatchSequential()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-xs shadow-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-all">
-                        <i data-lucide="download" class="w-4 h-4"></i> 📸 DESCARGAR UNA POR UNA (100% ESTABLE)
+                        <i data-lucide="download" class="w-4 h-4"></i> 📸 DESCARGAR UNA POR UNA
                     </button>
-                    <p class="text-[9px] text-center text-slate-500">✅ ZIP: Comprimido en un solo archivo | Una por una: Ideal para lotes grandes sin errores</p>
+                    <p class="text-[9px] text-center text-slate-500">✅ ZIP: Comprimido | Una por una: Ideal para lotes grandes</p>
                 </div>
             </aside>
             <main class="lg:col-span-8 space-y-6">
@@ -96,23 +99,19 @@
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4"><button onclick="document.getElementById('bgInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition-all shadow-sm"><i data-lucide="image" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase">Cambiar Fondo</span></button><button onclick="document.getElementById('logoInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition-all shadow-sm"><i data-lucide="award" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase">Cambiar Logo</span></button><input type="file" id="bgInput" class="hidden" accept="image/*" onchange="handleImage(event, 'qsl-bg')"><input type="file" id="logoInput" class="hidden" accept="image/*" onchange="handleImage(event, 'user-logo')"></div>
             </main>
         </div>
-        <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4"><p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ v5.0 FINAL - Batch completamente funcional ✧</p></footer>
+        <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4"><p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ v6.0 - Envío de QSL por Email incluido ✧</p></footer>
     </div>
     <script>
-        // ========== MAPA DE PREFIJOS COMPLETO (CON USA, INDONESIA, URUGUAY) ==========
+        // ========== MAPA DE PREFIJOS COMPLETO ==========
         const prefixToCountry = {
-            // ESTADOS UNIDOS (todos los prefijos A, K, N, W)
+            'CT':'pt','CS':'pt','CQ':'pt','CR':'pt','CW':'pt','CU':'pt','CT3':'pt','CR4':'pt','CQ4':'pt','CT8':'pt','CQ8':'pt','CR8':'pt','CS8':'pt',
             'A':'us','AA':'us','AB':'us','AC':'us','AD':'us','AE':'us','AF':'us','AG':'us','AH':'us','AI':'us','AJ':'us','AK':'us','AL':'us','AM':'us','AN':'us','AO':'us','AP':'us','AQ':'us','AR':'us','AS':'us','AT':'us','AU':'us','AV':'us','AW':'us','AX':'us','AY':'us','AZ':'us',
             'K':'us','W':'us','N':'us','KL':'us','KH':'us','KP':'us','NP':'us','WP':'us',
-            // Cuba
             'CM':'cu','CO':'cu','CL':'cu','T4':'cu',
-            // Uruguay
             'CX':'uy','CW':'uy','CV':'uy',
-            // INDONESIA
             'YB':'id','YC':'id','YD':'id','YE':'id','YF':'id','YG':'id','YH':'id','YI':'id','YJ':'id','YK':'id','YL':'id','YM':'id','YN':'id','YO':'id','YP':'id','YQ':'id','YR':'id','YS':'id','YT':'id','YU':'id','YV':'id','YW':'id','YX':'id','YY':'id','YZ':'id',
             '4A':'id','4B':'id','4C':'id','4D':'id','4E':'id','4F':'id','4G':'id','4H':'id','4I':'id','4J':'id','4K':'id','4L':'id','4M':'id','4N':'id','4O':'id','4P':'id','4Q':'id','4R':'id','4S':'id','4T':'id','4U':'id','4V':'id','4W':'id','4X':'id','4Y':'id','4Z':'id',
             '8A':'id','8B':'id','8C':'id','8D':'id','8E':'id','8F':'id','8G':'id','8H':'id','8I':'id','8J':'id','8K':'id','8L':'id','8M':'id','8N':'id','8O':'id','8P':'id','8Q':'id','8R':'id','8S':'id','8T':'id','8U':'id','8V':'id','8W':'id','8X':'id','8Y':'id','8Z':'id',
-            // Resto de América
             'TI':'cr','TE':'cr','TB':'cr','TG':'gt','TD':'gt','YS':'sv','YN':'ni','HR':'hn','HQ':'hn','HP':'pa','H3':'pa','V3':'bz','HI':'do',
             'J3':'gd','J6':'lc','J7':'dm','J8':'vc','V2':'ag','V4':'kn','8P':'bb','9Y':'tt','P4':'aw','C6':'bs','HH':'ht','6Y':'jm',
             'XE':'mx','XF':'mx','XG':'mx','XH':'mx','XI':'mx','XJ':'mx','XK':'mx','XL':'mx','XM':'mx','XN':'mx','XO':'mx','XP':'mx','XQ':'mx','XR':'mx',
@@ -127,11 +126,9 @@
             '8R':'gy',
             'PZ':'sr',
             'HK':'co','HJ':'co','5K':'co','5J':'co',
-            // Islas Caimán y otras del Caribe
             'ZF':'ky','ZF8':'ky','ZF9':'ky',
             'VP2M':'ms','VP2E':'ai','VP2V':'vg','VP5':'tc','VP9':'bm',
             'FG':'gp','FM':'mq','FH':'yt','FR':'re','FO':'pf','FK':'nc','FW':'wf','FJ':'bl','FS':'mf','FP':'pm',
-            // Europa y resto del mundo
             'EA':'es','EB':'es','EC':'es','ED':'es','EF':'es','EG':'es','EH':'es','EI':'ie','EJ':'ie','F':'fr','G':'gb','I':'it','JA':'jp',
             'RA':'ru','UR':'ua','VK':'au','ZL':'nz','ZS':'za','SU':'eg','CN':'ma','5N':'ng','9G':'gh','A6':'ae','A7':'qa','A9':'bh','9K':'kw',
             'HZ':'sa','DU':'ph','HL':'kr','4X':'il','TA':'tr','SV':'gr','OK':'cz','OM':'sk','ON':'be','OZ':'dk','SP':'pl','HA':'hu',
@@ -144,8 +141,7 @@
         function getCountryCode(call) { 
             if(!call) return null; 
             const u = call.toUpperCase().trim(); 
-            // Primero buscar prefijos de 3 letras, luego 2, luego 1
-            for(let l=3; l>=1; l--) { 
+            for(let l=4; l>=1; l--) { 
                 let p = u.substring(0,l); 
                 if(prefixToCountry[p]) return prefixToCountry[p]; 
             } 
@@ -196,7 +192,6 @@
             updateTableHeaderTextColor(document.getElementById('table-header-text-color').value); 
             updateTableBgOpacity(parseFloat(document.getElementById('table-bg-opacity').value)); 
             setTimeout(()=>updateTableStyle(document.getElementById('table-style-select').value),100); 
-            // Aplicar AJ8B automáticamente al inicio
             setTimeout(() => applyManualFull(), 500);
         };
         
@@ -356,6 +351,80 @@
         function setBackground(url) { const bg=document.getElementById('qsl-bg'); bg.src=url; bg.style.display='block'; bg.onerror=function(){ this.parentElement.style.backgroundColor='#1e293b'; this.style.display='none'; }; saveToStorage(); }
         function toggleVisibility(elementId, visible) { const el=document.getElementById(elementId); if(el) el.style.display=visible?'block':'none'; saveToStorage(); }
         
+        // ========== FUNCIONES DE ENVÍO DE EMAIL ==========
+        async function sendQSLByEmail(call, email, qsoData) {
+            if(!email || email === '' || !email.includes('@')) {
+                alert(`❌ No hay un email válido para ${call}. Ingresa el email del corresponsal.`);
+                return false;
+            }
+            
+            const loader = document.getElementById('loader');
+            const loaderText = document.getElementById('loader-text');
+            const loaderSub = document.getElementById('loader-sub');
+            loader.style.display = 'flex';
+            loaderText.textContent = `📧 Preparando QSL para ${call}...`;
+            loaderSub.textContent = `Generando tarjeta y preparando email...`;
+            
+            try {
+                // Generar la QSL actual
+                const area = document.getElementById('qsl-render-area');
+                const scale = parseInt(document.getElementById('export-scale').value) || 2;
+                const format = document.getElementById('export-format').value;
+                const station = document.getElementById('watermark-el').textContent;
+                
+                await waitForAllImages();
+                const canvas = await html2canvas(area, { scale: scale, useCORS: true, logging: false, backgroundColor: null });
+                const imgData = canvas.toDataURL(format === 'png' ? 'image/png' : 'image/jpeg', 0.95);
+                
+                // Crear mensaje de correo
+                const subject = encodeURIComponent(`QSL Tarjeta para ${call} desde ${station}`);
+                const dateStr = document.getElementById('td-date').textContent;
+                const timeStr = document.getElementById('td-time').textContent;
+                const band = document.getElementById('td-band').textContent;
+                const mode = document.getElementById('td-mode').textContent;
+                const rst = document.getElementById('td-rst').textContent;
+                const comment = document.getElementById('comment-el').textContent;
+                
+                const body = encodeURIComponent(
+                    `Hola ${call},\n\n` +
+                    `Adjunto encontrarás tu tarjeta QSL confirmando nuestro contacto.\n\n` +
+                    `📡 DATOS DEL QSO:\n` +
+                    `📅 Fecha: ${dateStr}\n` +
+                    `⏰ Hora UTC: ${timeStr}\n` +
+                    `📻 Banda: ${band}\n` +
+                    `🔧 Modo: ${mode}\n` +
+                    `📊 RST: ${rst}\n\n` +
+                    `💬 Mensaje: ${comment}\n\n` +
+                    `🎯 73's de ${station}\n` +
+                    `---\n` +
+                    `Esta QSL fue generada automáticamente por QSL ELITE PRO\n` +
+                    `📧 Por favor, confirma recepción. ¡73 y DX!`
+                );
+                
+                // Abrir cliente de correo (el usuario debe adjuntar la imagen manualmente o usar servicio externo)
+                // Por ahora, mostramos instrucciones y abrimos el email
+                const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
+                window.location.href = mailtoLink;
+                
+                // También ofrecemos descargar la imagen para adjuntar
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.download = `QSL_${station}_${call}.${format === 'png' ? 'png' : 'jpg'}`;
+                    link.href = imgData;
+                    link.click();
+                    alert(`✅ Se ha abierto tu cliente de correo para enviar a ${email}\n📎 La imagen QSL se ha descargado. Adjúntala al correo.\n📧 Si tu cliente no se abre, copia el email: ${email}`);
+                }, 500);
+                
+                loader.style.display = 'none';
+                return true;
+            } catch(error) {
+                console.error('Error al preparar email:', error);
+                loader.style.display = 'none';
+                alert(`❌ Error al preparar el envío para ${call}. Intenta nuevamente.`);
+                return false;
+            }
+        }
+        
         function parseADIF(event) { 
             const file=event.target.files[0]; 
             if(!file) return; 
@@ -375,7 +444,10 @@
                         const value=match[3].trim(); 
                         if(value) qso[tag]=value; 
                     } 
-                    if(qso.CALL) allQsos.push(qso); 
+                    if(qso.CALL) {
+                        qso.EMAIL = ''; // Se puede agregar campo EMAIL en ADIF
+                        allQsos.push(qso); 
+                    }
                 }); 
                 document.getElementById('qso-count').textContent=allQsos.length; 
                 displayQSOs(); 
@@ -390,11 +462,41 @@
             container.innerHTML=""; 
             allQsos.forEach((qso,index)=>{ 
                 const div=document.createElement('div'); 
-                div.className="bg-white p-3 border rounded-xl hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-all group"; 
-                div.onclick=()=>applyQSO(qso); 
-                div.innerHTML=`<div class="flex flex-col"><span class="text-xs font-black text-slate-700">${qso.CALL}</span><span class="text-[9px] text-slate-400">${qso.QSO_DATE||'---'}</span></div><span class="text-[10px] font-bold bg-slate-100 px-2 py-1 rounded group-hover:bg-blue-200">${qso.BAND||'??'}</span>`; 
+                div.className="bg-white p-3 border rounded-xl hover:bg-blue-50 cursor-pointer transition-all group mb-2"; 
+                div.innerHTML=`
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-col flex-1" onclick='applyQSO(${JSON.stringify(qso)})'>
+                            <span class="text-xs font-black text-slate-700">${qso.CALL}</span>
+                            <span class="text-[9px] text-slate-400">${qso.QSO_DATE||'---'} | ${qso.BAND||'??'}</span>
+                        </div>
+                        <div class="flex gap-1">
+                            <input type="email" id="email-${index}" placeholder="Email" class="email-input text-[9px]" value="${qso.EMAIL || ''}">
+                            <button onclick="updateQSOEmail(${index}, document.getElementById('email-${index}').value)" class="bg-gray-500 text-white px-2 py-1 rounded text-[9px]">💾</button>
+                            <button onclick="sendQSLFromList(${index})" class="btn-email">📧 Enviar</button>
+                        </div>
+                    </div>
+                `; 
                 container.appendChild(div); 
             }); 
+        }
+        
+        function updateQSOEmail(index, email) {
+            if(allQsos[index]) {
+                allQsos[index].EMAIL = email;
+                alert(`✅ Email guardado para ${allQsos[index].CALL}`);
+            }
+        }
+        
+        async function sendQSLFromList(index) {
+            const qso = allQsos[index];
+            const email = qso.EMAIL || document.getElementById(`email-${index}`)?.value;
+            if(!email || email === '') {
+                alert(`❌ Por favor ingresa un email para ${qso.CALL} primero`);
+                return;
+            }
+            applyQSO(qso);
+            await new Promise(r => setTimeout(r, 300));
+            await sendQSLByEmail(qso.CALL, email, qso);
         }
         
         function applyQSO(qso) { 
@@ -413,6 +515,7 @@
         
         function applyManualFull() { 
             const call=document.getElementById('manual-call').value.toUpperCase()||'DX_STATION'; 
+            const email=document.getElementById('manual-email').value;
             let dateRaw=document.getElementById('manual-date').value; 
             let timeRaw=document.getElementById('manual-time').value; 
             const band=document.getElementById('manual-band').value||'40M'; 
@@ -422,8 +525,11 @@
             const qsoDate=dateRaw.replace(/-/g,''); 
             timeRaw=timeRaw.replace(/[^0-9]/g,'').padStart(4,'0').substring(0,4); 
             if(!/^\d{4}$/.test(timeRaw)) timeRaw='0000'; 
-            const qso={ CALL:call, QSO_DATE:qsoDate, TIME_ON:timeRaw, BAND:band, MODE:mode, RST_SENT:rst }; 
+            const qso={ CALL:call, QSO_DATE:qsoDate, TIME_ON:timeRaw, BAND:band, MODE:mode, RST_SENT:rst, EMAIL:email }; 
             applyQSO(qso); 
+            if(email && email.includes('@')) {
+                setTimeout(() => sendQSLByEmail(call, email, qso), 500);
+            }
         }
         
         function updateFlag(call) { 
