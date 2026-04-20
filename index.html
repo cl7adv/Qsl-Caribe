@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QSL ELITE PRO v 6.1 - ENVÍO EMAIL CORREGIDO</title>
+    <title>QSL ELITE PRO v 6.2 - ENVÍO EMAIL CON ARCHIVO .EML</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -42,6 +42,8 @@
         .btn-email:hover { background-color: #059669; }
         .toast-notification { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 12px 20px; border-radius: 12px; font-size: 12px; z-index: 10000; animation: slideIn 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .btn-eml { background-color: #3b82f6; color: white; padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s; margin-top: 8px; width: 100%; }
+        .btn-eml:hover { background-color: #2563eb; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -58,7 +60,7 @@
     </div>
     <div class="max-w-[1400px] mx-auto p-4">
         <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <div class="flex items-center gap-4"><div class="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200"><i data-lucide="radio" class="text-white w-8 h-8"></i></div><div><h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v 6.1</h1><div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span><p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">COMPLETO + ENVÍO EMAIL</p></div></div></div>
+            <div class="flex items-center gap-4"><div class="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200"><i data-lucide="radio" class="text-white w-8 h-8"></i></div><div><h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v 6.2</h1><div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span><p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">ENVÍO EMAIL + ARCHIVO .EML</p></div></div></div>
             <div class="flex gap-2 w-full md:w-auto"><button onclick="downloadSingleQSL()" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100"><i data-lucide="download" class="w-4 h-4"></i> GUARDAR QSL</button></div>
         </header>
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -80,7 +82,7 @@
                         <div class="grid grid-cols-2 gap-2 pt-4"><button onclick="resetPositions()" class="bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase tracking-widest"><i data-lucide="rotate-ccw" class="inline w-4 h-4 mr-1"></i> Rest. posiciones</button><button onclick="resetAll()" class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase tracking-widest"><i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1"></i> Rest. todo</button></div>
                     </div>
                     <div id="tab-data" class="p-6 hidden space-y-6">
-                        <div class="space-y-4 bg-blue-50/30 p-4 rounded-2xl border border-blue-100"><label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> LLENADO MANUAL</label><div class="grid grid-cols-2 gap-3"><input type="text" id="manual-call" placeholder="CALL" value="CT1BFP" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2"><input type="email" id="manual-email" placeholder="EMAIL del corresponsal" value="" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2"><input type="text" id="manual-date" placeholder="FECHA" value="2026-04-06" class="text-xs p-3 border rounded-xl outline-none"><input type="text" id="manual-time" placeholder="HORA" value="2215" class="text-xs p-3 border rounded-xl outline-none"><input type="text" id="manual-band" placeholder="BANDA" value="20M" class="text-xs p-3 border rounded-xl outline-none"><input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl outline-none"><input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl outline-none"></div><div class="grid grid-cols-2 gap-2"><button onclick="applyManualFull()" class="bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700">APLICAR AL DISEÑO</button><button onclick="sendManualEmail()" class="bg-green-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-green-700">📧 ENVIAR QSL POR EMAIL</button></div></div>
+                        <div class="space-y-4 bg-blue-50/30 p-4 rounded-2xl border border-blue-100"><label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> LLENADO MANUAL</label><div class="grid grid-cols-2 gap-3"><input type="text" id="manual-call" placeholder="CALL" value="CT1BFP" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2"><input type="email" id="manual-email" placeholder="EMAIL del corresponsal" value="" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2"><input type="text" id="manual-date" placeholder="FECHA" value="2026-04-06" class="text-xs p-3 border rounded-xl outline-none"><input type="text" id="manual-time" placeholder="HORA" value="2215" class="text-xs p-3 border rounded-xl outline-none"><input type="text" id="manual-band" placeholder="BANDA" value="20M" class="text-xs p-3 border rounded-xl outline-none"><input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl outline-none"><input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl outline-none"></div><div class="grid grid-cols-2 gap-2"><button onclick="applyManualFull()" class="bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700">APLICAR AL DISEÑO</button><button onclick="sendManualEmailAsEML()" class="bg-green-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-green-700">📧 GENERAR ARCHIVO .EML</button></div></div>
                         <button onclick="document.getElementById('adifInput').click()" class="w-full bg-slate-800 text-white p-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-900"><i data-lucide="file-plus" class="w-4 h-4"></i> IMPORTAR ADIF</button>
                         <input type="file" id="adifInput" class="hidden" accept=".adi,.adif" onchange="parseADIF(event)">
                         <div id="qso-list-container" class="space-y-2"><label class="text-[11px] font-black text-slate-400 uppercase flex justify-between">Contactos <span id="qso-count" class="text-blue-500 font-black">0</span></label><div id="qso-list" class="max-h-[300px] overflow-y-auto space-y-1 bg-slate-50 p-2 rounded-xl border border-slate-100"><p class="text-[10px] text-center text-slate-400 py-6 italic">Sin contactos cargados...</p></div></div>
@@ -96,7 +98,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4"><button onclick="document.getElementById('bgInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50"><i data-lucide="image" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase">Cambiar Fondo</span></button><button onclick="document.getElementById('logoInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50"><i data-lucide="award" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase">Cambiar Logo</span></button><input type="file" id="bgInput" class="hidden" accept="image/*" onchange="handleImage(event, 'qsl-bg')"><input type="file" id="logoInput" class="hidden" accept="image/*" onchange="handleImage(event, 'user-logo')"></div>
             </main>
         </div>
-        <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4"><p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ v6.1 - Envío de QSL por Email funcionando ✧</p></footer>
+        <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4"><p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ v6.2 - Envío por email con archivo .EML ✧</p></footer>
     </div>
     <script>
         // MAPA DE PREFIJOS COMPLETO
@@ -131,7 +133,7 @@
             toast.style.backgroundColor = isError ? '#dc2626' : '#10b981';
             toast.innerHTML = message;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+            setTimeout(() => toast.remove(), 5000);
         }
         
         function getCountryCode(call) { 
@@ -342,35 +344,33 @@
         function setBackground(url) { const bg=document.getElementById('qsl-bg'); bg.src=url; bg.style.display='block'; bg.onerror=function(){ this.parentElement.style.backgroundColor='#1e293b'; this.style.display='none'; }; saveToStorage(); }
         function toggleVisibility(elementId, visible) { const el=document.getElementById(elementId); if(el) el.style.display=visible?'block':'none'; saveToStorage(); }
         
-        // ========== FUNCIÓN PRINCIPAL DE ENVÍO DE EMAIL CORREGIDA ==========
-        async function sendQSLByEmail(call, email, qsoData) {
+        // ========== FUNCIÓN PARA GENERAR ARCHIVO .EML (CORREO CON ADJUNTO) ==========
+        async function generateEMLFile(call, email, myEmail) {
             if(!email || email === '' || !email.includes('@')) {
                 showToast(`❌ Email no válido para ${call}`, true);
-                return false;
+                return null;
             }
-            
-            showToast(`📧 Preparando QSL para ${call}...`, false);
             
             try {
                 const area = document.getElementById('qsl-render-area');
                 const scale = parseInt(document.getElementById('export-scale').value) || 2;
                 const format = document.getElementById('export-format').value;
                 const station = document.getElementById('watermark-el').textContent;
-                const myEmail = prompt("📧 Tu correo electrónico (para que el corresponsal pueda responder):", "tuemail@ejemplo.com");
-                if(!myEmail) return false;
                 
                 await waitForAllImages();
                 const canvas = await html2canvas(area, { scale: scale, useCORS: true, logging: false, backgroundColor: null });
                 const imgData = canvas.toDataURL(format === 'png' ? 'image/png' : 'image/jpeg', 0.95);
                 
-                // Descargar la imagen automáticamente
-                const link = document.createElement('a');
-                const filename = `QSL_${station}_${call}.${format === 'png' ? 'png' : 'jpg'}`;
-                link.download = filename;
-                link.href = imgData;
-                link.click();
+                // Convertir base64 a blob
+                const base64Data = imgData.split(',')[1];
+                const binaryData = atob(base64Data);
+                const bytes = new Uint8Array(binaryData.length);
+                for (let i = 0; i < binaryData.length; i++) {
+                    bytes[i] = binaryData.charCodeAt(i);
+                }
+                const imageBlob = new Blob([bytes], { type: format === 'png' ? 'image/png' : 'image/jpeg' });
+                const imageBase64ForEML = btoa(binaryData);
                 
-                // Preparar mensaje de correo
                 const dateStr = document.getElementById('td-date').textContent;
                 const timeStr = document.getElementById('td-time').textContent;
                 const band = document.getElementById('td-band').textContent;
@@ -378,52 +378,98 @@
                 const rst = document.getElementById('td-rst').textContent;
                 const comment = document.getElementById('comment-el').textContent;
                 
-                const subject = encodeURIComponent(`QSL Tarjeta para ${call} desde ${station}`);
-                const body = encodeURIComponent(
-                    `Hola ${call},\n\n` +
-                    `Adjunto encontrarás tu tarjeta QSL confirmando nuestro contacto.\n\n` +
-                    `📡 DATOS DEL QSO:\n` +
-                    `📅 Fecha: ${dateStr}\n` +
-                    `⏰ Hora UTC: ${timeStr}\n` +
-                    `📻 Banda: ${band}\n` +
-                    `🔧 Modo: ${mode}\n` +
-                    `📊 RST: ${rst}\n\n` +
-                    `💬 Mensaje: ${comment}\n\n` +
-                    `🎯 73's de ${station} (${myEmail})\n` +
-                    `---\n` +
-                    `📎 INSTRUCCIONES: La imagen QSL se ha descargado automáticamente.\n` +
-                    `📧 Por favor, adjúntala a este correo y envíala.\n` +
-                    `🌟 ¡Gracias por el contacto!`
-                );
+                const boundary = "----=_NextPart_" + Date.now();
+                const filename = `QSL_${station}_${call}.${format === 'png' ? 'png' : 'jpg'}`;
+                const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
                 
-                // Copiar email al portapapeles
-                await navigator.clipboard.writeText(email);
-                showToast(`📋 Email ${email} copiado al portapapeles`, false);
+                // Construir archivo .EML
+                const emlContent = `MIME-Version: 1.0
+From: "${station}" <${myEmail}>
+To: "${call}" <${email}>
+Subject: QSL Tarjeta para ${call} desde ${station}
+Date: ${new Date().toUTCString()}
+Content-Type: multipart/mixed; boundary="${boundary}"
+
+--${boundary}
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Hola ${call},
+
+Adjunto encontrarás tu tarjeta QSL confirmando nuestro contacto.
+
+📡 DATOS DEL QSO:
+📅 Fecha: ${dateStr}
+⏰ Hora UTC: ${timeStr}
+📻 Banda: ${band}
+🔧 Modo: ${mode}
+📊 RST: ${rst}
+
+💬 Mensaje: ${comment}
+
+🎯 73's de ${station} (${myEmail})
+---
+¡Gracias por el contacto y esperamos repetir!
+
+--${boundary}
+Content-Type: ${mimeType}; name="${filename}"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="${filename}"
+
+${imageBase64ForEML}
+--${boundary}--`;
                 
-                // Abrir cliente de correo
-                const mailtoLink = `mailto:${email}?cc=${myEmail}&subject=${subject}&body=${body}`;
-                window.open(mailtoLink, '_blank');
-                
-                setTimeout(() => {
-                    showToast(`✅ PASO 1: Imagen QSL descargada | PASO 2: Adjúntala al correo abierto | PASO 3: Envía el mensaje`, false);
-                }, 1000);
-                
-                return true;
+                return emlContent;
             } catch(error) {
-                console.error('Error:', error);
-                showToast(`❌ Error al preparar envío para ${call}`, true);
-                return false;
+                console.error('Error generando EML:', error);
+                showToast(`❌ Error al generar el archivo para ${call}`, true);
+                return null;
             }
         }
         
-        async function sendManualEmail() {
+        async function sendManualEmailAsEML() {
             const call = document.getElementById('manual-call').value.toUpperCase();
             const email = document.getElementById('manual-email').value;
             if(!email) {
                 showToast("❌ Ingresa el email del corresponsal", true);
                 return;
             }
-            await sendQSLByEmail(call, email, null);
+            
+            const myEmail = prompt("📧 Tu correo electrónico (para que el corresponsal pueda responder):", "tuemail@ejemplo.com");
+            if(!myEmail) return;
+            
+            showToast(`📧 Generando archivo .EML para ${call}...`, false);
+            
+            const emlContent = await generateEMLFile(call, email, myEmail);
+            if(emlContent) {
+                const blob = new Blob([emlContent], { type: "message/rfc822" });
+                const filename = `QSL_${call}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.eml`;
+                saveAs(blob, filename);
+                showToast(`✅ Archivo .EML descargado. Haz doble clic para abrirlo en tu correo y enviarlo.`, false);
+            }
+        }
+        
+        async function sendQSLFromListAsEML(index) {
+            const qso = allQsos[index];
+            const email = qso.EMAIL || document.getElementById(`email-${index}`)?.value;
+            if(!email || email === '') {
+                showToast(`❌ Ingresa email para ${qso.CALL} primero`, true);
+                return;
+            }
+            
+            const myEmail = prompt("📧 Tu correo electrónico:", "tuemail@ejemplo.com");
+            if(!myEmail) return;
+            
+            applyQSO(qso);
+            await new Promise(r => setTimeout(r, 300));
+            
+            const emlContent = await generateEMLFile(qso.CALL, email, myEmail);
+            if(emlContent) {
+                const blob = new Blob([emlContent], { type: "message/rfc822" });
+                const filename = `QSL_${qso.CALL}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.eml`;
+                saveAs(blob, filename);
+                showToast(`✅ Archivo .EML descargado para ${qso.CALL}. Haz doble clic para enviarlo.`, false);
+            }
         }
         
         function parseADIF(event) { 
@@ -474,7 +520,7 @@
                         <div class="flex gap-1">
                             <input type="email" id="email-${index}" placeholder="Email" class="email-input text-[9px]" value="${qso.EMAIL || ''}">
                             <button onclick="updateQSOEmail(${index}, document.getElementById('email-${index}').value)" class="bg-gray-500 text-white px-2 py-1 rounded text-[9px] hover:bg-gray-600">💾</button>
-                            <button onclick="sendQSLFromList(${index})" class="btn-email">📧 Enviar</button>
+                            <button onclick="sendQSLFromListAsEML(${index})" class="btn-email">📧 .EML</button>
                         </div>
                     </div>
                 `; 
@@ -487,18 +533,6 @@
                 allQsos[index].EMAIL = email;
                 showToast(`✅ Email guardado para ${allQsos[index].CALL}`, false);
             }
-        }
-        
-        async function sendQSLFromList(index) {
-            const qso = allQsos[index];
-            const email = qso.EMAIL || document.getElementById(`email-${index}`)?.value;
-            if(!email || email === '') {
-                showToast(`❌ Ingresa email para ${qso.CALL} primero`, true);
-                return;
-            }
-            applyQSO(qso);
-            await new Promise(r => setTimeout(r, 300));
-            await sendQSLByEmail(qso.CALL, email, qso);
         }
         
         function applyQSO(qso) { 
@@ -683,7 +717,7 @@
             toggleVisibility('table-overlay',true); 
             resetPositions(); 
             localStorage.removeItem('qslConfig'); 
-            showToast("✅ Todo restaurado a valores de fábrica", false);
+            showToast("✅ Todo restaurado", false);
         }
     </script>
 </body>
