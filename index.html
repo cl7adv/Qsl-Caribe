@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QSL ELITE PRO v 5.0 FINAL - CORREGIDO</title>
+    <title>QSL ELITE PRO v 5.1 - CAJA ESTRECHA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -14,7 +14,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@700&family=Dancing+Script:wght@600&family=Playfair+Display:wght@700&family=Roboto+Mono&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; touch-action: manipulation; }
         
-        /* Contenedor principal de la QSL - dimensiones exactas */
         #qsl-render-area { 
             width: 1650px; 
             height: 1050px; 
@@ -23,7 +22,6 @@
             background: #2d3748; 
         }
         
-        /* Contenedor de previsualización - sin desbordamiento */
         .preview-wrapper {
             width: 100%;
             aspect-ratio: 1650/1050;
@@ -120,10 +118,10 @@
                     <i data-lucide="radio" class="text-white w-8 h-8"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v 5.0 FINAL</h1>
+                    <h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v 5.1</h1>
                     <div class="flex items-center gap-2">
                         <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">COMPLETO + BATCH CORREGIDO</p>
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">CAJA QSO ESTRECHA + MEJORAS</p>
                     </div>
                 </div>
             </div>
@@ -135,7 +133,6 @@
         </header>
         
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <!-- Sidebar izquierdo - mismo contenido que antes -->
             <aside class="lg:col-span-4 space-y-6">
                 <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
                     <div class="flex bg-slate-50/50">
@@ -326,7 +323,6 @@
                 </div>
             </aside>
             
-            <!-- Área principal de previsualización -->
             <main class="lg:col-span-8 space-y-6">
                 <div class="bg-white p-4 rounded-[32px] shadow-2xl border border-slate-100">
                     <div class="preview-wrapper" id="preview-wrapper">
@@ -349,35 +345,38 @@
                                 <div id="qr-code-container" class="bg-white p-5 rounded-3xl shadow-2xl"></div>
                             </div>
                             
-                            <div id="table-overlay" class="qsl-element bg-white/95 shadow-2xl backdrop-blur-md rounded-3xl overflow-hidden p-6" style="top: 620px; left: 80px;">
-                                <div id="table-header" class="bg-blue-600 text-white p-5 mb-5 font-black flex justify-between items-center gap-20 text-3xl rounded-2xl">
-                                    <div class="flex items-center gap-4">
-                                        <i data-lucide="user" class="w-8 h-8"></i>
+                            <!-- ============================================ -->
+                            <!-- CAJA QSO ESTRECHA: Paddings, fuentes y ancho reducidos -->
+                            <!-- ============================================ -->
+                            <div id="table-overlay" class="qsl-element bg-white/95 shadow-2xl backdrop-blur-md rounded-3xl overflow-hidden p-4" style="top: 620px; left: 80px;">
+                                <div id="table-header" class="bg-blue-600 text-white p-3 mb-4 font-black flex justify-between items-center gap-10 text-2xl rounded-2xl">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="user" class="w-6 h-6"></i>
                                         <span id="lbl-operator">OP: CO2KK</span>
-                                        <img id="operator-flag" src="" class="h-8 rounded shadow-md hidden" crossorigin="anonymous">
+                                        <img id="operator-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous">
                                     </div>
-                                    <div class="flex items-center gap-4">
+                                    <div class="flex items-center gap-3">
                                         <span id="lbl-qso-with">CONTACTO: <span id="target-call" class="text-yellow-300">DX_STATION</span></span>
-                                        <img id="target-flag" src="" class="h-8 rounded shadow-md hidden" crossorigin="anonymous">
+                                        <img id="target-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous">
                                     </div>
                                 </div>
-                                <table class="w-full text-center text-3xl font-bold border-collapse">
+                                <table class="w-auto text-center text-2xl font-bold border-collapse">
                                     <thead>
-                                        <tr class="text-slate-500 text-xl border-b-2 border-slate-100">
-                                            <th class="pb-4 px-6">FECHA</th>
-                                            <th class="pb-4 px-6">HORA UTC</th>
-                                            <th class="pb-4 px-6">BANDA</th>
-                                            <th class="pb-4 px-6">MODO</th>
-                                            <th class="pb-4 px-6">RST</th>
+                                        <tr class="text-slate-500 text-xs border-b-2 border-slate-100">
+                                            <th class="pb-2 px-3">FECHA</th>
+                                            <th class="pb-2 px-3">HORA UTC</th>
+                                            <th class="pb-2 px-3">BANDA</th>
+                                            <th class="pb-2 px-3">MODO</th>
+                                            <th class="pb-2 px-3">RST</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td class="pt-6 px-6" id="td-date">2026-04-06</td>
-                                            <td class="pt-6 px-6" id="td-time">22:15</td>
-                                            <td class="pt-6 px-6" id="td-band">20M</td>
-                                            <td class="pt-6 px-6" id="td-mode">SSB</td>
-                                            <td class="pt-6 px-6 text-blue-600" id="td-rst">59</td>
+                                            <td class="pt-2 px-3" id="td-date">2026-04-06</td>
+                                            <td class="pt-2 px-3" id="td-time">22:15</td>
+                                            <td class="pt-2 px-3" id="td-band">20M</td>
+                                            <td class="pt-2 px-3" id="td-mode">SSB</td>
+                                            <td class="pt-2 px-3 text-blue-600" id="td-rst">59</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -402,7 +401,7 @@
         </div>
         
         <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4">
-            <p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ v5.0 FINAL - Batch completamente funcional ✧</p>
+            <p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ v5.1 - Caja QSO estrecha ✧</p>
         </footer>
     </div>
 
@@ -770,7 +769,8 @@
             const call=text.toUpperCase()||"CO2KK"; 
             document.getElementById('watermark-el').textContent=call; 
             document.getElementById('signature-el').textContent=`73's de ${call}`; 
-            document.getElementById('lbl-operator').innerHTML=`OP: ${call}`; 
+            // Actualizar operador de forma segura (textContent en lugar de innerHTML)
+            document.getElementById('lbl-operator').textContent = `OP: ${call}`; 
             updateOperatorFlag(call); 
             saveToStorage(); 
         }
@@ -905,7 +905,6 @@
             const scale=parseInt(document.getElementById('export-scale').value)||2; 
             const format=document.getElementById('export-format').value; 
             
-            // IMPORTANTE: Remover temporalmente la transformación para capturar
             const originalTransform = area.style.transform;
             area.style.transform = 'none';
             
@@ -927,7 +926,6 @@
                 link.href=format==='png'?canvas.toDataURL("image/png"):canvas.toDataURL("image/jpeg",1.0); 
                 link.click();
             } finally {
-                // Restaurar la transformación
                 area.style.transform = originalTransform;
             }
         }
@@ -950,7 +948,6 @@
             const station = document.getElementById('watermark-el').textContent;
             const ext = format === 'png' ? 'png' : 'jpg'; 
             
-            // Guardar transformación original
             const originalTransform = area.style.transform;
             area.style.transform = 'none';
             
@@ -981,7 +978,6 @@
                 }
             } 
             
-            // Restaurar transformación
             area.style.transform = originalTransform;
             
             if(!cancelBatch) {
@@ -1008,7 +1004,6 @@
             const station = document.getElementById('watermark-el').textContent;
             loader.style.display = 'flex';
             
-            // Guardar transformación original
             const originalTransform = area.style.transform;
             area.style.transform = 'none';
             
@@ -1042,7 +1037,6 @@
                 }
             }
             
-            // Restaurar transformación
             area.style.transform = originalTransform;
             
             loaderText.textContent = "✅ ¡DESCARGA COMPLETADA!";
