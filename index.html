@@ -11,17 +11,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.5.0/FileSaver.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@700&family=Dancing+Script:wght@600&family=Playfair+Display:wght@700&family=Roboto+Mono&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; touch-action: manipulation; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Oswald:wght@700&family=Dancing+Script:wght@600&family=Playfair+Display:wght@700&family=Roboto+Mono&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #f0f4f8; touch-action: manipulation; }
         #qsl-render-area { width:1650px; height:1050px; position:relative; overflow:hidden; background:#1e293b; }
         #qsl-bg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
         .bg-fallback { background: linear-gradient(145deg, #0f172a, #1e293b); }
-        .preview-wrapper { width:100%; aspect-ratio:1650/1050; overflow:auto; background:#0f172a; border-radius:12px; position:sticky; top:20px; }
+        .preview-wrapper { width:100%; aspect-ratio:1650/1050; overflow:auto; background:#0f172a; border-radius:16px; position:sticky; top:20px; box-shadow:0 20px 40px -12px rgba(0,0,0,0.5); }
         .preview-content { transform-origin:top left; }
         @media (max-width:1024px) { .preview-content { transform:scale(0.3); } }
         @media (max-width:768px) { .preview-content { transform:scale(0.22); } }
         @media (max-width:480px) { .preview-content { transform:scale(0.18); } }
-        #qsl-border { position:absolute; inset:30px; border:3px solid rgba(255,255,255,0.3); pointer-events:none; z-index:10; }
+        #qsl-border { position:absolute; inset:30px; border:3px solid rgba(255,255,255,0.3); pointer-events:none; z-index:10; border-radius:20px; }
         #postcard-frame { position:absolute; inset:20px; border:12px solid white; border-radius:30px; box-shadow:0 0 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.3); pointer-events:none; z-index:15; display:none; }
         .qsl-element { position:absolute; cursor:move; user-select:none; z-index:20; touch-action:none; }
         .font-sans { font-family:'Inter',sans-serif; }
@@ -45,8 +45,8 @@
         .batch-options button { flex:1; padding:12px; border-radius:12px; font-weight:bold; font-size:11px; }
         .qso-watermark { position:absolute; bottom:10px; right:20px; font-family:'Dancing Script',cursive; font-size:90px; opacity:0.4; color:#1e293b; pointer-events:none; z-index:5; transform:rotate(-8deg); text-shadow:2px 2px 8px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.2); }
         .qso-watermark.light { color:rgba(255,255,255,0.35); text-shadow:2px 2px 8px rgba(0,0,0,0.3); }
-        #table-overlay { position:relative; overflow:visible; width:650px !important; max-width:650px !important; min-width:650px !important; box-sizing:border-box; }
-        .lang-selector { background:white; border-radius:30px; padding:4px 12px 4px 16px; border:1px solid #e2e8f0; display:flex; align-items:center; gap:8px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+        #table-overlay { position:relative; overflow:visible; width:650px !important; max-width:650px !important; min-width:650px !important; box-sizing:border-box; border-radius:20px; box-shadow:0 8px 32px rgba(0,0,0,0.12); transition:all 0.3s ease; }
+        .lang-selector { background:white; border-radius:40px; padding:4px 12px 4px 16px; border:1px solid #e2e8f0; display:flex; align-items:center; gap:8px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
         .lang-selector select { border:none; background:transparent; font-weight:600; font-size:12px; outline:none; cursor:pointer; padding:4px 0; font-family:'Inter',sans-serif; }
         .thanks-btn { background:linear-gradient(145deg,#fbbf24,#f59e0b); color:#1e293b; font-weight:900; padding:8px 20px; border-radius:40px; border:none; box-shadow:0 4px 12px rgba(245,158,11,0.3); transition:all 0.2s; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; gap:8px; }
         .thanks-btn:hover { transform:scale(1.05); box-shadow:0 8px 24px rgba(245,158,11,0.5); }
@@ -59,6 +59,32 @@
         .thanks-modal .names { font-weight:800; color:#2563eb; font-size:18px; }
         .clear-btn { background:#ef4444; color:white; padding:6px 14px; border-radius:30px; font-size:10px; font-weight:bold; border:none; cursor:pointer; transition:0.2s; }
         .clear-btn:hover { background:#dc2626; transform:scale(1.05); }
+        /* Mejoras en los controles */
+        input, select, button { transition: all 0.2s; }
+        .input-modern { background:#f8fafc; border:2px solid #e2e8f0; border-radius:16px; padding:12px 18px; font-size:14px; outline:none; width:100%; }
+        .input-modern:focus { border-color:#3b82f6; box-shadow:0 0 0 4px rgba(59,130,246,0.1); }
+        .btn-primary { background:#2563eb; color:white; font-weight:700; padding:12px 24px; border-radius:40px; border:none; box-shadow:0 4px 12px rgba(37,99,235,0.3); transition:all 0.2s; cursor:pointer; }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(37,99,235,0.4); }
+        .btn-primary:active { transform:scale(0.98); }
+        .card-panel { background:white; border-radius:28px; padding:24px; box-shadow:0 8px 30px rgba(0,0,0,0.06); border:1px solid #f1f5f9; }
+        .badge { background:#e2e8f0; color:#475569; border-radius:40px; padding:4px 12px; font-size:10px; font-weight:700; letter-spacing:0.5px; }
+        /* Tabla QSO mejorada */
+        #table-overlay table { width:100%; border-collapse:separate; border-spacing:0; }
+        #table-overlay th { font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; padding:10px 12px; color:#94a3b8; border-bottom:2px solid #e2e8f0; }
+        #table-overlay td { font-size:22px; font-weight:700; padding:12px 12px; color:#1e293b; }
+        #table-overlay .header-row { background:linear-gradient(135deg,#1e293b,#334155); border-radius:16px 16px 0 0; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; color:white; }
+        #table-overlay .header-row span { font-size:20px; font-weight:800; }
+        #table-overlay .call-sign { color:#fbbf24; font-weight:900; font-size:28px; letter-spacing:1px; }
+        #table-overlay .operator { opacity:0.8; font-size:18px; }
+        /* Estilos de la tabla según modo */
+        .table-modern { background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); border-radius:20px; box-shadow:0 8px 32px rgba(0,0,0,0.12); }
+        .table-minimal { background:transparent; backdrop-filter:none; box-shadow:none; }
+        .table-minimal .header-row { background:transparent; color:#1e293b; border-bottom:2px solid #cbd5e1; }
+        .table-minimal td { color:#1e293b; }
+        .table-classic { background:rgba(255,255,255,0.9); border:2px solid #1e293b; border-radius:8px; }
+        .table-classic .header-row { background:#1e293b; border-radius:0; }
+        .table-elegant { background:rgba(255,255,255,0.92); border:2px solid #b8860b; border-radius:20px; }
+        .table-elegant .header-row { background:#b8860b; border-radius:20px 20px 0 0; }
     </style>
 </head>
 <body>
@@ -132,11 +158,11 @@
 
                     <div id="tab-design" class="p-6 space-y-6">
                         <div><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.call">1. Indicativo Personal</label>
-                            <input type="text" id="watermark-text" value="CO2KK" oninput="updatePersonalData(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 text-xl font-black uppercase focus:border-blue-500 outline-none"></div>
+                            <input type="text" id="watermark-text" value="CO2KK" oninput="updatePersonalData(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 text-xl font-black uppercase focus:border-blue-500 outline-none transition"></div>
                         <div><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.qr">2. URL del Código QR</label>
-                            <input type="url" id="qr-url-input" value="https://cl7adv.github.io/Qsl-Caribe/" oninput="updateQRUrl(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 text-sm focus:border-blue-500 outline-none"></div>
+                            <input type="url" id="qr-url-input" value="https://cl7adv.github.io/Qsl-Caribe/" oninput="updateQRUrl(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 text-sm focus:border-blue-500 outline-none transition"></div>
                         <div><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.comment">3. Comentario Opcional</label>
-                            <input type="text" id="comment-input" placeholder="Escribe un mensaje..." oninput="updateComment(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-3 text-sm focus:border-blue-500 outline-none">
+                            <input type="text" id="comment-input" placeholder="Escribe un mensaje..." oninput="updateComment(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-3 text-sm focus:border-blue-500 outline-none transition">
                             <div class="grid grid-cols-2 gap-2 mt-2">
                                 <div><span class="text-[9px] text-slate-400 uppercase font-bold" data-i18n="label.opacity">Transparencia</span>
                                     <input type="range" min="0" max="1" step="0.05" value="1" id="comment-opacity-slider" oninput="updateCommentOpacity(this.value)" class="w-full"></div>
@@ -161,9 +187,9 @@
                         </div>
                         <div><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.fontborder">5. Tipografía y Bordes</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <button onclick="updateFont('font-oswald')" class="p-3 border rounded-xl text-[10px] font-bold hover:bg-slate-50">OSWALD</button>
-                                <button onclick="updateFont('font-serif')" class="p-3 border rounded-xl text-[10px] font-bold hover:bg-slate-50 font-serif">SERIF</button>
-                                <button onclick="toggleBorder()" class="p-3 bg-slate-800 text-white rounded-xl text-[10px] font-bold hover:bg-black" data-i18n="btn.border">BORDE ON/OFF</button>
+                                <button onclick="updateFont('font-oswald')" class="p-3 border rounded-xl text-[10px] font-bold hover:bg-slate-50 transition">OSWALD</button>
+                                <button onclick="updateFont('font-serif')" class="p-3 border rounded-xl text-[10px] font-bold hover:bg-slate-50 font-serif transition">SERIF</button>
+                                <button onclick="toggleBorder()" class="p-3 bg-slate-800 text-white rounded-xl text-[10px] font-bold hover:bg-black transition" data-i18n="btn.border">BORDE ON/OFF</button>
                                 <select onchange="updateTableStyle(this.value)" id="table-style-select" class="p-3 bg-slate-100 rounded-xl text-[10px] font-bold uppercase">
                                     <option value="modern" data-i18n="style.modern">Moderna</option>
                                     <option value="minimal" data-i18n="style.minimal">Minimalista</option>
@@ -174,11 +200,11 @@
                         </div>
                         <div><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.bordercolor">6. Color del Borde</label>
                             <div class="flex gap-2 flex-wrap">
-                                <button onclick="updateBorderColor('rgba(255,255,255,0.4)')" class="w-8 h-8 rounded-full bg-white border border-slate-200"></button>
-                                <button onclick="updateBorderColor('rgba(212,175,55,0.7)')" class="w-8 h-8 rounded-full bg-yellow-500"></button>
-                                <button onclick="updateBorderColor('rgba(37,99,235,0.7)')" class="w-8 h-8 rounded-full bg-blue-600"></button>
-                                <button onclick="updateBorderColor('rgba(239,68,68,0.7)')" class="w-8 h-8 rounded-full bg-red-500"></button>
-                                <button onclick="updateBorderColor('rgba(0,0,0,0.6)')" class="w-8 h-8 rounded-full bg-black"></button>
+                                <button onclick="updateBorderColor('rgba(255,255,255,0.4)')" class="w-8 h-8 rounded-full bg-white border border-slate-200 hover:scale-110 transition"></button>
+                                <button onclick="updateBorderColor('rgba(212,175,55,0.7)')" class="w-8 h-8 rounded-full bg-yellow-500 hover:scale-110 transition"></button>
+                                <button onclick="updateBorderColor('rgba(37,99,235,0.7)')" class="w-8 h-8 rounded-full bg-blue-600 hover:scale-110 transition"></button>
+                                <button onclick="updateBorderColor('rgba(239,68,68,0.7)')" class="w-8 h-8 rounded-full bg-red-500 hover:scale-110 transition"></button>
+                                <button onclick="updateBorderColor('rgba(0,0,0,0.6)')" class="w-8 h-8 rounded-full bg-black hover:scale-110 transition"></button>
                             </div>
                         </div>
                         <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.table">7. Personalizar Tabla</label>
@@ -192,8 +218,8 @@
                         </div>
                         <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.bgpresets">8. Fondos Predefinidos</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <button onclick="setBackground('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200">🐬 Delfines</button>
-                                <button onclick="setBackground('https://images.unsplash.com/photo-1507525425510-1e2d6b4a9a8c?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200">🌅 Atardecer</button>
+                                <button onclick="setBackground('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200 transition">🐬 Delfines</button>
+                                <button onclick="setBackground('https://images.unsplash.com/photo-1507525425510-1e2d6b4a9a8c?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200 transition">🌅 Atardecer</button>
                             </div>
                         </div>
                         <div class="border-t pt-4"><label class="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase"><input type="checkbox" id="postcard-frame-checkbox" onchange="togglePostcardFrame(this.checked)"> <span data-i18n="label.postcard">Marco tipo postal</span></label></div>
@@ -214,8 +240,8 @@
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2 pt-4 border-t">
-                            <button onclick="resetPositions()" class="bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase"><i data-lucide="rotate-ccw" class="inline w-4 h-4 mr-1"></i> <span data-i18n="btn.resetpos">Rest. posiciones</span></button>
-                            <button onclick="resetAll()" class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase"><i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1"></i> <span data-i18n="btn.resetall">Rest. todo</span></button>
+                            <button onclick="resetPositions()" class="bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase transition"><i data-lucide="rotate-ccw" class="inline w-4 h-4 mr-1"></i> <span data-i18n="btn.resetpos">Rest. posiciones</span></button>
+                            <button onclick="resetAll()" class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase transition"><i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1"></i> <span data-i18n="btn.resetall">Rest. todo</span></button>
                         </div>
                     </div>
 
@@ -223,21 +249,21 @@
                         <div class="space-y-4 bg-blue-50/30 p-4 rounded-2xl border border-blue-100">
                             <label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> <span data-i18n="label.manual">LLENADO MANUAL DEL QSO</span></label>
                             <div class="grid grid-cols-2 gap-3">
-                                <input type="text" id="manual-call" placeholder="CALL" value="CT1BFP" class="text-xs p-3 border rounded-xl outline-none col-span-2">
-                                <input type="text" id="manual-date" placeholder="FECHA (YYYY-MM-DD)" value="2026-04-06" class="text-xs p-3 border rounded-xl">
-                                <input type="text" id="manual-time" placeholder="HORA (HHMM)" value="2215" class="text-xs p-3 border rounded-xl">
-                                <input type="text" id="manual-band" placeholder="BANDA" value="20M" class="text-xs p-3 border rounded-xl">
-                                <input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl">
-                                <input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl">
+                                <input type="text" id="manual-call" placeholder="CALL" value="CT1BFP" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-500 transition col-span-2">
+                                <input type="text" id="manual-date" placeholder="FECHA (YYYY-MM-DD)" value="2026-04-06" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-500 transition">
+                                <input type="text" id="manual-time" placeholder="HORA (HHMM)" value="2215" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-500 transition">
+                                <input type="text" id="manual-band" placeholder="BANDA" value="20M" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-500 transition">
+                                <input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-500 transition">
+                                <input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-500 transition">
                             </div>
-                            <button onclick="applyManualFull()" class="w-full bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700" data-i18n="btn.apply">APLICAR AL DISEÑO</button>
+                            <button onclick="applyManualFull()" class="w-full bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700 transition" data-i18n="btn.apply">APLICAR AL DISEÑO</button>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="document.getElementById('adifInput').click()" class="flex-1 bg-slate-800 text-white p-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-900 shadow-lg">
+                            <button onclick="document.getElementById('adifInput').click()" class="flex-1 bg-slate-800 text-white p-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-900 shadow-lg transition">
                                 <i data-lucide="file-plus" class="w-4 h-4"></i> <span data-i18n="btn.import">IMPORTAR ADIF</span>
                             </button>
                             <button onclick="clearContacts()" class="clear-btn">🗑️ <span data-i18n="btn.clear">Limpiar</span></button>
-                            <button onclick="loadExampleADIF()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-2xl text-[10px] font-bold">📄 <span data-i18n="btn.example">Ejemplo</span></button>
+                            <button onclick="loadExampleADIF()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-2xl text-[10px] font-bold transition">📄 <span data-i18n="btn.example">Ejemplo</span></button>
                         </div>
                         <input type="file" id="adifInput" class="hidden" accept=".adi,.adif,.log,.txt" onchange="parseADIF(event)">
                         <div id="qso-list-container">
@@ -248,8 +274,8 @@
                 </div>
 
                 <div id="mass-actions" class="hidden space-y-3">
-                    <button onclick="downloadAllQSLsZip()" class="w-full bg-emerald-600 text-white py-5 rounded-3xl font-black text-sm shadow-xl hover:bg-emerald-700 flex items-center justify-center gap-3"><i data-lucide="archive" class="w-5 h-5"></i> 📦 <span data-i18n="btn.zip">DESCARGAR TODO EN ZIP</span></button>
-                    <button onclick="downloadBatchSequential()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-xs shadow-lg hover:bg-blue-700 flex items-center justify-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> 📸 <span data-i18n="btn.sequential">UNA POR UNA</span></button>
+                    <button onclick="downloadAllQSLsZip()" class="w-full bg-emerald-600 text-white py-5 rounded-3xl font-black text-sm shadow-xl hover:bg-emerald-700 flex items-center justify-center gap-3 transition"><i data-lucide="archive" class="w-5 h-5"></i> 📦 <span data-i18n="btn.zip">DESCARGAR TODO EN ZIP</span></button>
+                    <button onclick="downloadBatchSequential()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-xs shadow-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition"><i data-lucide="download" class="w-4 h-4"></i> 📸 <span data-i18n="btn.sequential">UNA POR UNA</span></button>
                 </div>
             </aside>
 
@@ -280,8 +306,8 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <button onclick="document.getElementById('bgInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50"><i data-lucide="image" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase" data-i18n="btn.changebg">Cambiar Fondo</span></button>
-                    <button onclick="document.getElementById('logoInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50"><i data-lucide="award" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase" data-i18n="btn.changelogo">Cambiar Logo</span></button>
+                    <button onclick="document.getElementById('bgInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition"><i data-lucide="image" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase" data-i18n="btn.changebg">Cambiar Fondo</span></button>
+                    <button onclick="document.getElementById('logoInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition"><i data-lucide="award" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase" data-i18n="btn.changelogo">Cambiar Logo</span></button>
                     <input type="file" id="bgInput" class="hidden" accept="image/*" onchange="handleImage(event, 'qsl-bg')">
                     <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="handleImage(event, 'user-logo')">
                 </div>
@@ -692,22 +718,106 @@
 
         function updateTableStyle(style) {
             const table = document.getElementById('table-overlay');
-            const html = `<div class="qso-watermark font-signature" style="color:rgba(30,41,59,0.4);font-size:90px;bottom:10px;right:20px;text-shadow:2px 2px 8px rgba(255,255,255,0.5),0 0 20px rgba(255,255,255,0.2);">73</div><div id="table-header" class="bg-blue-600 text-white p-3 mb-4 font-black flex justify-between items-center gap-10 text-2xl rounded-2xl"><div class="flex items-center gap-3"><i data-lucide="user" class="w-6 h-6"></i><span id="lbl-operator">OP: CO2KK</span><img id="operator-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous"></div><div class="flex items-center gap-3"><span>CONTACTO: <span id="target-call" class="text-yellow-300">DX_STATION</span></span><img id="target-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous"></div></div><table class="w-auto text-center text-2xl font-bold border-collapse"><thead><tr class="text-slate-500 text-xs border-b-2 border-slate-100"><th class="pb-2 px-3">FECHA</th><th class="pb-2 px-3">HORA UTC</th><th class="pb-2 px-3">BANDA</th><th class="pb-2 px-3">MODO</th><th class="pb-2 px-3">RST</th></tr></thead><tbody><tr><td class="pt-2 px-3" id="td-date">2026-04-06</td><td class="pt-2 px-3" id="td-time">22:15</td><td class="pt-2 px-3" id="td-band">20M</td><td class="pt-2 px-3" id="td-mode">SSB</td><td class="pt-2 px-3 text-blue-600" id="td-rst">59</td></tr></tbody></table>`;
+            // Construir la tabla con clases mejoradas
+            const html = `
+                <div class="qso-watermark font-signature" style="color:rgba(30,41,59,0.4);font-size:90px;bottom:10px;right:20px;text-shadow:2px 2px 8px rgba(255,255,255,0.5),0 0 20px rgba(255,255,255,0.2);">73</div>
+                <div id="table-header" class="header-row" style="background:linear-gradient(135deg,#1e293b,#334155);border-radius:16px 16px 0 0;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;color:white;">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="user" class="w-6 h-6"></i>
+                        <span id="lbl-operator" class="operator">OP: CO2KK</span>
+                        <img id="operator-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous">
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span>CONTACTO: <span id="target-call" class="call-sign">DX_STATION</span></span>
+                        <img id="target-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous">
+                    </div>
+                </div>
+                <table class="w-full text-center border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="pb-2 px-3 text-sm font-semibold uppercase tracking-wider text-slate-400 border-b-2 border-slate-200">FECHA</th>
+                            <th class="pb-2 px-3 text-sm font-semibold uppercase tracking-wider text-slate-400 border-b-2 border-slate-200">HORA UTC</th>
+                            <th class="pb-2 px-3 text-sm font-semibold uppercase tracking-wider text-slate-400 border-b-2 border-slate-200">BANDA</th>
+                            <th class="pb-2 px-3 text-sm font-semibold uppercase tracking-wider text-slate-400 border-b-2 border-slate-200">MODO</th>
+                            <th class="pb-2 px-3 text-sm font-semibold uppercase tracking-wider text-slate-400 border-b-2 border-slate-200">RST</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="pt-3 px-3 text-2xl font-bold text-slate-700" id="td-date">2026-04-06</td>
+                            <td class="pt-3 px-3 text-2xl font-bold text-slate-700" id="td-time">22:15</td>
+                            <td class="pt-3 px-3 text-2xl font-bold text-slate-700" id="td-band">20M</td>
+                            <td class="pt-3 px-3 text-2xl font-bold text-slate-700" id="td-mode">SSB</td>
+                            <td class="pt-3 px-3 text-2xl font-bold text-blue-600" id="td-rst">59</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
             table.innerHTML = html;
+            // Aplicar clases de estilo según selección
+            table.className = 'qsl-element'; // reset
             table.style.width = "650px"; table.style.maxWidth = "650px"; table.style.minWidth = "650px";
-            table.style.background = ""; table.style.backdropFilter = ""; table.style.boxShadow = ""; table.style.padding = "4px"; table.style.overflow = "hidden";
+            table.style.padding = "0";
+            table.style.overflow = "hidden";
+            table.style.borderRadius = "20px";
+            table.style.boxShadow = "0 8px 32px rgba(0,0,0,0.12)";
+
+            let bgColor = document.getElementById('table-bg-color').value;
+            let op = parseFloat(document.getElementById('table-bg-opacity').value);
+            let headerColor = document.getElementById('table-header-color').value;
+            let headerTextColor = document.getElementById('table-header-text-color').value;
+            let textColor = document.getElementById('table-text-color').value;
+
+            if (style === 'modern') {
+                table.style.background = hexToRgba(bgColor, op);
+                table.style.backdropFilter = 'blur(12px)';
+                table.querySelector('#table-header').style.background = `linear-gradient(135deg, ${headerColor}, ${adjustColor(headerColor, -20)})`;
+                table.querySelector('#table-header').style.color = headerTextColor;
+                table.querySelectorAll('tbody td').forEach(td => td.style.color = textColor);
+            } else if (style === 'minimal') {
+                table.style.background = 'transparent';
+                table.style.backdropFilter = 'none';
+                table.style.boxShadow = 'none';
+                table.querySelector('#table-header').style.background = 'transparent';
+                table.querySelector('#table-header').style.color = '#1e293b';
+                table.querySelector('#table-header').style.borderBottom = '2px solid #cbd5e1';
+                table.querySelectorAll('tbody td').forEach(td => td.style.color = '#1e293b');
+                // Ajustar bordes de tabla
+                table.querySelector('table').style.border = 'none';
+            } else if (style === 'classic') {
+                table.style.background = hexToRgba(bgColor, op);
+                table.style.border = '2px solid #1e293b';
+                table.style.borderRadius = '8px';
+                table.style.backdropFilter = 'none';
+                table.querySelector('#table-header').style.background = '#1e293b';
+                table.querySelector('#table-header').style.color = '#ffffff';
+                table.querySelector('#table-header').style.borderRadius = '0';
+                table.querySelectorAll('tbody td').forEach(td => td.style.color = '#1e293b');
+            } else if (style === 'elegant') {
+                table.style.background = hexToRgba(bgColor, op);
+                table.style.border = '2px solid #b8860b';
+                table.style.borderRadius = '20px';
+                table.style.backdropFilter = 'blur(8px)';
+                table.querySelector('#table-header').style.background = '#b8860b';
+                table.querySelector('#table-header').style.color = '#ffffff';
+                table.querySelector('#table-header').style.borderRadius = '20px 20px 0 0';
+                table.querySelectorAll('tbody td').forEach(td => td.style.color = textColor);
+            }
+
+            // Re-aplicar iconos
             lucide.createIcons();
-            const bg = document.getElementById('table-bg-color').value;
-            const op = parseFloat(document.getElementById('table-bg-opacity').value);
-            table.style.backgroundColor = hexToRgba(bg, op);
-            document.getElementById('table-header').style.backgroundColor = document.getElementById('table-header-color').value;
-            document.getElementById('table-header').style.color = document.getElementById('table-header-text-color').value;
-            document.querySelectorAll('#table-overlay tbody td').forEach(td => td.style.color = document.getElementById('table-text-color').value);
-            if(style === 'minimal') { table.style.background='transparent'; table.style.backdropFilter='none'; document.getElementById('table-header').style.backgroundColor='transparent'; }
-            else if(style === 'classic') { table.style.background=hexToRgba(bg, op); document.getElementById('table-header').style.backgroundColor='#1e293b'; document.getElementById('table-header').style.color='#ffffff'; }
-            else if(style === 'elegant') { table.style.background=hexToRgba(bg, op); document.getElementById('table-header').style.backgroundColor='#b8860b'; document.getElementById('table-header').style.color='#ffffff'; table.style.border='2px solid #b8860b'; }
-            else { table.style.background=hexToRgba(bg, op); table.style.backdropFilter='blur(10px)'; document.getElementById('table-header').style.backgroundColor=document.getElementById('table-header-color').value; document.getElementById('table-header').style.color=document.getElementById('table-header-text-color').value; }
             saveToStorage();
+        }
+
+        // Helper para oscurecer un color hexadecimal
+        function adjustColor(hex, amount) {
+            let r = parseInt(hex.slice(1,3),16);
+            let g = parseInt(hex.slice(3,5),16);
+            let b = parseInt(hex.slice(5,7),16);
+            r = Math.max(0, Math.min(255, r + amount));
+            g = Math.max(0, Math.min(255, g + amount));
+            b = Math.max(0, Math.min(255, b + amount));
+            return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
         }
 
         // ========== FUNCIONES DE DATOS ==========
@@ -797,7 +907,7 @@
                     container.innerHTML = "";
                     allQsos.forEach((q, i) => {
                         let d = document.createElement('div');
-                        d.className = "bg-white p-3 border rounded-xl hover:bg-blue-50 cursor-pointer flex justify-between items-center";
+                        d.className = "bg-white p-3 border rounded-xl hover:bg-blue-50 cursor-pointer flex justify-between items-center transition";
                         d.onclick = () => { applyQSO(q); container.querySelectorAll('.bg-blue-50').forEach(el=>el.classList.remove('bg-blue-50')); d.classList.add('bg-blue-50'); };
                         d.innerHTML = `<div><span class="text-xs font-black">${q.CALL}</span><span class="text-[9px] text-slate-400 ml-2">${q.QSO_DATE||''}</span></div><span class="text-[10px] bg-slate-100 px-2 py-1 rounded">${q.BAND||'?'}</span>`;
                         container.appendChild(d);
