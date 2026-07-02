@@ -46,7 +46,6 @@
         .qso-watermark { position:absolute; bottom:10px; right:20px; font-family:'Dancing Script',cursive; font-size:90px; opacity:0.4; color:#1e293b; pointer-events:none; z-index:5; transform:rotate(-8deg); text-shadow:2px 2px 8px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.2); }
         .qso-watermark.light { color:rgba(255,255,255,0.35); text-shadow:2px 2px 8px rgba(0,0,0,0.3); }
         #table-overlay { position:relative; overflow:visible; width:650px !important; max-width:650px !important; min-width:650px !important; box-sizing:border-box; }
-        #table-overlay.ave-finish-card { width:520px !important; max-width:520px !important; min-width:520px !important; }
         .lang-selector { background:white; border-radius:30px; padding:4px 12px 4px 16px; border:1px solid #e2e8f0; display:flex; align-items:center; gap:8px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
         .lang-selector select { border:none; background:transparent; font-weight:600; font-size:12px; outline:none; cursor:pointer; padding:4px 0; font-family:'Inter',sans-serif; }
         .thanks-btn { background:linear-gradient(145deg,#fbbf24,#f59e0b); color:#1e293b; font-weight:900; padding:8px 20px; border-radius:40px; border:none; box-shadow:0 4px 12px rgba(245,158,11,0.3); transition:all 0.2s; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; gap:8px; }
@@ -60,10 +59,6 @@
         .thanks-modal .names { font-weight:800; color:#2563eb; font-size:18px; }
         .clear-btn { background:#ef4444; color:white; padding:6px 14px; border-radius:30px; font-size:10px; font-weight:bold; border:none; cursor:pointer; transition:0.2s; }
         .clear-btn:hover { background:#dc2626; transform:scale(1.05); }
-        .ave-finish-card { background:linear-gradient(135deg,rgba(18,25,45,0.92) 0%,rgba(28,38,65,0.88) 100%); backdrop-filter:blur(12px); border-radius:32px; border:1px solid rgba(255,215,0,0.3); box-shadow:0 25px 40px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); transition:all 0.2s ease; font-family:'Inter',sans-serif; width:520px !important; padding:20px 24px; letter-spacing:0.3px; box-sizing:border-box; }
-        .ave-finish-card .wing-icon { background:rgba(255,215,0,0.2); border-radius:40px; padding:8px 12px; display:inline-flex; align-items:center; gap:12px; }
-        .ave-finish-card .qso-main-call { font-size:42px; font-weight:800; background:linear-gradient(135deg,#FFE6B0,#FFB347); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 2px 5px rgba(0,0,0,0.2); }
-        .ave-finish-card .data-row { display:flex; justify-content:space-between; border-bottom:1px dashed rgba(255,215,0,0.4); padding:8px 0; }
     </style>
 </head>
 <body>
@@ -112,10 +107,13 @@
                     <select id="languageSelect" onchange="setLanguage(this.value)">
                         <option value="es">🇪🇸 Español</option>
                         <option value="en">🇬🇧 English</option>
+                        <option value="pt">🇵🇹 Português</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="de">🇩🇪 Deutsch</option>
                     </select>
                 </div>
                 <button onclick="downloadSingleQSL()" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100">
-                    <i data-lucide="download" class="w-4 h-4"></i> <span id="header-save">GUARDAR CALIDAD PRO</span>
+                    <i data-lucide="download" class="w-4 h-4"></i> <span id="header-save" data-i18n="header.save">GUARDAR CALIDAD PRO</span>
                 </button>
             </div>
         </header>
@@ -125,53 +123,56 @@
                 <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
                     <div class="flex">
                         <button onclick="switchTab('design')" id="btn-design" class="tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 active-design">
-                            <i data-lucide="brush" class="w-4 h-4"></i> Estilo
+                            <i data-lucide="brush" class="w-4 h-4"></i> <span data-i18n="tab.design">Estilo</span>
                         </button>
                         <button onclick="switchTab('data')" id="btn-data" class="tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 inactive">
-                            <i data-lucide="clipboard-list" class="w-4 h-4"></i> Log ADIF
+                            <i data-lucide="clipboard-list" class="w-4 h-4"></i> <span data-i18n="tab.data">Log ADIF</span>
                         </button>
                     </div>
 
                     <div id="tab-design" class="p-6 space-y-6">
-                        <div><label class="text-[11px] font-black text-slate-400 uppercase">1. Indicativo Personal</label>
+                        <div><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.call">1. Indicativo Personal</label>
                             <input type="text" id="watermark-text" value="CO2KK" oninput="updatePersonalData(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 text-xl font-black uppercase focus:border-blue-500 outline-none"></div>
-                        <div><label class="text-[11px] font-black text-slate-400 uppercase">2. URL del Código QR</label>
+                        <div><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.qr">2. URL del Código QR</label>
                             <input type="url" id="qr-url-input" value="https://cl7adv.github.io/Qsl-Caribe/" oninput="updateQRUrl(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 text-sm focus:border-blue-500 outline-none"></div>
-                        <div><label class="text-[11px] font-black text-slate-400 uppercase">3. Comentario Opcional</label>
+                        <div><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.comment">3. Comentario Opcional</label>
                             <input type="text" id="comment-input" placeholder="Escribe un mensaje..." oninput="updateComment(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-3 text-sm focus:border-blue-500 outline-none">
                             <div class="grid grid-cols-2 gap-2 mt-2">
-                                <div><span class="text-[9px] text-slate-400 uppercase font-bold">Transparencia</span>
+                                <div><span class="text-[9px] text-slate-400 uppercase font-bold" data-i18n="label.opacity">Transparencia</span>
                                     <input type="range" min="0" max="1" step="0.05" value="1" id="comment-opacity-slider" oninput="updateCommentOpacity(this.value)" class="w-full"></div>
-                                <div><span class="text-[9px] text-slate-400 uppercase font-bold">Color Texto</span>
+                                <div><span class="text-[9px] text-slate-400 uppercase font-bold" data-i18n="label.color">Color Texto</span>
                                     <input type="color" value="#ffffff" id="comment-color-picker" oninput="updateCommentColor(this.value)" class="w-full h-8 cursor-pointer rounded"></div>
                             </div>
                         </div>
-                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase">4. Watermark</label>
+                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.watermark">4. Watermark</label>
                             <div class="grid grid-cols-2 gap-3 mt-1">
-                                <div><span class="text-[9px] text-slate-400">Color</span><input type="color" id="watermark-color" value="#ffffff" oninput="updateWatermarkColor(this.value)" class="w-full h-8"></div>
-                                <div><span class="text-[9px] text-slate-400">Opacidad</span><input type="range" id="watermark-opacity" min="0" max="1" step="0.05" value="0.5" oninput="updateWatermarkOpacity(this.value)" class="w-full"></div>
-                                <div class="col-span-2"><span class="text-[9px] text-slate-400">Relieve</span>
+                                <div><span class="text-[9px] text-slate-400" data-i18n="label.color">Color</span><input type="color" id="watermark-color" value="#ffffff" oninput="updateWatermarkColor(this.value)" class="w-full h-8"></div>
+                                <div><span class="text-[9px] text-slate-400" data-i18n="label.opacity">Opacidad</span><input type="range" id="watermark-opacity" min="0" max="1" step="0.05" value="0.5" oninput="updateWatermarkOpacity(this.value)" class="w-full"></div>
+                                <div class="col-span-2"><span class="text-[9px] text-slate-400" data-i18n="label.relief">Relieve</span>
                                     <select id="watermark-relief" onchange="updateWatermarkRelief(this.value)" class="w-full p-2 bg-slate-100 rounded-xl text-[10px] font-bold">
-                                        <option value="none">Ninguno</option><option value="soft">Sombra suave</option><option value="strong">Sombra fuerte</option><option value="engrave">Relieve grabado</option><option value="glow">Resplandor</option>
+                                        <option value="none" data-i18n="relief.none">Ninguno</option>
+                                        <option value="soft" data-i18n="relief.soft">Sombra suave</option>
+                                        <option value="strong" data-i18n="relief.strong">Sombra fuerte</option>
+                                        <option value="engrave" data-i18n="relief.engrave">Relieve grabado</option>
+                                        <option value="glow" data-i18n="relief.glow">Resplandor</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-                        <div><label class="text-[11px] font-black text-slate-400 uppercase">5. Tipografía y Bordes</label>
+                        <div><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.fontborder">5. Tipografía y Bordes</label>
                             <div class="grid grid-cols-2 gap-2">
                                 <button onclick="updateFont('font-oswald')" class="p-3 border rounded-xl text-[10px] font-bold hover:bg-slate-50">OSWALD</button>
                                 <button onclick="updateFont('font-serif')" class="p-3 border rounded-xl text-[10px] font-bold hover:bg-slate-50 font-serif">SERIF</button>
-                                <button onclick="toggleBorder()" class="p-3 bg-slate-800 text-white rounded-xl text-[10px] font-bold hover:bg-black">BORDE ON/OFF</button>
+                                <button onclick="toggleBorder()" class="p-3 bg-slate-800 text-white rounded-xl text-[10px] font-bold hover:bg-black" data-i18n="btn.border">BORDE ON/OFF</button>
                                 <select onchange="updateTableStyle(this.value)" id="table-style-select" class="p-3 bg-slate-100 rounded-xl text-[10px] font-bold uppercase">
-                                    <option value="modern">Moderna</option>
-                                    <option value="minimal">Minimalista</option>
-                                    <option value="classic">Clásica</option>
-                                    <option value="elegant">Elegante</option>
-                                    <option value="avefinish">✨ AVE FINISH ✨</option>
+                                    <option value="modern" data-i18n="style.modern">Moderna</option>
+                                    <option value="minimal" data-i18n="style.minimal">Minimalista</option>
+                                    <option value="classic" data-i18n="style.classic">Clásica</option>
+                                    <option value="elegant" data-i18n="style.elegant">Elegante</option>
                                 </select>
                             </div>
                         </div>
-                        <div><label class="text-[11px] font-black text-slate-400 uppercase">6. Color del Borde</label>
+                        <div><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.bordercolor">6. Color del Borde</label>
                             <div class="flex gap-2 flex-wrap">
                                 <button onclick="updateBorderColor('rgba(255,255,255,0.4)')" class="w-8 h-8 rounded-full bg-white border border-slate-200"></button>
                                 <button onclick="updateBorderColor('rgba(212,175,55,0.7)')" class="w-8 h-8 rounded-full bg-yellow-500"></button>
@@ -180,47 +181,47 @@
                                 <button onclick="updateBorderColor('rgba(0,0,0,0.6)')" class="w-8 h-8 rounded-full bg-black"></button>
                             </div>
                         </div>
-                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase">7. Personalizar Tabla</label>
+                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.table">7. Personalizar Tabla</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <div><span class="text-[9px] text-slate-400">Fondo</span><input type="color" id="table-bg-color" value="#ffffff" oninput="updateTableBgColor(this.value)" class="w-full h-8"></div>
-                                <div><span class="text-[9px] text-slate-400">Encabezado</span><input type="color" id="table-header-color" value="#2563eb" oninput="updateTableHeaderColor(this.value)" class="w-full h-8"></div>
-                                <div><span class="text-[9px] text-slate-400">Texto celdas</span><input type="color" id="table-text-color" value="#000000" oninput="updateTableTextColor(this.value)" class="w-full h-8"></div>
-                                <div><span class="text-[9px] text-slate-400">Texto encabezado</span><input type="color" id="table-header-text-color" value="#ffffff" oninput="updateTableHeaderTextColor(this.value)" class="w-full h-8"></div>
-                                <div class="col-span-2"><span class="text-[9px] text-slate-400">Opacidad fondo</span><input type="range" min="0" max="1" step="0.05" value="0.95" id="table-bg-opacity" oninput="updateTableBgOpacity(this.value)" class="w-full"></div>
+                                <div><span class="text-[9px] text-slate-400" data-i18n="label.background">Fondo</span><input type="color" id="table-bg-color" value="#ffffff" oninput="updateTableBgColor(this.value)" class="w-full h-8"></div>
+                                <div><span class="text-[9px] text-slate-400" data-i18n="label.header">Encabezado</span><input type="color" id="table-header-color" value="#2563eb" oninput="updateTableHeaderColor(this.value)" class="w-full h-8"></div>
+                                <div><span class="text-[9px] text-slate-400" data-i18n="label.celltext">Texto celdas</span><input type="color" id="table-text-color" value="#000000" oninput="updateTableTextColor(this.value)" class="w-full h-8"></div>
+                                <div><span class="text-[9px] text-slate-400" data-i18n="label.headertext">Texto encabezado</span><input type="color" id="table-header-text-color" value="#ffffff" oninput="updateTableHeaderTextColor(this.value)" class="w-full h-8"></div>
+                                <div class="col-span-2"><span class="text-[9px] text-slate-400" data-i18n="label.bgopacity">Opacidad fondo</span><input type="range" min="0" max="1" step="0.05" value="0.95" id="table-bg-opacity" oninput="updateTableBgOpacity(this.value)" class="w-full"></div>
                             </div>
                         </div>
-                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase">8. Fondos Predefinidos</label>
+                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.bgpresets">8. Fondos Predefinidos</label>
                             <div class="grid grid-cols-2 gap-2">
                                 <button onclick="setBackground('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200">🐬 Delfines</button>
                                 <button onclick="setBackground('https://images.unsplash.com/photo-1507525425510-1e2d6b4a9a8c?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200">🌅 Atardecer</button>
                             </div>
                         </div>
-                        <div class="border-t pt-4"><label class="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase"><input type="checkbox" id="postcard-frame-checkbox" onchange="togglePostcardFrame(this.checked)"> Marco tipo postal</label></div>
-                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase">10. Visibilidad</label>
+                        <div class="border-t pt-4"><label class="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase"><input type="checkbox" id="postcard-frame-checkbox" onchange="togglePostcardFrame(this.checked)"> <span data-i18n="label.postcard">Marco tipo postal</span></label></div>
+                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.visibility">10. Visibilidad</label>
                             <div class="grid grid-cols-2 gap-2 text-[10px]">
-                                <label><input type="checkbox" id="vis-logo" checked onchange="toggleVisibility('user-logo-container', this.checked)"> Logo</label>
-                                <label><input type="checkbox" id="vis-watermark" checked onchange="toggleVisibility('watermark-el', this.checked)"> Watermark</label>
-                                <label><input type="checkbox" id="vis-comment" checked onchange="toggleVisibility('comment-el', this.checked)"> Comentario</label>
-                                <label><input type="checkbox" id="vis-signature" checked onchange="toggleVisibility('signature-el', this.checked)"> Firma</label>
-                                <label><input type="checkbox" id="vis-qr" checked onchange="toggleVisibility('qr-element', this.checked)"> QR</label>
-                                <label><input type="checkbox" id="vis-table" checked onchange="toggleVisibility('table-overlay', this.checked)"> Tabla</label>
+                                <label><input type="checkbox" id="vis-logo" checked onchange="toggleVisibility('user-logo-container', this.checked)"> <span data-i18n="vis.logo">Logo</span></label>
+                                <label><input type="checkbox" id="vis-watermark" checked onchange="toggleVisibility('watermark-el', this.checked)"> <span data-i18n="vis.watermark">Watermark</span></label>
+                                <label><input type="checkbox" id="vis-comment" checked onchange="toggleVisibility('comment-el', this.checked)"> <span data-i18n="vis.comment">Comentario</span></label>
+                                <label><input type="checkbox" id="vis-signature" checked onchange="toggleVisibility('signature-el', this.checked)"> <span data-i18n="vis.signature">Firma</span></label>
+                                <label><input type="checkbox" id="vis-qr" checked onchange="toggleVisibility('qr-element', this.checked)"> <span data-i18n="vis.qr">QR</span></label>
+                                <label><input type="checkbox" id="vis-table" checked onchange="toggleVisibility('table-overlay', this.checked)"> <span data-i18n="vis.table">Tabla</span></label>
                             </div>
                         </div>
-                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase">11. Calidad</label>
+                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="label.quality">11. Calidad</label>
                             <div class="grid grid-cols-2 gap-2">
                                 <select id="export-scale" class="p-2 bg-slate-100 rounded-xl text-[10px] font-bold"><option value="1">1x</option><option value="2" selected>2x</option><option value="3">3x</option><option value="4">4x</option></select>
                                 <select id="export-format" class="p-2 bg-slate-100 rounded-xl text-[10px] font-bold"><option value="jpeg">JPEG</option><option value="png">PNG</option></select>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2 pt-4 border-t">
-                            <button onclick="resetPositions()" class="bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase"><i data-lucide="rotate-ccw" class="inline w-4 h-4 mr-1"></i> Rest. posiciones</button>
-                            <button onclick="resetAll()" class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase"><i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1"></i> Rest. todo</button>
+                            <button onclick="resetPositions()" class="bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase"><i data-lucide="rotate-ccw" class="inline w-4 h-4 mr-1"></i> <span data-i18n="btn.resetpos">Rest. posiciones</span></button>
+                            <button onclick="resetAll()" class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase"><i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1"></i> <span data-i18n="btn.resetall">Rest. todo</span></button>
                         </div>
                     </div>
 
                     <div id="tab-data" class="p-6 hidden space-y-6">
                         <div class="space-y-4 bg-blue-50/30 p-4 rounded-2xl border border-blue-100">
-                            <label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> LLENADO MANUAL DEL QSO</label>
+                            <label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> <span data-i18n="label.manual">LLENADO MANUAL DEL QSO</span></label>
                             <div class="grid grid-cols-2 gap-3">
                                 <input type="text" id="manual-call" placeholder="CALL" value="CT1BFP" class="text-xs p-3 border rounded-xl outline-none col-span-2">
                                 <input type="text" id="manual-date" placeholder="FECHA (YYYY-MM-DD)" value="2026-04-06" class="text-xs p-3 border rounded-xl">
@@ -229,26 +230,26 @@
                                 <input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl">
                                 <input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl">
                             </div>
-                            <button onclick="applyManualFull()" class="w-full bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700">APLICAR AL DISEÑO</button>
+                            <button onclick="applyManualFull()" class="w-full bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700" data-i18n="btn.apply">APLICAR AL DISEÑO</button>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="document.getElementById('adifInput').click()" class="flex-1 bg-slate-800 text-white p-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-900 shadow-lg">
-                                <i data-lucide="file-plus" class="w-4 h-4"></i> IMPORTAR ADIF
+                                <i data-lucide="file-plus" class="w-4 h-4"></i> <span data-i18n="btn.import">IMPORTAR ADIF</span>
                             </button>
-                            <button onclick="clearContacts()" class="clear-btn">🗑️ Limpiar</button>
-                            <button onclick="loadExampleADIF()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-2xl text-[10px] font-bold">📄 Ejemplo</button>
+                            <button onclick="clearContacts()" class="clear-btn">🗑️ <span data-i18n="btn.clear">Limpiar</span></button>
+                            <button onclick="loadExampleADIF()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-2xl text-[10px] font-bold">📄 <span data-i18n="btn.example">Ejemplo</span></button>
                         </div>
                         <input type="file" id="adifInput" class="hidden" accept=".adi,.adif,.log,.txt" onchange="parseADIF(event)">
                         <div id="qso-list-container">
-                            <label class="text-[11px] font-black text-slate-400 uppercase flex justify-between">Contactos <span id="qso-count" class="text-blue-500 font-black">0</span></label>
-                            <div id="qso-list" class="max-h-[300px] overflow-y-auto space-y-1 bg-slate-50 p-2 rounded-xl border border-slate-100"><p class="text-[10px] text-center text-slate-400 py-6 italic">Sin contactos cargados...</p></div>
+                            <label class="text-[11px] font-black text-slate-400 uppercase flex justify-between"><span data-i18n="label.contacts">Contactos</span> <span id="qso-count" class="text-blue-500 font-black">0</span></label>
+                            <div id="qso-list" class="max-h-[300px] overflow-y-auto space-y-1 bg-slate-50 p-2 rounded-xl border border-slate-100"><p class="text-[10px] text-center text-slate-400 py-6 italic" data-i18n="no.contacts">Sin contactos cargados...</p></div>
                         </div>
                     </div>
                 </div>
 
                 <div id="mass-actions" class="hidden space-y-3">
-                    <button onclick="downloadAllQSLsZip()" class="w-full bg-emerald-600 text-white py-5 rounded-3xl font-black text-sm shadow-xl hover:bg-emerald-700 flex items-center justify-center gap-3"><i data-lucide="archive" class="w-5 h-5"></i> 📦 DESCARGAR TODO EN ZIP</button>
-                    <button onclick="downloadBatchSequential()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-xs shadow-lg hover:bg-blue-700 flex items-center justify-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> 📸 UNA POR UNA</button>
+                    <button onclick="downloadAllQSLsZip()" class="w-full bg-emerald-600 text-white py-5 rounded-3xl font-black text-sm shadow-xl hover:bg-emerald-700 flex items-center justify-center gap-3"><i data-lucide="archive" class="w-5 h-5"></i> 📦 <span data-i18n="btn.zip">DESCARGAR TODO EN ZIP</span></button>
+                    <button onclick="downloadBatchSequential()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-xs shadow-lg hover:bg-blue-700 flex items-center justify-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> 📸 <span data-i18n="btn.sequential">UNA POR UNA</span></button>
                 </div>
             </aside>
 
@@ -279,8 +280,8 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <button onclick="document.getElementById('bgInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50"><i data-lucide="image" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase">Cambiar Fondo</span></button>
-                    <button onclick="document.getElementById('logoInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50"><i data-lucide="award" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase">Cambiar Logo</span></button>
+                    <button onclick="document.getElementById('bgInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50"><i data-lucide="image" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase" data-i18n="btn.changebg">Cambiar Fondo</span></button>
+                    <button onclick="document.getElementById('logoInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50"><i data-lucide="award" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase" data-i18n="btn.changelogo">Cambiar Logo</span></button>
                     <input type="file" id="bgInput" class="hidden" accept="image/*" onchange="handleImage(event, 'qsl-bg')">
                     <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="handleImage(event, 'user-logo')">
                 </div>
@@ -288,18 +289,323 @@
         </div>
         <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4 flex flex-col sm:flex-row justify-between items-center gap-2">
             <p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ v5.4 - ADIF auto ✧</p>
-            <button onclick="document.getElementById('thanksModal').style.display='flex'" class="text-[10px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-1 rounded-full transition-all flex items-center gap-1">
-                <i data-lucide="heart" class="w-3 h-3"></i> CO5ABC · LU6EGD · LU4AGR
-            </button>
+            <div class="flex items-center gap-3">
+                <a href="https://info.flagcounter.com/8mkb" target="_blank" rel="noopener noreferrer">
+                    <img src="https://s05.flagcounter.com/count2/8mkb/bg_FFFFFF/txt_000000/border_CCCCCC/columns_8/maxflags_50/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0" class="h-5 w-auto">
+                </a>
+                <button onclick="document.getElementById('thanksModal').style.display='flex'" class="text-[10px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-1 rounded-full transition-all flex items-center gap-1">
+                    <i data-lucide="heart" class="w-3 h-3"></i> CO5ABC · LU6EGD · LU4AGR
+                </button>
+            </div>
         </footer>
     </div>
 
     <script>
-        // ========== TRADUCCIONES ==========
-        const translations = { es: { "header.save": "GUARDAR CALIDAD PRO" }, en: { "header.save": "SAVE PRO QUALITY" } };
+        // ========== TRADUCCIONES COMPLETAS ==========
+        const translations = {
+            es: {
+                "header.save": "GUARDAR CALIDAD PRO",
+                "tab.design": "Estilo",
+                "tab.data": "Log ADIF",
+                "label.call": "1. Indicativo Personal",
+                "label.qr": "2. URL del Código QR",
+                "label.comment": "3. Comentario Opcional",
+                "label.opacity": "Transparencia",
+                "label.color": "Color Texto",
+                "label.watermark": "4. Watermark",
+                "label.relief": "Relieve",
+                "relief.none": "Ninguno",
+                "relief.soft": "Sombra suave",
+                "relief.strong": "Sombra fuerte",
+                "relief.engrave": "Relieve grabado",
+                "relief.glow": "Resplandor",
+                "label.fontborder": "5. Tipografía y Bordes",
+                "btn.border": "BORDE ON/OFF",
+                "style.modern": "Moderna",
+                "style.minimal": "Minimalista",
+                "style.classic": "Clásica",
+                "style.elegant": "Elegante",
+                "label.bordercolor": "6. Color del Borde",
+                "label.table": "7. Personalizar Tabla",
+                "label.background": "Fondo",
+                "label.header": "Encabezado",
+                "label.celltext": "Texto celdas",
+                "label.headertext": "Texto encabezado",
+                "label.bgopacity": "Opacidad fondo",
+                "label.bgpresets": "8. Fondos Predefinidos",
+                "label.postcard": "Marco tipo postal",
+                "label.visibility": "10. Visibilidad",
+                "vis.logo": "Logo",
+                "vis.watermark": "Watermark",
+                "vis.comment": "Comentario",
+                "vis.signature": "Firma",
+                "vis.qr": "QR",
+                "vis.table": "Tabla",
+                "label.quality": "11. Calidad",
+                "btn.resetpos": "Rest. posiciones",
+                "btn.resetall": "Rest. todo",
+                "label.manual": "LLENADO MANUAL DEL QSO",
+                "btn.apply": "APLICAR AL DISEÑO",
+                "btn.import": "IMPORTAR ADIF",
+                "btn.clear": "Limpiar",
+                "btn.example": "Ejemplo",
+                "label.contacts": "Contactos",
+                "no.contacts": "Sin contactos cargados...",
+                "btn.zip": "DESCARGAR TODO EN ZIP",
+                "btn.sequential": "UNA POR UNA",
+                "btn.changebg": "Cambiar Fondo",
+                "btn.changelogo": "Cambiar Logo"
+            },
+            en: {
+                "header.save": "SAVE PRO QUALITY",
+                "tab.design": "Style",
+                "tab.data": "ADIF Log",
+                "label.call": "1. Personal Callsign",
+                "label.qr": "2. QR Code URL",
+                "label.comment": "3. Optional Comment",
+                "label.opacity": "Opacity",
+                "label.color": "Text Color",
+                "label.watermark": "4. Watermark",
+                "label.relief": "Relief",
+                "relief.none": "None",
+                "relief.soft": "Soft shadow",
+                "relief.strong": "Strong shadow",
+                "relief.engrave": "Engraved",
+                "relief.glow": "Glow",
+                "label.fontborder": "5. Font & Borders",
+                "btn.border": "BORDER ON/OFF",
+                "style.modern": "Modern",
+                "style.minimal": "Minimal",
+                "style.classic": "Classic",
+                "style.elegant": "Elegant",
+                "label.bordercolor": "6. Border Color",
+                "label.table": "7. Customize Table",
+                "label.background": "Background",
+                "label.header": "Header",
+                "label.celltext": "Cell text",
+                "label.headertext": "Header text",
+                "label.bgopacity": "Background opacity",
+                "label.bgpresets": "8. Preset Backgrounds",
+                "label.postcard": "Postcard frame",
+                "label.visibility": "10. Visibility",
+                "vis.logo": "Logo",
+                "vis.watermark": "Watermark",
+                "vis.comment": "Comment",
+                "vis.signature": "Signature",
+                "vis.qr": "QR",
+                "vis.table": "Table",
+                "label.quality": "11. Quality",
+                "btn.resetpos": "Reset positions",
+                "btn.resetall": "Reset all",
+                "label.manual": "MANUAL QSO ENTRY",
+                "btn.apply": "APPLY TO DESIGN",
+                "btn.import": "IMPORT ADIF",
+                "btn.clear": "Clear",
+                "btn.example": "Example",
+                "label.contacts": "Contacts",
+                "no.contacts": "No contacts loaded...",
+                "btn.zip": "DOWNLOAD ALL IN ZIP",
+                "btn.sequential": "ONE BY ONE",
+                "btn.changebg": "Change Background",
+                "btn.changelogo": "Change Logo"
+            },
+            pt: {
+                "header.save": "SALVAR QUALIDADE PRO",
+                "tab.design": "Estilo",
+                "tab.data": "Log ADIF",
+                "label.call": "1. Indicativo Pessoal",
+                "label.qr": "2. URL do Código QR",
+                "label.comment": "3. Comentário Opcional",
+                "label.opacity": "Transparência",
+                "label.color": "Cor do Texto",
+                "label.watermark": "4. Marca d'água",
+                "label.relief": "Relevo",
+                "relief.none": "Nenhum",
+                "relief.soft": "Sombra suave",
+                "relief.strong": "Sombra forte",
+                "relief.engrave": "Gravado",
+                "relief.glow": "Brilho",
+                "label.fontborder": "5. Fonte e Bordas",
+                "btn.border": "BORDA LIG/DESL",
+                "style.modern": "Moderna",
+                "style.minimal": "Minimalista",
+                "style.classic": "Clássica",
+                "style.elegant": "Elegante",
+                "label.bordercolor": "6. Cor da Borda",
+                "label.table": "7. Personalizar Tabela",
+                "label.background": "Fundo",
+                "label.header": "Cabeçalho",
+                "label.celltext": "Texto células",
+                "label.headertext": "Texto cabeçalho",
+                "label.bgopacity": "Opacidade fundo",
+                "label.bgpresets": "8. Fundos Predefinidos",
+                "label.postcard": "Molde tipo postal",
+                "label.visibility": "10. Visibilidade",
+                "vis.logo": "Logo",
+                "vis.watermark": "Marca d'água",
+                "vis.comment": "Comentário",
+                "vis.signature": "Assinatura",
+                "vis.qr": "QR",
+                "vis.table": "Tabela",
+                "label.quality": "11. Qualidade",
+                "btn.resetpos": "Restaurar posições",
+                "btn.resetall": "Restaurar tudo",
+                "label.manual": "INSERÇÃO MANUAL DO QSO",
+                "btn.apply": "APLICAR AO DESIGN",
+                "btn.import": "IMPORTAR ADIF",
+                "btn.clear": "Limpar",
+                "btn.example": "Exemplo",
+                "label.contacts": "Contactos",
+                "no.contacts": "Sem contactos carregados...",
+                "btn.zip": "BAIXAR TUDO EM ZIP",
+                "btn.sequential": "UM POR UM",
+                "btn.changebg": "Alterar Fundo",
+                "btn.changelogo": "Alterar Logo"
+            },
+            fr: {
+                "header.save": "ENREGISTRER QUALITÉ PRO",
+                "tab.design": "Style",
+                "tab.data": "Log ADIF",
+                "label.call": "1. Indicatif Personnel",
+                "label.qr": "2. URL du Code QR",
+                "label.comment": "3. Commentaire Optionnel",
+                "label.opacity": "Transparence",
+                "label.color": "Couleur du Texte",
+                "label.watermark": "4. Filigrane",
+                "label.relief": "Relief",
+                "relief.none": "Aucun",
+                "relief.soft": "Ombre douce",
+                "relief.strong": "Ombre forte",
+                "relief.engrave": "Gravé",
+                "relief.glow": "Lueur",
+                "label.fontborder": "5. Police et Bordures",
+                "btn.border": "BORDURE ON/OFF",
+                "style.modern": "Moderne",
+                "style.minimal": "Minimaliste",
+                "style.classic": "Classique",
+                "style.elegant": "Élégant",
+                "label.bordercolor": "6. Couleur de Bordure",
+                "label.table": "7. Personnaliser le Tableau",
+                "label.background": "Fond",
+                "label.header": "En-tête",
+                "label.celltext": "Texte cellules",
+                "label.headertext": "Texte en-tête",
+                "label.bgopacity": "Opacité fond",
+                "label.bgpresets": "8. Fonds Prédéfinis",
+                "label.postcard": "Cadre type carte postale",
+                "label.visibility": "10. Visibilité",
+                "vis.logo": "Logo",
+                "vis.watermark": "Filigrane",
+                "vis.comment": "Commentaire",
+                "vis.signature": "Signature",
+                "vis.qr": "QR",
+                "vis.table": "Tableau",
+                "label.quality": "11. Qualité",
+                "btn.resetpos": "Réinitialiser positions",
+                "btn.resetall": "Tout réinitialiser",
+                "label.manual": "SAISIE MANUELLE DU QSO",
+                "btn.apply": "APPLIQUER AU DESIGN",
+                "btn.import": "IMPORTER ADIF",
+                "btn.clear": "Effacer",
+                "btn.example": "Exemple",
+                "label.contacts": "Contacts",
+                "no.contacts": "Aucun contact chargé...",
+                "btn.zip": "TÉLÉCHARGER TOUT EN ZIP",
+                "btn.sequential": "UN PAR UN",
+                "btn.changebg": "Changer le Fond",
+                "btn.changelogo": "Changer le Logo"
+            },
+            de: {
+                "header.save": "PRO-QUALITÄT SPEICHERN",
+                "tab.design": "Stil",
+                "tab.data": "ADIF-Log",
+                "label.call": "1. Eigenes Rufzeichen",
+                "label.qr": "2. QR-Code-URL",
+                "label.comment": "3. Optionaler Kommentar",
+                "label.opacity": "Transparenz",
+                "label.color": "Textfarbe",
+                "label.watermark": "4. Wasserzeichen",
+                "label.relief": "Relief",
+                "relief.none": "Keins",
+                "relief.soft": "Weicher Schatten",
+                "relief.strong": "Starker Schatten",
+                "relief.engrave": "Graviert",
+                "relief.glow": "Leuchten",
+                "label.fontborder": "5. Schriftart & Rahmen",
+                "btn.border": "RAHMEN EIN/AUS",
+                "style.modern": "Modern",
+                "style.minimal": "Minimalistisch",
+                "style.classic": "Klassisch",
+                "style.elegant": "Elegant",
+                "label.bordercolor": "6. Rahmenfarbe",
+                "label.table": "7. Tabelle anpassen",
+                "label.background": "Hintergrund",
+                "label.header": "Kopfzeile",
+                "label.celltext": "Zelltext",
+                "label.headertext": "Kopfzeilentext",
+                "label.bgopacity": "Hintergrund-Transparenz",
+                "label.bgpresets": "8. Vordefinierte Hintergründe",
+                "label.postcard": "Postkartenrahmen",
+                "label.visibility": "10. Sichtbarkeit",
+                "vis.logo": "Logo",
+                "vis.watermark": "Wasserzeichen",
+                "vis.comment": "Kommentar",
+                "vis.signature": "Unterschrift",
+                "vis.qr": "QR",
+                "vis.table": "Tabelle",
+                "label.quality": "11. Qualität",
+                "btn.resetpos": "Positionen zurücksetzen",
+                "btn.resetall": "Alles zurücksetzen",
+                "label.manual": "MANUELLE QSO-EINGABE",
+                "btn.apply": "AUF DESIGN ANWENDEN",
+                "btn.import": "ADIF IMPORTIEREN",
+                "btn.clear": "Löschen",
+                "btn.example": "Beispiel",
+                "label.contacts": "Kontakte",
+                "no.contacts": "Keine Kontakte geladen...",
+                "btn.zip": "ALLE ALS ZIP HERUNTERLADEN",
+                "btn.sequential": "EINZELN",
+                "btn.changebg": "Hintergrund ändern",
+                "btn.changelogo": "Logo ändern"
+            }
+        };
+
         let currentLang = 'es';
-        function setLanguage(lang) { currentLang = lang; localStorage.setItem('qsl_lang', lang); document.getElementById('header-save').textContent = translations[lang]['header.save']; }
-        (function() { const saved = localStorage.getItem('qsl_lang'); if (saved && translations[saved]) { currentLang = saved; document.getElementById('languageSelect').value = saved; } setLanguage(currentLang); })();
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('qsl_lang', lang);
+            applyTranslations(lang);
+        }
+
+        function applyTranslations(lang) {
+            const dict = translations[lang] || translations.es;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key] !== undefined) {
+                    if (el.tagName === 'INPUT' && el.getAttribute('data-i18n-placeholder')) {
+                        // manejar placeholders
+                    } else {
+                        el.textContent = dict[key];
+                    }
+                }
+            });
+            document.querySelectorAll('select [data-i18n]').forEach(opt => {
+                const key = opt.getAttribute('data-i18n');
+                if (dict[key] !== undefined) opt.textContent = dict[key];
+            });
+            lucide.createIcons();
+        }
+
+        (function() {
+            const saved = localStorage.getItem('qsl_lang');
+            if (saved && translations[saved]) {
+                currentLang = saved;
+                document.getElementById('languageSelect').value = saved;
+            } else {
+                document.getElementById('languageSelect').value = 'es';
+            }
+            applyTranslations(currentLang);
+        })();
 
         // ========== MAPA DE PREFIJOS ==========
         const prefixToCountry = {
@@ -378,57 +684,29 @@
         function updateWatermarkOpacity(o) { document.getElementById('watermark-el').style.opacity=o; document.getElementById('watermark-opacity').value=o; saveToStorage(); }
         function updateWatermarkRelief(s) { const w=document.getElementById('watermark-el'); switch(s){ case'none':w.style.textShadow='none';break; case'soft':w.style.textShadow='2px 2px 8px rgba(0,0,0,0.6)';break; case'strong':w.style.textShadow='4px 4px 12px black';break; case'engrave':w.style.textShadow='1px 1px 0px white, -1px -1px 0px rgba(0,0,0,0.7)';break; case'glow':w.style.textShadow='0 0 15px cyan, 0 0 5px darkblue';break; } saveToStorage(); }
         function hexToRgba(h,o) { const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16); return `rgba(${r},${g},${b},${o})`; }
-        function updateTableBgColor(c) { if(document.getElementById('table-style-select').value!=='avefinish'){ const op=document.getElementById('table-bg-opacity').value; document.getElementById('table-overlay').style.backgroundColor=hexToRgba(c,op); saveToStorage(); } }
-        function updateTableHeaderColor(c) { if(document.getElementById('table-style-select').value!=='avefinish'){ document.getElementById('table-header').style.backgroundColor=c; saveToStorage(); } }
-        function updateTableTextColor(c) { if(document.getElementById('table-style-select').value!=='avefinish'){ document.querySelectorAll('#table-overlay tbody td').forEach(td=>td.style.color=c); saveToStorage(); } }
-        function updateTableHeaderTextColor(c) { if(document.getElementById('table-style-select').value!=='avefinish'){ document.getElementById('table-header').style.color=c; saveToStorage(); } }
-        function updateTableBgOpacity(v) { if(document.getElementById('table-style-select').value!=='avefinish'){ const c=document.getElementById('table-bg-color').value; document.getElementById('table-overlay').style.backgroundColor=hexToRgba(c,v); saveToStorage(); } }
+        function updateTableBgColor(c) { const op=document.getElementById('table-bg-opacity').value; document.getElementById('table-overlay').style.backgroundColor=hexToRgba(c,op); saveToStorage(); }
+        function updateTableHeaderColor(c) { document.getElementById('table-header').style.backgroundColor=c; saveToStorage(); }
+        function updateTableTextColor(c) { document.querySelectorAll('#table-overlay tbody td').forEach(td=>td.style.color=c); saveToStorage(); }
+        function updateTableHeaderTextColor(c) { document.getElementById('table-header').style.color=c; saveToStorage(); }
+        function updateTableBgOpacity(v) { const c=document.getElementById('table-bg-color').value; document.getElementById('table-overlay').style.backgroundColor=hexToRgba(c,v); saveToStorage(); }
 
         function updateTableStyle(style) {
             const table = document.getElementById('table-overlay');
-            table.classList.remove('ave-finish-card');
+            const html = `<div class="qso-watermark font-signature" style="color:rgba(30,41,59,0.4);font-size:90px;bottom:10px;right:20px;text-shadow:2px 2px 8px rgba(255,255,255,0.5),0 0 20px rgba(255,255,255,0.2);">73</div><div id="table-header" class="bg-blue-600 text-white p-3 mb-4 font-black flex justify-between items-center gap-10 text-2xl rounded-2xl"><div class="flex items-center gap-3"><i data-lucide="user" class="w-6 h-6"></i><span id="lbl-operator">OP: CO2KK</span><img id="operator-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous"></div><div class="flex items-center gap-3"><span>CONTACTO: <span id="target-call" class="text-yellow-300">DX_STATION</span></span><img id="target-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous"></div></div><table class="w-auto text-center text-2xl font-bold border-collapse"><thead><tr class="text-slate-500 text-xs border-b-2 border-slate-100"><th class="pb-2 px-3">FECHA</th><th class="pb-2 px-3">HORA UTC</th><th class="pb-2 px-3">BANDA</th><th class="pb-2 px-3">MODO</th><th class="pb-2 px-3">RST</th></tr></thead><tbody><tr><td class="pt-2 px-3" id="td-date">2026-04-06</td><td class="pt-2 px-3" id="td-time">22:15</td><td class="pt-2 px-3" id="td-band">20M</td><td class="pt-2 px-3" id="td-mode">SSB</td><td class="pt-2 px-3 text-blue-600" id="td-rst">59</td></tr></tbody></table>`;
+            table.innerHTML = html;
             table.style.width = "650px"; table.style.maxWidth = "650px"; table.style.minWidth = "650px";
-            if(style === 'avefinish') {
-                const html = `<div class="ave-finish-card" style="width:520px;padding:20px 24px;box-sizing:border-box;"><div class="flex justify-between items-center mb-3"><div class="wing-icon" style="background:rgba(255,215,0,0.2);border-radius:40px;padding:8px 12px;display:inline-flex;align-items:center;gap:12px;"><i data-lucide="feather" class="w-6 h-6 text-amber-400"></i><span class="text-amber-300 text-xs font-bold tracking-wider uppercase">AVE FINISH · ÉLITE</span></div><img id="finish-flag-target" src="" class="h-8 w-auto rounded-md shadow-md hidden"></div><div class="flex justify-between items-center mt-2 mb-4"><span class="qso-main-call" id="finish-call-display" style="font-size:42px;font-weight:800;background:linear-gradient(135deg,#FFE6B0,#FFB347);-webkit-background-clip:text;background-clip:text;color:transparent;">DX_STATION</span><span class="text-white/60 text-sm bg-white/10 px-3 py-1 rounded-full">DXpedition style</span></div><div class="space-y-2 mt-2"><div class="data-row"><span class="text-amber-300 font-semibold"><i data-lucide="calendar" class="inline w-4 h-4 mr-1"></i> FECHA UTC</span><span id="finish-date" class="text-white font-mono">2026-04-06</span></div><div class="data-row"><span class="text-amber-300 font-semibold"><i data-lucide="clock" class="inline w-4 h-4 mr-1"></i> HORA</span><span id="finish-time" class="text-white font-mono">22:15</span></div><div class="data-row"><span class="text-amber-300 font-semibold"><i data-lucide="radio" class="inline w-4 h-4 mr-1"></i> BANDA / MODO</span><span id="finish-bandmode" class="text-white font-bold">20M · SSB</span></div><div class="data-row"><span class="text-amber-300 font-semibold"><i data-lucide="zap" class="inline w-4 h-4 mr-1"></i> RST</span><span id="finish-rst" class="text-amber-200 text-xl font-black">59</span></div></div><div class="mt-5 pt-2 border-t border-amber-500/30 flex justify-end"><span class="text-[9px] text-white/40 tracking-wider">✧ FINISH TOUCH ✧</span></div></div>`;
-                table.innerHTML = html;
-                table.classList.add('ave-finish-card');
-                table.style.width = "520px"; table.style.maxWidth = "520px"; table.style.minWidth = "520px";
-                table.style.background = "transparent"; table.style.backdropFilter = "none"; table.style.boxShadow = "none"; table.style.padding = "0"; table.style.overflow = "visible";
-                lucide.createIcons();
-                // Sincronizar datos
-                const call = document.getElementById('target-call')?.textContent || 'DX_STATION';
-                const date = document.getElementById('td-date')?.textContent || '2026-04-06';
-                const time = document.getElementById('td-time')?.textContent || '22:15';
-                const band = document.getElementById('td-band')?.textContent || '20M';
-                const mode = document.getElementById('td-mode')?.textContent || 'SSB';
-                const rst = document.getElementById('td-rst')?.textContent || '59';
-                if(document.getElementById('finish-call-display')) document.getElementById('finish-call-display').textContent = call;
-                if(document.getElementById('finish-date')) document.getElementById('finish-date').textContent = date;
-                if(document.getElementById('finish-time')) document.getElementById('finish-time').textContent = time;
-                if(document.getElementById('finish-bandmode')) document.getElementById('finish-bandmode').textContent = `${band} · ${mode}`;
-                if(document.getElementById('finish-rst')) document.getElementById('finish-rst').textContent = rst;
-                const code = getCountryCode(call);
-                const f = document.getElementById('finish-flag-target');
-                if(f){ if(code){ f.src=`https://flagcdn.com/w80/${code}.png`; f.classList.remove('hidden'); f.onerror=()=>f.classList.add('hidden'); } else f.classList.add('hidden'); }
-            } else {
-                const html = `<div class="qso-watermark font-signature" style="color:rgba(30,41,59,0.4);font-size:90px;bottom:10px;right:20px;text-shadow:2px 2px 8px rgba(255,255,255,0.5),0 0 20px rgba(255,255,255,0.2);">73</div><div id="table-header" class="bg-blue-600 text-white p-3 mb-4 font-black flex justify-between items-center gap-10 text-2xl rounded-2xl"><div class="flex items-center gap-3"><i data-lucide="user" class="w-6 h-6"></i><span id="lbl-operator">OP: CO2KK</span><img id="operator-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous"></div><div class="flex items-center gap-3"><span>CONTACTO: <span id="target-call" class="text-yellow-300">DX_STATION</span></span><img id="target-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous"></div></div><table class="w-auto text-center text-2xl font-bold border-collapse"><thead><tr class="text-slate-500 text-xs border-b-2 border-slate-100"><th class="pb-2 px-3">FECHA</th><th class="pb-2 px-3">HORA UTC</th><th class="pb-2 px-3">BANDA</th><th class="pb-2 px-3">MODO</th><th class="pb-2 px-3">RST</th></tr></thead><tbody><tr><td class="pt-2 px-3" id="td-date">2026-04-06</td><td class="pt-2 px-3" id="td-time">22:15</td><td class="pt-2 px-3" id="td-band">20M</td><td class="pt-2 px-3" id="td-mode">SSB</td><td class="pt-2 px-3 text-blue-600" id="td-rst">59</td></tr></tbody></table>`;
-                table.innerHTML = html;
-                table.classList.remove('ave-finish-card');
-                table.style.width = "650px"; table.style.maxWidth = "650px"; table.style.minWidth = "650px";
-                table.style.background = ""; table.style.backdropFilter = ""; table.style.boxShadow = ""; table.style.padding = "4px"; table.style.overflow = "hidden";
-                lucide.createIcons();
-                const bg = document.getElementById('table-bg-color').value;
-                const op = parseFloat(document.getElementById('table-bg-opacity').value);
-                table.style.backgroundColor = hexToRgba(bg, op);
-                document.getElementById('table-header').style.backgroundColor = document.getElementById('table-header-color').value;
-                document.getElementById('table-header').style.color = document.getElementById('table-header-text-color').value;
-                document.querySelectorAll('#table-overlay tbody td').forEach(td => td.style.color = document.getElementById('table-text-color').value);
-                // Aplicar estilos específicos
-                if(style === 'minimal') { table.style.background='transparent'; table.style.backdropFilter='none'; document.getElementById('table-header').style.backgroundColor='transparent'; }
-                else if(style === 'classic') { table.style.background=hexToRgba(bg, op); document.getElementById('table-header').style.backgroundColor='#1e293b'; document.getElementById('table-header').style.color='#ffffff'; }
-                else if(style === 'elegant') { table.style.background=hexToRgba(bg, op); document.getElementById('table-header').style.backgroundColor='#b8860b'; document.getElementById('table-header').style.color='#ffffff'; table.style.border='2px solid #b8860b'; }
-                else { table.style.background=hexToRgba(bg, op); table.style.backdropFilter='blur(10px)'; document.getElementById('table-header').style.backgroundColor=document.getElementById('table-header-color').value; document.getElementById('table-header').style.color=document.getElementById('table-header-text-color').value; }
-            }
+            table.style.background = ""; table.style.backdropFilter = ""; table.style.boxShadow = ""; table.style.padding = "4px"; table.style.overflow = "hidden";
+            lucide.createIcons();
+            const bg = document.getElementById('table-bg-color').value;
+            const op = parseFloat(document.getElementById('table-bg-opacity').value);
+            table.style.backgroundColor = hexToRgba(bg, op);
+            document.getElementById('table-header').style.backgroundColor = document.getElementById('table-header-color').value;
+            document.getElementById('table-header').style.color = document.getElementById('table-header-text-color').value;
+            document.querySelectorAll('#table-overlay tbody td').forEach(td => td.style.color = document.getElementById('table-text-color').value);
+            if(style === 'minimal') { table.style.background='transparent'; table.style.backdropFilter='none'; document.getElementById('table-header').style.backgroundColor='transparent'; }
+            else if(style === 'classic') { table.style.background=hexToRgba(bg, op); document.getElementById('table-header').style.backgroundColor='#1e293b'; document.getElementById('table-header').style.color='#ffffff'; }
+            else if(style === 'elegant') { table.style.background=hexToRgba(bg, op); document.getElementById('table-header').style.backgroundColor='#b8860b'; document.getElementById('table-header').style.color='#ffffff'; table.style.border='2px solid #b8860b'; }
+            else { table.style.background=hexToRgba(bg, op); table.style.backdropFilter='blur(10px)'; document.getElementById('table-header').style.backgroundColor=document.getElementById('table-header-color').value; document.getElementById('table-header').style.color=document.getElementById('table-header-text-color').value; }
             saveToStorage();
         }
 
@@ -438,6 +716,7 @@
         function updateQR(url) { const c=document.getElementById('qr-code-container'); c.innerHTML=""; new QRCode(c,{text:url,width:140,height:140,colorDark:"#0f172a"}); saveToStorage(); }
         function updateQRUrl(url) { if(url) updateQR(url); saveToStorage(); }
 
+        // ========== MEJORA: MANEJO DE HORA UTC ==========
         function applyQSO(qso) {
             if (!qso) return;
             const call = qso.CALL || 'DX_STATION';
@@ -445,23 +724,27 @@
             let dateStr = qso.QSO_DATE || '';
             if (dateStr && /^\d{8}$/.test(dateStr)) dateStr = dateStr.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
             document.getElementById('td-date').textContent = dateStr || '----';
+
             let timeStr = qso.TIME_ON || '';
-            if (timeStr && /^\d{4}$/.test(timeStr)) timeStr = timeStr.substring(0,2)+':'+timeStr.substring(2,4);
-            document.getElementById('td-time').textContent = timeStr || '----';
+            timeStr = timeStr.trim();
+            let formattedTime = '----';
+            if (timeStr.includes(':')) {
+                const parts = timeStr.split(':');
+                if (parts.length >= 2) {
+                    formattedTime = parts[0].padStart(2, '0') + ':' + parts[1].padStart(2, '0');
+                }
+            } else if (/^\d{6}$/.test(timeStr)) {
+                formattedTime = timeStr.substring(0,2) + ':' + timeStr.substring(2,4);
+            } else if (/^\d{4}$/.test(timeStr)) {
+                formattedTime = timeStr.substring(0,2) + ':' + timeStr.substring(2,4);
+            }
+            document.getElementById('td-time').textContent = formattedTime;
+
             document.getElementById('td-band').textContent = qso.BAND || '---';
             document.getElementById('td-mode').textContent = qso.MODE || '---';
             const rst = qso.RST_SENT || qso.RST_RCVD || qso.RST || '---';
             document.getElementById('td-rst').textContent = rst;
-            // Actualizar AVE FINISH si existe
-            if(document.getElementById('finish-call-display')) document.getElementById('finish-call-display').textContent = call;
-            if(document.getElementById('finish-date')) document.getElementById('finish-date').textContent = document.getElementById('td-date').textContent;
-            if(document.getElementById('finish-time')) document.getElementById('finish-time').textContent = document.getElementById('td-time').textContent;
-            if(document.getElementById('finish-bandmode')) document.getElementById('finish-bandmode').textContent = `${document.getElementById('td-band').textContent} · ${document.getElementById('td-mode').textContent}`;
-            if(document.getElementById('finish-rst')) document.getElementById('finish-rst').textContent = rst;
-            // Banderas
             updateFlag(call);
-            const f = document.getElementById('finish-flag-target');
-            if(f){ const code=getCountryCode(call); if(code){ f.src=`https://flagcdn.com/w80/${code}.png`; f.classList.remove('hidden'); f.onerror=()=>f.classList.add('hidden'); } else f.classList.add('hidden'); }
         }
         function updateFlag(call) { const flag=document.getElementById('target-flag'); const code=getCountryCode(call); updateFlagImage(flag, code); }
 
@@ -484,7 +767,6 @@
         function parseADIF(event) {
             const file = event.target.files[0];
             if (!file) { console.warn('No se seleccionó archivo.'); return; }
-            // Resetear input para permitir recargar el mismo archivo
             event.target.value = '';
             console.log('📄 Archivo seleccionado:', file.name);
             const reader = new FileReader();
@@ -546,7 +828,6 @@
 <CALL:5>F5ABC <QSO_DATE:8>20260407 <TIME_ON:4>0945 <BAND:3>40M <MODE:3>FT8 <RST_SENT:3>-01 <EOR>
 <CALL:6>LU6EGD <QSO_DATE:8>20260408 <TIME_ON:4>1830 <BAND:2>15M <MODE:4>CW <RST_SENT:3>599 <EOR>
 <CALL:5>CO5ABC <QSO_DATE:8>20260409 <TIME_ON:4>1200 <BAND:3>20M <MODE:2>FM <RST_SENT:3>59+ <EOR>`;
-            // Simular evento de archivo
             const blob = new Blob([example], {type: 'text/plain'});
             const file = new File([blob], 'ejemplo.adi', {type: 'text/plain'});
             const event = { target: { files: [file] } };
@@ -558,7 +839,7 @@
             if (confirm('¿Eliminar todos los contactos cargados?')) {
                 allQsos = [];
                 document.getElementById('qso-count').textContent = '0';
-                document.getElementById('qso-list').innerHTML = '<p class="text-[10px] text-center text-slate-400 py-6 italic">Sin contactos cargados...</p>';
+                document.getElementById('qso-list').innerHTML = '<p class="text-[10px] text-center text-slate-400 py-6 italic" data-i18n="no.contacts">Sin contactos cargados...</p>';
                 document.getElementById('mass-actions').classList.add('hidden');
                 document.getElementById('target-call').textContent = 'DX_STATION';
                 document.getElementById('td-date').textContent = '2026-04-06';
@@ -567,12 +848,7 @@
                 document.getElementById('td-mode').textContent = 'SSB';
                 document.getElementById('td-rst').textContent = '59';
                 document.getElementById('target-flag').classList.add('hidden');
-                if(document.getElementById('finish-call-display')) document.getElementById('finish-call-display').textContent = 'DX_STATION';
-                if(document.getElementById('finish-date')) document.getElementById('finish-date').textContent = '2026-04-06';
-                if(document.getElementById('finish-time')) document.getElementById('finish-time').textContent = '22:15';
-                if(document.getElementById('finish-bandmode')) document.getElementById('finish-bandmode').textContent = '20M · SSB';
-                if(document.getElementById('finish-rst')) document.getElementById('finish-rst').textContent = '59';
-                if(document.getElementById('finish-flag-target')) document.getElementById('finish-flag-target').classList.add('hidden');
+                applyTranslations(currentLang);
             }
         }
 
@@ -722,10 +998,9 @@
             toggleVisibility('user-logo-container',true); toggleVisibility('watermark-el',true); toggleVisibility('comment-el',true); toggleVisibility('signature-el',true); toggleVisibility('qr-element',true); toggleVisibility('table-overlay',true);
             resetPositions();
             localStorage.removeItem('qslConfig');
-            // Limpiar contactos
             allQsos = [];
             document.getElementById('qso-count').textContent = '0';
-            document.getElementById('qso-list').innerHTML = '<p class="text-[10px] text-center text-slate-400 py-6 italic">Sin contactos cargados...</p>';
+            document.getElementById('qso-list').innerHTML = '<p class="text-[10px] text-center text-slate-400 py-6 italic" data-i18n="no.contacts">Sin contactos cargados...</p>';
             document.getElementById('mass-actions').classList.add('hidden');
             document.getElementById('target-call').textContent = 'DX_STATION';
             document.getElementById('td-date').textContent = '2026-04-06';
@@ -734,7 +1009,7 @@
             document.getElementById('td-mode').textContent = 'SSB';
             document.getElementById('td-rst').textContent = '59';
             document.getElementById('target-flag').classList.add('hidden');
-            if(document.getElementById('finish-call-display')) { document.getElementById('finish-call-display').textContent = 'DX_STATION'; document.getElementById('finish-date').textContent = '2026-04-06'; document.getElementById('finish-time').textContent = '22:15'; document.getElementById('finish-bandmode').textContent = '20M · SSB'; document.getElementById('finish-rst').textContent = '59'; document.getElementById('finish-flag-target').classList.add('hidden'); }
+            applyTranslations(currentLang);
         }
 
         // ========== INICIALIZACIÓN ==========
@@ -754,6 +1029,7 @@
             updateTableBgOpacity(parseFloat(document.getElementById('table-bg-opacity').value));
             setTimeout(() => updateTableStyle(document.getElementById('table-style-select').value), 100);
             setTimeout(() => applyManualFull(), 500);
+            applyTranslations(currentLang);
             console.log('🚀 QSL ELITE PRO v5.4 cargada correctamente.');
         };
     </script>
