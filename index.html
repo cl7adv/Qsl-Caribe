@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QSL ELITE PRO v 5.4 - Estable + Agradecimientos</title>
+    <title>QSL ELITE PRO v5.4 - ADIF auto-aplicado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -13,249 +13,85 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@700&family=Dancing+Script:wght@600&family=Playfair+Display:wght@700&family=Roboto+Mono&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; touch-action: manipulation; }
-        
-        #qsl-render-area { 
-            width: 1650px; 
-            height: 1050px; 
-            position: relative; 
-            overflow: hidden; 
-            background: #2d3748; 
-        }
-        
-        .preview-wrapper {
-            width: 100%;
-            aspect-ratio: 1650/1050;
-            overflow: auto;
-            background: #0f172a;
-            border-radius: 12px;
-            position: sticky;
-            top: 20px;
-        }
-        
-        .preview-content {
-            transform-origin: top left;
-        }
-        
-        @media (max-width: 1024px) { .preview-content { transform: scale(0.3); } }
-        @media (max-width: 768px) { .preview-content { transform: scale(0.22); } }
-        @media (max-width: 480px) { .preview-content { transform: scale(0.18); } }
-        
-        #qsl-border { 
-            position: absolute; 
-            inset: 30px; 
-            border: 3px solid rgba(255,255,255,0.3); 
-            pointer-events: none; 
-            z-index: 10; 
-        }
-        
-        #postcard-frame { 
-            position: absolute; 
-            inset: 20px; 
-            border: 12px solid white; 
-            border-radius: 30px; 
-            box-shadow: 0 0 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.3); 
-            pointer-events: none; 
-            z-index: 15; 
-            display: none; 
-        }
-        
-        .qsl-element { 
-            position: absolute; 
-            cursor: move; 
-            user-select: none; 
-            z-index: 20; 
-            touch-action: none; 
-        }
-        
-        .font-sans { font-family: 'Inter', sans-serif; }
-        .font-oswald { font-family: 'Oswald', sans-serif; }
-        .font-serif { font-family: 'Playfair Display', serif; }
-        .font-mono { font-family: 'Roboto Mono', monospace; }
-        .font-signature { font-family: 'Dancing Script', cursive; }
-        
-        .tab-btn {
-            transition: all 0.2s ease;
-            border-radius: 0;
-        }
-        .tab-btn.active-design {
-            background-color: #2563eb;
-            color: white;
-            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
-        }
-        .tab-btn.active-data {
-            background-color: #059669;
-            color: white;
-            box-shadow: 0 4px 12px rgba(5,150,105,0.3);
-        }
-        .tab-btn.inactive {
-            background-color: #e2e8f0;
-            color: #64748b;
-        }
-        .tab-btn.inactive:hover {
-            background-color: #cbd5e1;
-        }
-        
-        #loader { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0,0,0,0.95); 
-            z-index: 9999; 
-            align-items: center; 
-            justify-content: center; 
-            color: white; 
-            flex-direction: column; 
-            backdrop-filter: blur(8px); 
-        }
-        
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        .batch-progress { width: 80%; max-width: 500px; margin-top: 20px; }
-        .progress-bar { width: 100%; height: 30px; background: rgba(255,255,255,0.2); border-radius: 15px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); transition: width 0.3s ease; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold; }
-        .batch-options { display: flex; gap: 10px; margin-top: 10px; }
-        .batch-options button { flex: 1; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 11px; }
-        
-        .qso-watermark {
-            position: absolute;
-            bottom: 10px;
-            right: 20px;
-            font-family: 'Dancing Script', cursive;
-            font-size: 90px;
-            opacity: 0.4;
-            color: #1e293b;
-            pointer-events: none;
-            z-index: 5;
-            transform: rotate(-8deg);
-            text-shadow: 2px 2px 8px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.2);
-        }
-        .qso-watermark.light {
-            color: rgba(255,255,255,0.35);
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-        }
-        
-        #table-overlay {
-            position: relative;
-            overflow: visible;
-        }
-        
-        .lang-selector {
-            background: white;
-            border-radius: 30px;
-            padding: 4px 12px 4px 16px;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .lang-selector select {
-            border: none;
-            background: transparent;
-            font-weight: 600;
-            font-size: 12px;
-            outline: none;
-            cursor: pointer;
-            padding: 4px 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Botón de agradecimiento */
-        .thanks-btn {
-            background: linear-gradient(145deg, #fbbf24, #f59e0b);
-            color: #1e293b;
-            font-weight: 900;
-            padding: 8px 20px;
-            border-radius: 40px;
-            border: none;
-            box-shadow: 0 4px 12px rgba(245,158,11,0.3);
-            transition: all 0.2s;
-            cursor: pointer;
-            font-size: 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .thanks-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 24px rgba(245,158,11,0.5);
-        }
-        .thanks-modal {
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(8px);
-            position: fixed;
-            inset: 0;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 20px;
-        }
-        .thanks-modal-content {
-            background: white;
-            max-width: 500px;
-            width: 100%;
-            padding: 40px 30px;
-            border-radius: 40px;
-            text-align: center;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            animation: popIn 0.4s ease;
-        }
-        @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .thanks-modal .close-btn {
-            margin-top: 20px;
-            background: #e2e8f0;
-            border: none;
-            padding: 10px 30px;
-            border-radius: 30px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .thanks-modal .close-btn:hover {
-            background: #cbd5e1;
-        }
-        .thanks-modal .big-heart {
-            font-size: 60px;
-            display: block;
-            margin-bottom: 10px;
-        }
-        .thanks-modal .names {
-            font-weight: 800;
-            color: #2563eb;
-            font-size: 18px;
-        }
+        #qsl-render-area { width:1650px; height:1050px; position:relative; overflow:hidden; background:#1e293b; }
+        #qsl-bg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+        .bg-fallback { background: linear-gradient(145deg, #0f172a, #1e293b); }
+        .preview-wrapper { width:100%; aspect-ratio:1650/1050; overflow:auto; background:#0f172a; border-radius:12px; position:sticky; top:20px; }
+        .preview-content { transform-origin:top left; }
+        @media (max-width:1024px) { .preview-content { transform:scale(0.3); } }
+        @media (max-width:768px) { .preview-content { transform:scale(0.22); } }
+        @media (max-width:480px) { .preview-content { transform:scale(0.18); } }
+        #qsl-border { position:absolute; inset:30px; border:3px solid rgba(255,255,255,0.3); pointer-events:none; z-index:10; }
+        #postcard-frame { position:absolute; inset:20px; border:12px solid white; border-radius:30px; box-shadow:0 0 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.3); pointer-events:none; z-index:15; display:none; }
+        .qsl-element { position:absolute; cursor:move; user-select:none; z-index:20; touch-action:none; }
+        .font-sans { font-family:'Inter',sans-serif; }
+        .font-oswald { font-family:'Oswald',sans-serif; }
+        .font-serif { font-family:'Playfair Display',serif; }
+        .font-mono { font-family:'Roboto Mono',monospace; }
+        .font-signature { font-family:'Dancing Script',cursive; }
+        .tab-btn { transition:all 0.2s ease; border-radius:0; }
+        .tab-btn.active-design { background-color:#2563eb; color:white; box-shadow:0 4px 12px rgba(37,99,235,0.3); }
+        .tab-btn.active-data { background-color:#059669; color:white; box-shadow:0 4px 12px rgba(5,150,105,0.3); }
+        .tab-btn.inactive { background-color:#e2e8f0; color:#64748b; }
+        .tab-btn.inactive:hover { background-color:#cbd5e1; }
+        #loader { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:9999; align-items:center; justify-content:center; color:white; flex-direction:column; backdrop-filter:blur(8px); }
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background:#f1f5f9; }
+        ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:10px; }
+        .batch-progress { width:80%; max-width:500px; margin-top:20px; }
+        .progress-bar { width:100%; height:30px; background:rgba(255,255,255,0.2); border-radius:15px; overflow:hidden; }
+        .progress-fill { height:100%; background:linear-gradient(90deg,#3b82f6,#60a5fa); transition:width 0.3s ease; display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:bold; }
+        .batch-options { display:flex; gap:10px; margin-top:10px; }
+        .batch-options button { flex:1; padding:12px; border-radius:12px; font-weight:bold; font-size:11px; }
+        .qso-watermark { position:absolute; bottom:10px; right:20px; font-family:'Dancing Script',cursive; font-size:90px; opacity:0.4; color:#1e293b; pointer-events:none; z-index:5; transform:rotate(-8deg); text-shadow:2px 2px 8px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.2); }
+        .qso-watermark.light { color:rgba(255,255,255,0.35); text-shadow:2px 2px 8px rgba(0,0,0,0.3); }
+        #table-overlay { position:relative; overflow:visible; width:650px !important; max-width:650px !important; min-width:650px !important; box-sizing:border-box; }
+        #table-overlay.ave-finish-card { width:520px !important; max-width:520px !important; min-width:520px !important; }
+        .lang-selector { background:white; border-radius:30px; padding:4px 12px 4px 16px; border:1px solid #e2e8f0; display:flex; align-items:center; gap:8px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+        .lang-selector select { border:none; background:transparent; font-weight:600; font-size:12px; outline:none; cursor:pointer; padding:4px 0; font-family:'Inter',sans-serif; }
+        .thanks-btn { background:linear-gradient(145deg,#fbbf24,#f59e0b); color:#1e293b; font-weight:900; padding:8px 20px; border-radius:40px; border:none; box-shadow:0 4px 12px rgba(245,158,11,0.3); transition:all 0.2s; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; gap:8px; }
+        .thanks-btn:hover { transform:scale(1.05); box-shadow:0 8px 24px rgba(245,158,11,0.5); }
+        .thanks-modal { background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:10000; padding:20px; }
+        .thanks-modal-content { background:white; max-width:500px; width:100%; padding:40px 30px; border-radius:40px; text-align:center; box-shadow:0 30px 60px rgba(0,0,0,0.5); animation:popIn 0.4s ease; }
+        @keyframes popIn { 0% { transform:scale(0.8); opacity:0; } 100% { transform:scale(1); opacity:1; } }
+        .thanks-modal .close-btn { margin-top:20px; background:#e2e8f0; border:none; padding:10px 30px; border-radius:30px; font-weight:bold; cursor:pointer; }
+        .thanks-modal .close-btn:hover { background:#cbd5e1; }
+        .thanks-modal .big-heart { font-size:60px; display:block; margin-bottom:10px; }
+        .thanks-modal .names { font-weight:800; color:#2563eb; font-size:18px; }
+        .clear-btn { background:#ef4444; color:white; padding:6px 14px; border-radius:30px; font-size:10px; font-weight:bold; border:none; cursor:pointer; transition:0.2s; }
+        .clear-btn:hover { background:#dc2626; transform:scale(1.05); }
+        .ave-finish-card { background:linear-gradient(135deg,rgba(18,25,45,0.92) 0%,rgba(28,38,65,0.88) 100%); backdrop-filter:blur(12px); border-radius:32px; border:1px solid rgba(255,215,0,0.3); box-shadow:0 25px 40px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); transition:all 0.2s ease; font-family:'Inter',sans-serif; width:520px !important; padding:20px 24px; letter-spacing:0.3px; box-sizing:border-box; }
+        .ave-finish-card .wing-icon { background:rgba(255,215,0,0.2); border-radius:40px; padding:8px 12px; display:inline-flex; align-items:center; gap:12px; }
+        .ave-finish-card .qso-main-call { font-size:42px; font-weight:800; background:linear-gradient(135deg,#FFE6B0,#FFB347); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 2px 5px rgba(0,0,0,0.2); }
+        .ave-finish-card .data-row { display:flex; justify-content:space-between; border-bottom:1px dashed rgba(255,215,0,0.4); padding:8px 0; }
     </style>
 </head>
 <body>
-    <!-- Modal de agradecimiento -->
+
+    <!-- Modal agradecimiento -->
     <div id="thanksModal" class="thanks-modal">
         <div class="thanks-modal-content">
             <span class="big-heart">❤️</span>
             <h2 class="text-2xl font-black text-slate-800">¡Gracias totales!</h2>
-            <p class="text-slate-600 mt-2 text-sm">A mis grandes amigos:</p>
+            <p class="text-slate-600 mt-2 text-sm">A mis grandes amigos y mentores:</p>
             <p class="names text-xl mt-1">CO5ABC · LU6EGD · LU4AGR</p>
-            <p class="text-slate-500 mt-4 text-sm">Por sus consejos en el desarrollo de esta app. ¡73!</p>
+            <p class="text-slate-500 mt-4 text-sm">Por su invaluable ayuda, consejos y apoyo en el desarrollo de esta app. ¡73!</p>
             <button class="close-btn" onclick="document.getElementById('thanksModal').style.display='none'">Cerrar</button>
         </div>
     </div>
 
     <div id="loader">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 mb-4"></div>
-        <p id="loader-text" class="font-bold text-xl text-blue-400 text-center px-4" data-i18n="loader.processing">Procesando QSLs...</p>
+        <p id="loader-text" class="font-bold text-xl text-blue-400 text-center px-4">Procesando QSLs...</p>
         <p id="loader-sub" class="text-sm text-slate-400 mt-2"></p>
         <div class="batch-progress">
             <div class="progress-bar"><div id="progress-fill" class="progress-fill">0%</div></div>
             <div class="batch-options">
-                <button onclick="cancelBatch = true" class="bg-red-600 hover:bg-red-700" data-i18n="loader.cancel">❌ Cancelar</button>
+                <button onclick="cancelBatch = true" class="bg-red-600 hover:bg-red-700">❌ Cancelar</button>
             </div>
         </div>
     </div>
-    
+
     <div class="max-w-[1400px] mx-auto p-4">
         <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
             <div class="flex items-center gap-4">
@@ -263,10 +99,10 @@
                     <i data-lucide="radio" class="text-white w-8 h-8"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v 5.4</h1>
+                    <h1 class="text-2xl font-black text-slate-800 tracking-tight">QSL <span class="text-blue-600">ELITE PRO</span> v5.4</h1>
                     <div class="flex items-center gap-2">
                         <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest" data-i18n="header.sub">ESTABLE + AGRADECIMIENTOS</p>
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">ESTABLE + ADIF AUTO</p>
                     </div>
                 </div>
             </div>
@@ -276,294 +112,182 @@
                     <select id="languageSelect" onchange="setLanguage(this.value)">
                         <option value="es">🇪🇸 Español</option>
                         <option value="en">🇬🇧 English</option>
-                        <option value="zh">🇨🇳 中文</option>
-                        <option value="ja">🇯🇵 日本語</option>
-                        <option value="de">🇩🇪 Deutsch</option>
                     </select>
                 </div>
                 <button onclick="downloadSingleQSL()" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100">
-                    <i data-lucide="download" class="w-4 h-4"></i> <span data-i18n="header.save">GUARDAR CALIDAD PRO</span>
-                </button>
-                <!-- Botón de agradecimiento -->
-                <button onclick="document.getElementById('thanksModal').style.display='flex'" class="thanks-btn">
-                    <i data-lucide="heart" class="w-4 h-4"></i> <span data-i18n="header.thanks">Gracias a mis amigos</span>
+                    <i data-lucide="download" class="w-4 h-4"></i> <span id="header-save">GUARDAR CALIDAD PRO</span>
                 </button>
             </div>
         </header>
-        
+
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <aside class="lg:col-span-4 space-y-6">
                 <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
                     <div class="flex">
-                        <button onclick="switchTab('design')" id="btn-design" class="tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 active-design" data-i18n="tabs.design">
+                        <button onclick="switchTab('design')" id="btn-design" class="tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 active-design">
                             <i data-lucide="brush" class="w-4 h-4"></i> Estilo
                         </button>
-                        <button onclick="switchTab('data')" id="btn-data" class="tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 inactive" data-i18n="tabs.data">
+                        <button onclick="switchTab('data')" id="btn-data" class="tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 inactive">
                             <i data-lucide="clipboard-list" class="w-4 h-4"></i> Log ADIF
                         </button>
                     </div>
-                    
+
                     <div id="tab-design" class="p-6 space-y-6">
-                        <!-- 1..12 igual que antes -->
-                        <div class="space-y-2" data-section="1">
-                            <label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="design.call">1. Indicativo Personal</label>
-                            <input type="text" id="watermark-text" value="CO2KK" oninput="updatePersonalData(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 text-xl font-black uppercase focus:border-blue-500 outline-none">
-                        </div>
-                        
-                        <div class="space-y-2" data-section="2">
-                            <label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="design.qrurl">2. URL del Código QR</label>
-                            <input type="url" id="qr-url-input" value="https://cl7adv.github.io/Qsl-Caribe/" oninput="updateQRUrl(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 text-sm focus:border-blue-500 outline-none">
-                        </div>
-                        
-                        <div class="space-y-2" data-section="3">
-                            <label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="design.comment">3. Comentario Opcional</label>
+                        <div><label class="text-[11px] font-black text-slate-400 uppercase">1. Indicativo Personal</label>
+                            <input type="text" id="watermark-text" value="CO2KK" oninput="updatePersonalData(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 text-xl font-black uppercase focus:border-blue-500 outline-none"></div>
+                        <div><label class="text-[11px] font-black text-slate-400 uppercase">2. URL del Código QR</label>
+                            <input type="url" id="qr-url-input" value="https://cl7adv.github.io/Qsl-Caribe/" oninput="updateQRUrl(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 text-sm focus:border-blue-500 outline-none"></div>
+                        <div><label class="text-[11px] font-black text-slate-400 uppercase">3. Comentario Opcional</label>
                             <input type="text" id="comment-input" placeholder="Escribe un mensaje..." oninput="updateComment(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-3 text-sm focus:border-blue-500 outline-none">
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="space-y-1">
-                                    <span class="text-[9px] text-slate-400 uppercase font-bold" data-i18n="design.opacity">Transparencia</span>
-                                    <input type="range" min="0" max="1" step="0.05" value="1" id="comment-opacity-slider" oninput="updateCommentOpacity(this.value)" class="w-full">
-                                </div>
-                                <div class="space-y-1">
-                                    <span class="text-[9px] text-slate-400 uppercase font-bold" data-i18n="design.color">Color Texto</span>
-                                    <input type="color" value="#ffffff" id="comment-color-picker" oninput="updateCommentColor(this.value)" class="w-full h-8 cursor-pointer rounded">
-                                </div>
+                            <div class="grid grid-cols-2 gap-2 mt-2">
+                                <div><span class="text-[9px] text-slate-400 uppercase font-bold">Transparencia</span>
+                                    <input type="range" min="0" max="1" step="0.05" value="1" id="comment-opacity-slider" oninput="updateCommentOpacity(this.value)" class="w-full"></div>
+                                <div><span class="text-[9px] text-slate-400 uppercase font-bold">Color Texto</span>
+                                    <input type="color" value="#ffffff" id="comment-color-picker" oninput="updateCommentColor(this.value)" class="w-full h-8 cursor-pointer rounded"></div>
                             </div>
                         </div>
-                        
-                        <div class="space-y-2 border-t border-slate-200 pt-4" data-section="4">
-                            <label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="design.watermark">4. Watermark (Indicativo superior)</label>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1">
-                                    <span class="text-[9px] text-slate-400 uppercase font-bold" data-i18n="design.color">Color</span>
-                                    <input type="color" id="watermark-color" value="#ffffff" oninput="updateWatermarkColor(this.value)" class="w-full h-8 cursor-pointer rounded">
-                                </div>
-                                <div class="space-y-1">
-                                    <span class="text-[9px] text-slate-400 uppercase font-bold" data-i18n="design.opacity">Opacidad</span>
-                                    <input type="range" id="watermark-opacity" min="0" max="1" step="0.05" value="0.5" oninput="updateWatermarkOpacity(this.value)" class="w-full">
-                                </div>
-                                <div class="col-span-2 space-y-1">
-                                    <span class="text-[9px] text-slate-400 uppercase font-bold" data-i18n="design.relief">Relieve (sombra)</span>
-                                    <select id="watermark-relief" onchange="updateWatermarkRelief(this.value)" class="w-full p-2 bg-slate-100 rounded-xl text-[10px] font-bold uppercase cursor-pointer">
-                                        <option value="none" data-i18n="design.relief_none">Ninguno</option>
-                                        <option value="soft" data-i18n="design.relief_soft">Sombra suave</option>
-                                        <option value="strong" data-i18n="design.relief_strong">Sombra fuerte</option>
-                                        <option value="engrave" data-i18n="design.relief_engrave">Relieve grabado</option>
-                                        <option value="glow" data-i18n="design.relief_glow">Resplandor</option>
+                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase">4. Watermark</label>
+                            <div class="grid grid-cols-2 gap-3 mt-1">
+                                <div><span class="text-[9px] text-slate-400">Color</span><input type="color" id="watermark-color" value="#ffffff" oninput="updateWatermarkColor(this.value)" class="w-full h-8"></div>
+                                <div><span class="text-[9px] text-slate-400">Opacidad</span><input type="range" id="watermark-opacity" min="0" max="1" step="0.05" value="0.5" oninput="updateWatermarkOpacity(this.value)" class="w-full"></div>
+                                <div class="col-span-2"><span class="text-[9px] text-slate-400">Relieve</span>
+                                    <select id="watermark-relief" onchange="updateWatermarkRelief(this.value)" class="w-full p-2 bg-slate-100 rounded-xl text-[10px] font-bold">
+                                        <option value="none">Ninguno</option><option value="soft">Sombra suave</option><option value="strong">Sombra fuerte</option><option value="engrave">Relieve grabado</option><option value="glow">Resplandor</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="space-y-2" data-section="5">
-                            <label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="design.fonts">5. Tipografía y Bordes</label>
+                        <div><label class="text-[11px] font-black text-slate-400 uppercase">5. Tipografía y Bordes</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <button onclick="updateFont('font-oswald')" class="p-3 border rounded-xl text-[10px] font-bold hover:bg-slate-50" data-i18n="design.font_oswald">OSWALD</button>
-                                <button onclick="updateFont('font-serif')" class="p-3 border rounded-xl text-[10px] font-bold hover:bg-slate-50 font-serif" data-i18n="design.font_serif">SERIF</button>
-                                <button onclick="toggleBorder()" class="p-3 bg-slate-800 text-white rounded-xl text-[10px] font-bold hover:bg-black" data-i18n="design.border_toggle">BORDE ON/OFF</button>
-                                <select onchange="updateTableStyle(this.value)" id="table-style-select" class="p-3 bg-slate-100 rounded-xl text-[10px] font-bold uppercase cursor-pointer">
-                                    <option value="modern" data-i18n="design.style_modern">Moderna</option>
-                                    <option value="minimal" data-i18n="design.style_minimal">Minimalista</option>
-                                    <option value="classic" data-i18n="design.style_classic">Clásica</option>
-                                    <option value="elegant" data-i18n="design.style_elegant">Elegante</option>
+                                <button onclick="updateFont('font-oswald')" class="p-3 border rounded-xl text-[10px] font-bold hover:bg-slate-50">OSWALD</button>
+                                <button onclick="updateFont('font-serif')" class="p-3 border rounded-xl text-[10px] font-bold hover:bg-slate-50 font-serif">SERIF</button>
+                                <button onclick="toggleBorder()" class="p-3 bg-slate-800 text-white rounded-xl text-[10px] font-bold hover:bg-black">BORDE ON/OFF</button>
+                                <select onchange="updateTableStyle(this.value)" id="table-style-select" class="p-3 bg-slate-100 rounded-xl text-[10px] font-bold uppercase">
+                                    <option value="modern">Moderna</option>
+                                    <option value="minimal">Minimalista</option>
+                                    <option value="classic">Clásica</option>
+                                    <option value="elegant">Elegante</option>
+                                    <option value="avefinish">✨ AVE FINISH ✨</option>
                                 </select>
                             </div>
                         </div>
-                        
-                        <div class="space-y-2" data-section="6">
-                            <label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="design.border_color">6. Color del Borde</label>
+                        <div><label class="text-[11px] font-black text-slate-400 uppercase">6. Color del Borde</label>
                             <div class="flex gap-2 flex-wrap">
-                                <button onclick="updateBorderColor('rgba(255,255,255,0.4)')" class="w-8 h-8 rounded-full bg-white border border-slate-200 shadow-sm"></button>
+                                <button onclick="updateBorderColor('rgba(255,255,255,0.4)')" class="w-8 h-8 rounded-full bg-white border border-slate-200"></button>
                                 <button onclick="updateBorderColor('rgba(212,175,55,0.7)')" class="w-8 h-8 rounded-full bg-yellow-500"></button>
                                 <button onclick="updateBorderColor('rgba(37,99,235,0.7)')" class="w-8 h-8 rounded-full bg-blue-600"></button>
                                 <button onclick="updateBorderColor('rgba(239,68,68,0.7)')" class="w-8 h-8 rounded-full bg-red-500"></button>
                                 <button onclick="updateBorderColor('rgba(0,0,0,0.6)')" class="w-8 h-8 rounded-full bg-black"></button>
                             </div>
                         </div>
-                        
-                        <div class="space-y-2 border-t pt-4" data-section="7">
-                            <label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="design.table_custom">7. Personalizar Tabla</label>
+                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase">7. Personalizar Tabla</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <div><span class="text-[9px] text-slate-400" data-i18n="design.table_bg">Fondo tabla</span><input type="color" id="table-bg-color" value="#ffffff" oninput="updateTableBgColor(this.value)" class="w-full h-8"></div>
-                                <div><span class="text-[9px] text-slate-400" data-i18n="design.table_header">Encabezado</span><input type="color" id="table-header-color" value="#2563eb" oninput="updateTableHeaderColor(this.value)" class="w-full h-8"></div>
-                                <div><span class="text-[9px] text-slate-400" data-i18n="design.table_text">Texto celdas</span><input type="color" id="table-text-color" value="#000000" oninput="updateTableTextColor(this.value)" class="w-full h-8"></div>
-                                <div><span class="text-[9px] text-slate-400" data-i18n="design.table_header_text">Texto encabezado</span><input type="color" id="table-header-text-color" value="#ffffff" oninput="updateTableHeaderTextColor(this.value)" class="w-full h-8"></div>
-                                <div class="col-span-2"><span class="text-[9px] text-slate-400" data-i18n="design.table_opacity">Opacidad fondo tabla</span><input type="range" min="0" max="1" step="0.05" value="0.95" id="table-bg-opacity" oninput="updateTableBgOpacity(this.value)" class="w-full"></div>
+                                <div><span class="text-[9px] text-slate-400">Fondo</span><input type="color" id="table-bg-color" value="#ffffff" oninput="updateTableBgColor(this.value)" class="w-full h-8"></div>
+                                <div><span class="text-[9px] text-slate-400">Encabezado</span><input type="color" id="table-header-color" value="#2563eb" oninput="updateTableHeaderColor(this.value)" class="w-full h-8"></div>
+                                <div><span class="text-[9px] text-slate-400">Texto celdas</span><input type="color" id="table-text-color" value="#000000" oninput="updateTableTextColor(this.value)" class="w-full h-8"></div>
+                                <div><span class="text-[9px] text-slate-400">Texto encabezado</span><input type="color" id="table-header-text-color" value="#ffffff" oninput="updateTableHeaderTextColor(this.value)" class="w-full h-8"></div>
+                                <div class="col-span-2"><span class="text-[9px] text-slate-400">Opacidad fondo</span><input type="range" min="0" max="1" step="0.05" value="0.95" id="table-bg-opacity" oninput="updateTableBgOpacity(this.value)" class="w-full"></div>
                             </div>
                         </div>
-                        
-                        <div class="space-y-2 border-t pt-4" data-section="8">
-                            <label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="design.backgrounds">8. Fondos Predefinidos</label>
+                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase">8. Fondos Predefinidos</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <button onclick="setBackground('https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200 truncate" data-i18n="design.bg_beach">Playa Caribeña</button>
-                                <button onclick="setBackground('https://images.unsplash.com/photo-1507525425510-1e2d6b4a9a8c?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200 truncate" data-i18n="design.bg_sunset">Atardecer Habana</button>
-                                <button onclick="setBackground('https://images.unsplash.com/photo-1584432810601-6c7f27d2362b?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200 truncate" data-i18n="design.bg_vintage">Radio Vintage</button>
-                                <button onclick="setBackground('https://images.unsplash.com/photo-1536240474400-95dad987e7ff?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200 truncate" data-i18n="design.bg_stars">Cielo Estrellado</button>
-                                <button onclick="setBackground('https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200 truncate col-span-2" data-i18n="design.bg_malecon">Malecón Habanero</button>
+                                <button onclick="setBackground('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200">🐬 Delfines</button>
+                                <button onclick="setBackground('https://images.unsplash.com/photo-1507525425510-1e2d6b4a9a8c?w=1650')" class="p-2 bg-slate-100 rounded-xl text-[8px] font-bold hover:bg-slate-200">🌅 Atardecer</button>
                             </div>
                         </div>
-                        
-                        <div class="space-y-2 border-t pt-4" data-section="9">
-                            <label class="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase" data-i18n="design.postcard">
-                                <input type="checkbox" id="postcard-frame-checkbox" onchange="togglePostcardFrame(this.checked)"> Marco tipo postal
-                            </label>
-                        </div>
-                        
-                        <div class="space-y-2 border-t pt-4" data-section="10">
-                            <label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="design.visibility">10. Visibilidad de Elementos</label>
+                        <div class="border-t pt-4"><label class="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase"><input type="checkbox" id="postcard-frame-checkbox" onchange="togglePostcardFrame(this.checked)"> Marco tipo postal</label></div>
+                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase">10. Visibilidad</label>
                             <div class="grid grid-cols-2 gap-2 text-[10px]">
-                                <label class="flex items-center gap-2"><input type="checkbox" id="vis-logo" checked onchange="toggleVisibility('user-logo-container', this.checked)"> <span data-i18n="design.vis_logo">Logo/Bandera</span></label>
-                                <label class="flex items-center gap-2"><input type="checkbox" id="vis-watermark" checked onchange="toggleVisibility('watermark-el', this.checked)"> <span data-i18n="design.vis_watermark">Marca de agua</span></label>
-                                <label class="flex items-center gap-2"><input type="checkbox" id="vis-comment" checked onchange="toggleVisibility('comment-el', this.checked)"> <span data-i18n="design.vis_comment">Comentario</span></label>
-                                <label class="flex items-center gap-2"><input type="checkbox" id="vis-signature" checked onchange="toggleVisibility('signature-el', this.checked)"> <span data-i18n="design.vis_signature">Firma</span></label>
-                                <label class="flex items-center gap-2"><input type="checkbox" id="vis-qr" checked onchange="toggleVisibility('qr-element', this.checked)"> <span data-i18n="design.vis_qr">Código QR</span></label>
-                                <label class="flex items-center gap-2"><input type="checkbox" id="vis-table" checked onchange="toggleVisibility('table-overlay', this.checked)"> <span data-i18n="design.vis_table">Tabla QSO</span></label>
+                                <label><input type="checkbox" id="vis-logo" checked onchange="toggleVisibility('user-logo-container', this.checked)"> Logo</label>
+                                <label><input type="checkbox" id="vis-watermark" checked onchange="toggleVisibility('watermark-el', this.checked)"> Watermark</label>
+                                <label><input type="checkbox" id="vis-comment" checked onchange="toggleVisibility('comment-el', this.checked)"> Comentario</label>
+                                <label><input type="checkbox" id="vis-signature" checked onchange="toggleVisibility('signature-el', this.checked)"> Firma</label>
+                                <label><input type="checkbox" id="vis-qr" checked onchange="toggleVisibility('qr-element', this.checked)"> QR</label>
+                                <label><input type="checkbox" id="vis-table" checked onchange="toggleVisibility('table-overlay', this.checked)"> Tabla</label>
                             </div>
                         </div>
-                        
-                        <div class="space-y-2 border-t pt-4" data-section="11">
-                            <label class="text-[11px] font-black text-slate-400 uppercase" data-i18n="design.export">11. Calidad de Exportación</label>
+                        <div class="border-t pt-4"><label class="text-[11px] font-black text-slate-400 uppercase">11. Calidad</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <select id="export-scale" class="p-2 bg-slate-100 rounded-xl text-[10px] font-bold">
-                                    <option value="1" data-i18n="design.export_1">1x (rápido)</option>
-                                    <option value="2" selected data-i18n="design.export_2">2x (recomendado)</option>
-                                    <option value="3" data-i18n="design.export_3">3x (super alta)</option>
-                                    <option value="4" data-i18n="design.export_4">4x (máxima)</option>
-                                </select>
-                                <select id="export-format" class="p-2 bg-slate-100 rounded-xl text-[10px] font-bold">
-                                    <option value="jpeg" data-i18n="design.export_jpeg">JPEG</option>
-                                    <option value="png" data-i18n="design.export_png">PNG</option>
-                                </select>
+                                <select id="export-scale" class="p-2 bg-slate-100 rounded-xl text-[10px] font-bold"><option value="1">1x</option><option value="2" selected>2x</option><option value="3">3x</option><option value="4">4x</option></select>
+                                <select id="export-format" class="p-2 bg-slate-100 rounded-xl text-[10px] font-bold"><option value="jpeg">JPEG</option><option value="png">PNG</option></select>
                             </div>
                         </div>
-                        
-                        <div class="grid grid-cols-2 gap-2 pt-4 border-t" data-section="12">
-                            <button onclick="resetPositions()" class="bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all" data-i18n="design.reset_pos">
-                                <i data-lucide="rotate-ccw" class="inline w-4 h-4 mr-1"></i> Rest. posiciones
-                            </button>
-                            <button onclick="resetAll()" class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all" data-i18n="design.reset_all">
-                                <i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1"></i> Rest. todo
-                            </button>
+                        <div class="grid grid-cols-2 gap-2 pt-4 border-t">
+                            <button onclick="resetPositions()" class="bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase"><i data-lucide="rotate-ccw" class="inline w-4 h-4 mr-1"></i> Rest. posiciones</button>
+                            <button onclick="resetAll()" class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-[10px] font-bold uppercase"><i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1"></i> Rest. todo</button>
                         </div>
                     </div>
-                    
+
                     <div id="tab-data" class="p-6 hidden space-y-6">
                         <div class="space-y-4 bg-blue-50/30 p-4 rounded-2xl border border-blue-100">
-                            <label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2" data-i18n="data.manual">
-                                <i data-lucide="edit" class="w-4 h-4"></i> LLENADO MANUAL DEL QSO
-                            </label>
+                            <label class="text-[11px] font-black text-slate-400 uppercase flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> LLENADO MANUAL DEL QSO</label>
                             <div class="grid grid-cols-2 gap-3">
-                                <input type="text" id="manual-call" placeholder="CALL" value="CT1BFP" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400 col-span-2">
-                                <input type="text" id="manual-date" placeholder="FECHA (YYYY-MM-DD)" value="2026-04-06" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
-                                <input type="text" id="manual-time" placeholder="HORA (HHMM)" value="2215" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
-                                <input type="text" id="manual-band" placeholder="BANDA" value="20M" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
-                                <input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
-                                <input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl outline-none focus:border-blue-400">
+                                <input type="text" id="manual-call" placeholder="CALL" value="CT1BFP" class="text-xs p-3 border rounded-xl outline-none col-span-2">
+                                <input type="text" id="manual-date" placeholder="FECHA (YYYY-MM-DD)" value="2026-04-06" class="text-xs p-3 border rounded-xl">
+                                <input type="text" id="manual-time" placeholder="HORA (HHMM)" value="2215" class="text-xs p-3 border rounded-xl">
+                                <input type="text" id="manual-band" placeholder="BANDA" value="20M" class="text-xs p-3 border rounded-xl">
+                                <input type="text" id="manual-mode" placeholder="MODO" value="SSB" class="text-xs p-3 border rounded-xl">
+                                <input type="text" id="manual-rst" placeholder="RST" value="59" class="text-xs p-3 border rounded-xl">
                             </div>
-                            <button onclick="applyManualFull()" class="w-full bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700 transition-all uppercase tracking-widest" data-i18n="data.apply">APLICAR AL DISEÑO</button>
+                            <button onclick="applyManualFull()" class="w-full bg-blue-600 text-white p-3 rounded-xl text-[10px] font-bold hover:bg-blue-700">APLICAR AL DISEÑO</button>
                         </div>
-                        
-                        <button onclick="document.getElementById('adifInput').click()" class="w-full bg-slate-800 text-white p-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-900 shadow-lg" data-i18n="data.import">
-                            <i data-lucide="file-plus" class="w-4 h-4"></i> IMPORTAR ADIF
-                        </button>
-                        <input type="file" id="adifInput" class="hidden" accept=".adi,.adif" onchange="parseADIF(event)">
-                        
-                        <div id="qso-list-container" class="space-y-2">
-                            <label class="text-[11px] font-black text-slate-400 uppercase flex justify-between" data-i18n="data.contacts">Contactos <span id="qso-count" class="text-blue-500 font-black">0</span></label>
-                            <div id="qso-list" class="max-h-[300px] overflow-y-auto space-y-1 bg-slate-50 p-2 rounded-xl border border-slate-100">
-                                <p class="text-[10px] text-center text-slate-400 py-6 italic" data-i18n="data.no_contacts">Sin contactos cargados...</p>
-                            </div>
+                        <div class="flex gap-2">
+                            <button onclick="document.getElementById('adifInput').click()" class="flex-1 bg-slate-800 text-white p-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-900 shadow-lg">
+                                <i data-lucide="file-plus" class="w-4 h-4"></i> IMPORTAR ADIF
+                            </button>
+                            <button onclick="clearContacts()" class="clear-btn">🗑️ Limpiar</button>
+                            <button onclick="loadExampleADIF()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-2xl text-[10px] font-bold">📄 Ejemplo</button>
+                        </div>
+                        <input type="file" id="adifInput" class="hidden" accept=".adi,.adif,.log,.txt" onchange="parseADIF(event)">
+                        <div id="qso-list-container">
+                            <label class="text-[11px] font-black text-slate-400 uppercase flex justify-between">Contactos <span id="qso-count" class="text-blue-500 font-black">0</span></label>
+                            <div id="qso-list" class="max-h-[300px] overflow-y-auto space-y-1 bg-slate-50 p-2 rounded-xl border border-slate-100"><p class="text-[10px] text-center text-slate-400 py-6 italic">Sin contactos cargados...</p></div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div id="mass-actions" class="hidden space-y-3">
-                    <button onclick="downloadAllQSLsZip()" class="w-full bg-emerald-600 text-white py-5 rounded-3xl font-black text-sm shadow-xl hover:bg-emerald-700 flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02]" data-i18n="mass.zip">
-                        <i data-lucide="archive" class="w-5 h-5"></i> 📦 DESCARGAR TODO EN ZIP (MEJORADO)
-                    </button>
-                    <button onclick="downloadBatchSequential()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-xs shadow-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-all" data-i18n="mass.sequential">
-                        <i data-lucide="download" class="w-4 h-4"></i> 📸 DESCARGAR UNA POR UNA (100% ESTABLE)
-                    </button>
-                    <p class="text-[9px] text-center text-slate-500" data-i18n="mass.info">✅ ZIP mejorado con esperas y manejo de errores | Una por una: ideal para lotes grandes</p>
+                    <button onclick="downloadAllQSLsZip()" class="w-full bg-emerald-600 text-white py-5 rounded-3xl font-black text-sm shadow-xl hover:bg-emerald-700 flex items-center justify-center gap-3"><i data-lucide="archive" class="w-5 h-5"></i> 📦 DESCARGAR TODO EN ZIP</button>
+                    <button onclick="downloadBatchSequential()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-xs shadow-lg hover:bg-blue-700 flex items-center justify-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> 📸 UNA POR UNA</button>
                 </div>
             </aside>
-            
+
             <main class="lg:col-span-8 space-y-6">
                 <div class="bg-white p-4 rounded-[32px] shadow-2xl border border-slate-100">
                     <div class="preview-wrapper" id="preview-wrapper">
-                        <div id="qsl-render-area" class="preview-content">
+                        <div id="qsl-render-area" class="preview-content bg-fallback">
                             <div id="qsl-border"></div>
                             <div id="postcard-frame"></div>
-                            <img id="qsl-bg" src="https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=1650" crossorigin="anonymous" onerror="this.parentElement.style.backgroundColor='#1e293b'; this.style.display='none'" class="absolute inset-0 w-full h-full object-cover">
-                            
-                            <div id="user-logo-container" class="qsl-element" style="top: 80px; left: 80px; width: 220px;">
-                                <img id="user-logo" src="https://upload.wikimedia.org/wikipedia/commons/b/bd/Flag_of_Cuba.svg" crossorigin="anonymous" class="w-full drop-shadow-2xl">
-                            </div>
-                            
-                            <div id="watermark-el" class="qsl-element font-oswald text-[180px] leading-none uppercase font-black" style="top: 80px; left: 1070px; color: white; opacity: 0.5; text-shadow: none;">CO2KK</div>
-                            
-                            <div id="comment-el" class="qsl-element font-sans text-4xl italic font-bold max-w-[600px]" style="top: 300px; left: 80px; color: white; text-shadow: 2px 2px 5px rgba(0,0,0,0.5);">Confirmando nuestro excelente contacto.</div>
-                            
-                            <div id="signature-el" class="qsl-element font-signature text-[50px] drop-shadow-lg" style="top: 670px; left: 1350px; color: white; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);">73's de CO2KK</div>
-                            
-                            <div id="qr-element" class="qsl-element" style="top: 810px; left: 1410px;">
-                                <div id="qr-code-container" class="bg-white p-5 rounded-3xl shadow-2xl"></div>
-                            </div>
-                            
-                            <div id="table-overlay" class="qsl-element bg-white/95 shadow-2xl backdrop-blur-md rounded-3xl overflow-visible p-4" style="top: 620px; left: 80px; width: 650px;">
-                                <div class="qso-watermark font-signature" style="color: rgba(30,41,59,0.4); font-size: 90px; bottom: 10px; right: 20px; text-shadow: 2px 2px 8px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.2);">73</div>
+                            <img id="qsl-bg" src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1650" crossorigin="anonymous" onerror="this.style.display='none'; this.parentElement.classList.add('bg-fallback');" class="absolute inset-0 w-full h-full object-cover">
+                            <div id="user-logo-container" class="qsl-element" style="top:80px; left:80px; width:220px;"><img id="user-logo" src="https://upload.wikimedia.org/wikipedia/commons/b/bd/Flag_of_Cuba.svg" crossorigin="anonymous" class="w-full drop-shadow-2xl" onerror="this.style.display='none'"></div>
+                            <div id="watermark-el" class="qsl-element font-oswald text-[180px] leading-none uppercase font-black" style="top:80px; left:1070px; color:white; opacity:0.5; text-shadow:none;">CO2KK</div>
+                            <div id="comment-el" class="qsl-element font-sans text-4xl italic font-bold max-w-[600px]" style="top:300px; left:80px; color:white; text-shadow:2px 2px 5px rgba(0,0,0,0.5);">Confirmando nuestro excelente contacto.</div>
+                            <div id="signature-el" class="qsl-element font-signature text-[50px] drop-shadow-lg" style="top:670px; left:1350px; color:white; text-shadow:2px 2px 10px rgba(0,0,0,0.5);">73's de CO2KK</div>
+                            <div id="qr-element" class="qsl-element" style="top:810px; left:1410px;"><div id="qr-code-container" class="bg-white p-5 rounded-3xl shadow-2xl"></div></div>
+                            <div id="table-overlay" class="qsl-element bg-white/95 shadow-2xl backdrop-blur-md rounded-3xl overflow-hidden p-4" style="top:620px; left:80px; width:650px;">
+                                <div class="qso-watermark font-signature" style="color:rgba(30,41,59,0.4); font-size:90px; bottom:10px; right:20px; text-shadow:2px 2px 8px rgba(255,255,255,0.5),0 0 20px rgba(255,255,255,0.2);">73</div>
                                 <div id="table-header" class="bg-blue-600 text-white p-3 mb-4 font-black flex justify-between items-center gap-10 text-2xl rounded-2xl">
-                                    <div class="flex items-center gap-3">
-                                        <i data-lucide="user" class="w-6 h-6"></i>
-                                        <span id="lbl-operator">OP: CO2KK</span>
-                                        <img id="operator-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous">
-                                    </div>
-                                    <div class="flex items-center gap-3">
-                                        <span id="lbl-qso-with">CONTACTO: <span id="target-call" class="text-yellow-300">DX_STATION</span></span>
-                                        <img id="target-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous">
-                                    </div>
+                                    <div class="flex items-center gap-3"><i data-lucide="user" class="w-6 h-6"></i><span id="lbl-operator">OP: CO2KK</span><img id="operator-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous"></div>
+                                    <div class="flex items-center gap-3"><span>CONTACTO: <span id="target-call" class="text-yellow-300">DX_STATION</span></span><img id="target-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous"></div>
                                 </div>
                                 <table class="w-auto text-center text-2xl font-bold border-collapse">
-                                    <thead>
-                                        <tr class="text-slate-500 text-xs border-b-2 border-slate-100">
-                                            <th class="pb-2 px-3" data-i18n="table.date">FECHA</th>
-                                            <th class="pb-2 px-3" data-i18n="table.time">HORA UTC</th>
-                                            <th class="pb-2 px-3" data-i18n="table.band">BANDA</th>
-                                            <th class="pb-2 px-3" data-i18n="table.mode">MODO</th>
-                                            <th class="pb-2 px-3" data-i18n="table.rst">RST</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="pt-2 px-3" id="td-date">2026-04-06</td>
-                                            <td class="pt-2 px-3" id="td-time">22:15</td>
-                                            <td class="pt-2 px-3" id="td-band">20M</td>
-                                            <td class="pt-2 px-3" id="td-mode">SSB</td>
-                                            <td class="pt-2 px-3 text-blue-600" id="td-rst">59</td>
-                                        </tr>
-                                    </tbody>
+                                    <thead><tr class="text-slate-500 text-xs border-b-2 border-slate-100"><th class="pb-2 px-3">FECHA</th><th class="pb-2 px-3">HORA UTC</th><th class="pb-2 px-3">BANDA</th><th class="pb-2 px-3">MODO</th><th class="pb-2 px-3">RST</th></tr></thead>
+                                    <tbody><tr><td class="pt-2 px-3" id="td-date">2026-04-06</td><td class="pt-2 px-3" id="td-time">22:15</td><td class="pt-2 px-3" id="td-band">20M</td><td class="pt-2 px-3" id="td-mode">SSB</td><td class="pt-2 px-3 text-blue-600" id="td-rst">59</td></tr></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
-                
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <button onclick="document.getElementById('bgInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition-all shadow-sm" data-i18n="actions.bg">
-                        <i data-lucide="image" class="text-slate-400"></i>
-                        <span class="text-[10px] font-bold uppercase">Cambiar Fondo</span>
-                    </button>
-                    <button onclick="document.getElementById('logoInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition-all shadow-sm" data-i18n="actions.logo">
-                        <i data-lucide="award" class="text-slate-400"></i>
-                        <span class="text-[10px] font-bold uppercase">Cambiar Logo</span>
-                    </button>
+                    <button onclick="document.getElementById('bgInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50"><i data-lucide="image" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase">Cambiar Fondo</span></button>
+                    <button onclick="document.getElementById('logoInput').click()" class="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50"><i data-lucide="award" class="text-slate-400"></i><span class="text-[10px] font-bold uppercase">Cambiar Logo</span></button>
                     <input type="file" id="bgInput" class="hidden" accept="image/*" onchange="handleImage(event, 'qsl-bg')">
                     <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="handleImage(event, 'user-logo')">
                 </div>
             </main>
         </div>
-        
         <footer class="mt-8 text-right text-xs text-slate-400 border-t border-slate-200 pt-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ v5.4 - Estable + Agradecimientos ✧</p>
+            <p class="font-mono">✧ Diseño profesional por <span class="font-bold text-blue-500">CM7ADV - Alfred</span> ✧ v5.4 - ADIF auto ✧</p>
             <button onclick="document.getElementById('thanksModal').style.display='flex'" class="text-[10px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-1 rounded-full transition-all flex items-center gap-1">
                 <i data-lucide="heart" class="w-3 h-3"></i> CO5ABC · LU6EGD · LU4AGR
             </button>
@@ -572,440 +296,10 @@
 
     <script>
         // ========== TRADUCCIONES ==========
-        const translations = {
-            es: {
-                "header.sub": "ESTABLE + AGRADECIMIENTOS",
-                "header.save": "GUARDAR CALIDAD PRO",
-                "header.thanks": "Gracias a mis amigos",
-                "tabs.design": "Estilo",
-                "tabs.data": "Log ADIF",
-                "design.call": "1. Indicativo Personal",
-                "design.qrurl": "2. URL del Código QR",
-                "design.comment": "3. Comentario Opcional",
-                "design.opacity": "Transparencia",
-                "design.color": "Color Texto",
-                "design.watermark": "4. Watermark (Indicativo superior)",
-                "design.relief": "Relieve (sombra)",
-                "design.relief_none": "Ninguno",
-                "design.relief_soft": "Sombra suave",
-                "design.relief_strong": "Sombra fuerte",
-                "design.relief_engrave": "Relieve grabado",
-                "design.relief_glow": "Resplandor",
-                "design.fonts": "5. Tipografía y Bordes",
-                "design.font_oswald": "OSWALD",
-                "design.font_serif": "SERIF",
-                "design.border_toggle": "BORDE ON/OFF",
-                "design.style_modern": "Moderna",
-                "design.style_minimal": "Minimalista",
-                "design.style_classic": "Clásica",
-                "design.style_elegant": "Elegante",
-                "design.border_color": "6. Color del Borde",
-                "design.table_custom": "7. Personalizar Tabla",
-                "design.table_bg": "Fondo tabla",
-                "design.table_header": "Encabezado",
-                "design.table_text": "Texto celdas",
-                "design.table_header_text": "Texto encabezado",
-                "design.table_opacity": "Opacidad fondo tabla",
-                "design.backgrounds": "8. Fondos Predefinidos",
-                "design.bg_beach": "Playa Caribeña",
-                "design.bg_sunset": "Atardecer Habana",
-                "design.bg_vintage": "Radio Vintage",
-                "design.bg_stars": "Cielo Estrellado",
-                "design.bg_malecon": "Malecón Habanero",
-                "design.postcard": "Marco tipo postal",
-                "design.visibility": "10. Visibilidad de Elementos",
-                "design.vis_logo": "Logo/Bandera",
-                "design.vis_watermark": "Marca de agua",
-                "design.vis_comment": "Comentario",
-                "design.vis_signature": "Firma",
-                "design.vis_qr": "Código QR",
-                "design.vis_table": "Tabla QSO",
-                "design.export": "11. Calidad de Exportación",
-                "design.export_1": "1x (rápido)",
-                "design.export_2": "2x (recomendado)",
-                "design.export_3": "3x (super alta)",
-                "design.export_4": "4x (máxima)",
-                "design.export_jpeg": "JPEG",
-                "design.export_png": "PNG",
-                "design.reset_pos": "Rest. posiciones",
-                "design.reset_all": "Rest. todo",
-                "data.manual": "LLENADO MANUAL DEL QSO",
-                "data.apply": "APLICAR AL DISEÑO",
-                "data.import": "IMPORTAR ADIF",
-                "data.contacts": "Contactos",
-                "data.no_contacts": "Sin contactos cargados...",
-                "mass.zip": "📦 DESCARGAR TODO EN ZIP (MEJORADO)",
-                "mass.sequential": "📸 DESCARGAR UNA POR UNA (100% ESTABLE)",
-                "mass.info": "✅ ZIP mejorado con esperas y manejo de errores | Una por una: ideal para lotes grandes",
-                "table.date": "FECHA",
-                "table.time": "HORA UTC",
-                "table.band": "BANDA",
-                "table.mode": "MODO",
-                "table.rst": "RST",
-                "actions.bg": "Cambiar Fondo",
-                "actions.logo": "Cambiar Logo",
-                "loader.processing": "Procesando QSLs...",
-                "loader.cancel": "❌ Cancelar"
-            },
-            en: {
-                "header.sub": "STABLE + THANKS",
-                "header.save": "SAVE PRO QUALITY",
-                "header.thanks": "Thanks to my friends",
-                "tabs.design": "Style",
-                "tabs.data": "ADIF Log",
-                "design.call": "1. Personal Callsign",
-                "design.qrurl": "2. QR Code URL",
-                "design.comment": "3. Optional Comment",
-                "design.opacity": "Opacity",
-                "design.color": "Text Color",
-                "design.watermark": "4. Watermark (Top callsign)",
-                "design.relief": "Relief (shadow)",
-                "design.relief_none": "None",
-                "design.relief_soft": "Soft shadow",
-                "design.relief_strong": "Strong shadow",
-                "design.relief_engrave": "Engraved relief",
-                "design.relief_glow": "Glow",
-                "design.fonts": "5. Fonts & Borders",
-                "design.font_oswald": "OSWALD",
-                "design.font_serif": "SERIF",
-                "design.border_toggle": "BORDER ON/OFF",
-                "design.style_modern": "Modern",
-                "design.style_minimal": "Minimalist",
-                "design.style_classic": "Classic",
-                "design.style_elegant": "Elegant",
-                "design.border_color": "6. Border Color",
-                "design.table_custom": "7. Customize Table",
-                "design.table_bg": "Table bg",
-                "design.table_header": "Header",
-                "design.table_text": "Cell text",
-                "design.table_header_text": "Header text",
-                "design.table_opacity": "Table bg opacity",
-                "design.backgrounds": "8. Preset Backgrounds",
-                "design.bg_beach": "Caribbean Beach",
-                "design.bg_sunset": "Havana Sunset",
-                "design.bg_vintage": "Vintage Radio",
-                "design.bg_stars": "Starry Sky",
-                "design.bg_malecon": "Malecón Havana",
-                "design.postcard": "Postcard frame",
-                "design.visibility": "10. Element Visibility",
-                "design.vis_logo": "Logo/Flag",
-                "design.vis_watermark": "Watermark",
-                "design.vis_comment": "Comment",
-                "design.vis_signature": "Signature",
-                "design.vis_qr": "QR Code",
-                "design.vis_table": "QSO Table",
-                "design.export": "11. Export Quality",
-                "design.export_1": "1x (fast)",
-                "design.export_2": "2x (recommended)",
-                "design.export_3": "3x (super high)",
-                "design.export_4": "4x (maximum)",
-                "design.export_jpeg": "JPEG",
-                "design.export_png": "PNG",
-                "design.reset_pos": "Reset positions",
-                "design.reset_all": "Reset all",
-                "data.manual": "MANUAL QSO FILL",
-                "data.apply": "APPLY TO DESIGN",
-                "data.import": "IMPORT ADIF",
-                "data.contacts": "Contacts",
-                "data.no_contacts": "No contacts loaded...",
-                "mass.zip": "📦 DOWNLOAD ALL IN ZIP (IMPROVED)",
-                "mass.sequential": "📸 DOWNLOAD ONE BY ONE (100% STABLE)",
-                "mass.info": "✅ ZIP improved with waits and error handling | One by one: ideal for large batches",
-                "table.date": "DATE",
-                "table.time": "UTC TIME",
-                "table.band": "BAND",
-                "table.mode": "MODE",
-                "table.rst": "RST",
-                "actions.bg": "Change Background",
-                "actions.logo": "Change Logo",
-                "loader.processing": "Processing QSLs...",
-                "loader.cancel": "❌ Cancel"
-            },
-            zh: {
-                "header.sub": "稳定 + 感谢",
-                "header.save": "保存专业质量",
-                "header.thanks": "感谢我的朋友",
-                "tabs.design": "样式",
-                "tabs.data": "ADIF日志",
-                "design.call": "1. 个人呼号",
-                "design.qrurl": "2. 二维码URL",
-                "design.comment": "3. 可选评论",
-                "design.opacity": "透明度",
-                "design.color": "文字颜色",
-                "design.watermark": "4. 水印（顶部呼号）",
-                "design.relief": "浮雕（阴影）",
-                "design.relief_none": "无",
-                "design.relief_soft": "柔和阴影",
-                "design.relief_strong": "强烈阴影",
-                "design.relief_engrave": "雕刻浮雕",
-                "design.relief_glow": "发光",
-                "design.fonts": "5. 字体与边框",
-                "design.font_oswald": "OSWALD",
-                "design.font_serif": "衬线",
-                "design.border_toggle": "边框开/关",
-                "design.style_modern": "现代",
-                "design.style_minimal": "极简",
-                "design.style_classic": "经典",
-                "design.style_elegant": "优雅",
-                "design.border_color": "6. 边框颜色",
-                "design.table_custom": "7. 自定义表格",
-                "design.table_bg": "表格背景",
-                "design.table_header": "表头",
-                "design.table_text": "单元格文字",
-                "design.table_header_text": "表头文字",
-                "design.table_opacity": "表格背景透明度",
-                "design.backgrounds": "8. 预设背景",
-                "design.bg_beach": "加勒比海滩",
-                "design.bg_sunset": "哈瓦那日落",
-                "design.bg_vintage": "复古电台",
-                "design.bg_stars": "星空",
-                "design.bg_malecon": "哈瓦那海滨大道",
-                "design.postcard": "明信片边框",
-                "design.visibility": "10. 元素可见性",
-                "design.vis_logo": "标志/旗帜",
-                "design.vis_watermark": "水印",
-                "design.vis_comment": "评论",
-                "design.vis_signature": "签名",
-                "design.vis_qr": "二维码",
-                "design.vis_table": "QSO表格",
-                "design.export": "11. 导出质量",
-                "design.export_1": "1x（快速）",
-                "design.export_2": "2x（推荐）",
-                "design.export_3": "3x（超高）",
-                "design.export_4": "4x（最高）",
-                "design.export_jpeg": "JPEG",
-                "design.export_png": "PNG",
-                "design.reset_pos": "重置位置",
-                "design.reset_all": "全部重置",
-                "data.manual": "手动填写QSO",
-                "data.apply": "应用到设计",
-                "data.import": "导入ADIF",
-                "data.contacts": "联系人",
-                "data.no_contacts": "未加载联系人...",
-                "mass.zip": "📦 全部下载为ZIP（改进版）",
-                "mass.sequential": "📸 逐个下载（100%稳定）",
-                "mass.info": "✅ ZIP改进，带有等待和错误处理 | 逐个：适合大批量",
-                "table.date": "日期",
-                "table.time": "UTC时间",
-                "table.band": "波段",
-                "table.mode": "模式",
-                "table.rst": "RST",
-                "actions.bg": "更换背景",
-                "actions.logo": "更换标志",
-                "loader.processing": "正在处理QSL...",
-                "loader.cancel": "❌ 取消"
-            },
-            ja: {
-                "header.sub": "安定 + 感謝",
-                "header.save": "プロ品質で保存",
-                "header.thanks": "友人に感謝",
-                "tabs.design": "スタイル",
-                "tabs.data": "ADIFログ",
-                "design.call": "1. 個人コールサイン",
-                "design.qrurl": "2. QRコードURL",
-                "design.comment": "3. オプションコメント",
-                "design.opacity": "透明度",
-                "design.color": "テキスト色",
-                "design.watermark": "4. ウォーターマーク（上部コールサイン）",
-                "design.relief": "浮き彫り（影）",
-                "design.relief_none": "なし",
-                "design.relief_soft": "ソフトシャドウ",
-                "design.relief_strong": "強い影",
-                "design.relief_engrave": "彫刻浮き彫り",
-                "design.relief_glow": "グロー",
-                "design.fonts": "5. フォントとボーダー",
-                "design.font_oswald": "OSWALD",
-                "design.font_serif": "セリフ",
-                "design.border_toggle": "ボーダーON/OFF",
-                "design.style_modern": "モダン",
-                "design.style_minimal": "ミニマリスト",
-                "design.style_classic": "クラシック",
-                "design.style_elegant": "エレガント",
-                "design.border_color": "6. ボーダー色",
-                "design.table_custom": "7. テーブルカスタマイズ",
-                "design.table_bg": "テーブル背景",
-                "design.table_header": "ヘッダー",
-                "design.table_text": "セルテキスト",
-                "design.table_header_text": "ヘッダーテキスト",
-                "design.table_opacity": "テーブル背景透明度",
-                "design.backgrounds": "8. プリセット背景",
-                "design.bg_beach": "カリビアンビーチ",
-                "design.bg_sunset": "ハバナの夕日",
-                "design.bg_vintage": "ビンテージラジオ",
-                "design.bg_stars": "星空",
-                "design.bg_malecon": "ハバナのマレコン",
-                "design.postcard": "ポストカードフレーム",
-                "design.visibility": "10. 要素の表示",
-                "design.vis_logo": "ロゴ/フラグ",
-                "design.vis_watermark": "ウォーターマーク",
-                "design.vis_comment": "コメント",
-                "design.vis_signature": "署名",
-                "design.vis_qr": "QRコード",
-                "design.vis_table": "QSOテーブル",
-                "design.export": "11. エクスポート品質",
-                "design.export_1": "1x（高速）",
-                "design.export_2": "2x（推奨）",
-                "design.export_3": "3x（超高）",
-                "design.export_4": "4x（最大）",
-                "design.export_jpeg": "JPEG",
-                "design.export_png": "PNG",
-                "design.reset_pos": "位置リセット",
-                "design.reset_all": "すべてリセット",
-                "data.manual": "手動QSO入力",
-                "data.apply": "デザインに適用",
-                "data.import": "ADIFをインポート",
-                "data.contacts": "コンタクト",
-                "data.no_contacts": "コンタクトが読み込まれていません...",
-                "mass.zip": "📦 すべてZIPでダウンロード（改善版）",
-                "mass.sequential": "📸 一つずつダウンロード（100%安定）",
-                "mass.info": "✅ ZIP改善、待機とエラー処理付き | 一つずつ：大バッチに最適",
-                "table.date": "日付",
-                "table.time": "UTC時刻",
-                "table.band": "バンド",
-                "table.mode": "モード",
-                "table.rst": "RST",
-                "actions.bg": "背景変更",
-                "actions.logo": "ロゴ変更",
-                "loader.processing": "QSLを処理中...",
-                "loader.cancel": "❌ キャンセル"
-            },
-            de: {
-                "header.sub": "STABIL + DANKE",
-                "header.save": "PRO-QUALITÄT SPEICHERN",
-                "header.thanks": "Danke an meine Freunde",
-                "tabs.design": "Stil",
-                "tabs.data": "ADIF-Log",
-                "design.call": "1. Persönliches Rufzeichen",
-                "design.qrurl": "2. QR-Code-URL",
-                "design.comment": "3. Optionaler Kommentar",
-                "design.opacity": "Transparenz",
-                "design.color": "Textfarbe",
-                "design.watermark": "4. Wasserzeichen (oberes Rufzeichen)",
-                "design.relief": "Relief (Schatten)",
-                "design.relief_none": "Keiner",
-                "design.relief_soft": "Weicher Schatten",
-                "design.relief_strong": "Starker Schatten",
-                "design.relief_engrave": "Graviertes Relief",
-                "design.relief_glow": "Leuchten",
-                "design.fonts": "5. Schriftarten & Rahmen",
-                "design.font_oswald": "OSWALD",
-                "design.font_serif": "SERIF",
-                "design.border_toggle": "RAHMEN EIN/AUS",
-                "design.style_modern": "Modern",
-                "design.style_minimal": "Minimalistisch",
-                "design.style_classic": "Klassisch",
-                "design.style_elegant": "Elegant",
-                "design.border_color": "6. Rahmenfarbe",
-                "design.table_custom": "7. Tabelle anpassen",
-                "design.table_bg": "Tabellenhintergrund",
-                "design.table_header": "Kopfzeile",
-                "design.table_text": "Zellentext",
-                "design.table_header_text": "Kopfzeilentext",
-                "design.table_opacity": "Tabellenhintergrund-Transparenz",
-                "design.backgrounds": "8. Voreingestellte Hintergründe",
-                "design.bg_beach": "Karibikstrand",
-                "design.bg_sunset": "Sonnenuntergang in Havanna",
-                "design.bg_vintage": "Vintage-Radio",
-                "design.bg_stars": "Sternenhimmel",
-                "design.bg_malecon": "Malecón Havanna",
-                "design.postcard": "Postkartenrahmen",
-                "design.visibility": "10. Sichtbarkeit der Elemente",
-                "design.vis_logo": "Logo/Flagge",
-                "design.vis_watermark": "Wasserzeichen",
-                "design.vis_comment": "Kommentar",
-                "design.vis_signature": "Unterschrift",
-                "design.vis_qr": "QR-Code",
-                "design.vis_table": "QSO-Tabelle",
-                "design.export": "11. Exportqualität",
-                "design.export_1": "1x (schnell)",
-                "design.export_2": "2x (empfohlen)",
-                "design.export_3": "3x (super hoch)",
-                "design.export_4": "4x (maximal)",
-                "design.export_jpeg": "JPEG",
-                "design.export_png": "PNG",
-                "design.reset_pos": "Positionen zurücksetzen",
-                "design.reset_all": "Alles zurücksetzen",
-                "data.manual": "MANUELLE QSO-EINGABE",
-                "data.apply": "AUF DESIGN ANWENDEN",
-                "data.import": "ADIF IMPORTIEREN",
-                "data.contacts": "Kontakte",
-                "data.no_contacts": "Keine Kontakte geladen...",
-                "mass.zip": "📦 ALLES ALS ZIP HERUNTERLADEN (VERBESSERT)",
-                "mass.sequential": "📸 EINZELN HERUNTERLADEN (100% STABIL)",
-                "mass.info": "✅ ZIP verbessert mit Wartezeiten und Fehlerbehandlung | Einzeln: Ideal für große Stapel",
-                "table.date": "DATUM",
-                "table.time": "UTC-ZEIT",
-                "table.band": "BAND",
-                "table.mode": "MODUS",
-                "table.rst": "RST",
-                "actions.bg": "Hintergrund ändern",
-                "actions.logo": "Logo ändern",
-                "loader.processing": "Verarbeite QSLs...",
-                "loader.cancel": "❌ Abbrechen"
-            }
-        };
-
+        const translations = { es: { "header.save": "GUARDAR CALIDAD PRO" }, en: { "header.save": "SAVE PRO QUALITY" } };
         let currentLang = 'es';
-
-        function t(key) {
-            return translations[currentLang] && translations[currentLang][key] ? translations[currentLang][key] : key;
-        }
-
-        function setLanguage(lang) {
-            if (!translations[lang]) lang = 'es';
-            currentLang = lang;
-            localStorage.setItem('qsl_lang', lang);
-            document.getElementById('languageSelect').value = lang;
-            updateUI();
-        }
-
-        function updateUI() {
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (key) {
-                    if (el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA') {
-                        if (el.hasAttribute('data-i18n-placeholder')) {
-                            el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
-                        }
-                    } else {
-                        el.textContent = t(key);
-                    }
-                }
-            });
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-i18n-placeholder');
-                if (key) el.placeholder = t(key);
-            });
-            document.querySelectorAll('select option[data-i18n]').forEach(opt => {
-                const key = opt.getAttribute('data-i18n');
-                if (key) opt.textContent = t(key);
-            });
-            document.querySelectorAll('th[data-i18n]').forEach(th => {
-                const key = th.getAttribute('data-i18n');
-                if (key) th.textContent = t(key);
-            });
-            const loaderText = document.getElementById('loader-text');
-            if (loaderText && loaderText.style.display !== 'none') {
-                const key = loaderText.getAttribute('data-i18n');
-                if (key) loaderText.textContent = t(key);
-            }
-        }
-
-        (function loadLang() {
-            const saved = localStorage.getItem('qsl_lang');
-            if (saved && translations[saved]) {
-                currentLang = saved;
-                document.getElementById('languageSelect').value = saved;
-            } else {
-                const navLang = navigator.language || navigator.userLanguage;
-                const code = navLang.split('-')[0];
-                if (translations[code]) {
-                    currentLang = code;
-                    document.getElementById('languageSelect').value = code;
-                }
-            }
-            updateUI();
-        })();
+        function setLanguage(lang) { currentLang = lang; localStorage.setItem('qsl_lang', lang); document.getElementById('header-save').textContent = translations[lang]['header.save']; }
+        (function() { const saved = localStorage.getItem('qsl_lang'); if (saved && translations[saved]) { currentLang = saved; document.getElementById('languageSelect').value = saved; } setLanguage(currentLang); })();
 
         // ========== MAPA DE PREFIJOS ==========
         const prefixToCountry = {
@@ -1039,709 +333,429 @@
             'HZ':'sa','DU':'ph','HL':'kr','4X':'il','TA':'tr','SV':'gr','OK':'cz','OM':'sk','ON':'be','OZ':'dk','SP':'pl','HA':'hu',
             'YO':'ro','LZ':'bg','9A':'hr','S5':'si','YU':'rs','Z3':'mk','E7':'ba','3A':'mc','HB':'ch','OE':'at','LX':'lu','PA':'nl'
         };
+        function getCountryCode(call) { if(!call) return null; const u = call.toUpperCase().trim(); for(let l=4;l>=1;l--) { let p = u.substring(0,l); if(prefixToCountry[p]) return prefixToCountry[p]; } return null; }
+        function updateFlagImage(img, code) { if(!img) return; if(code) { const url=`https://flagcdn.com/w80/${code}.png`; img.crossOrigin='anonymous'; img.onload=()=>img.classList.remove('hidden'); img.onerror=()=>img.classList.add('hidden'); img.src=url; } else { img.classList.add('hidden'); img.src=''; } }
 
         let allQsos = [], currentScale = 0.4, cancelBatch = false;
-        const defaultPositions = { 
-            'user-logo-container': { top: 80, left: 80 }, 
-            'table-overlay': { top: 620, left: 80 }, 
-            'qr-element': { top: 810, left: 1410 }, 
-            'watermark-el': { top: 80, left: 1070 }, 
-            'signature-el': { top: 670, left: 1350 }, 
-            'comment-el': { top: 300, left: 80 } 
-        };
+        const defaultPositions = { 'user-logo-container':{top:80,left:80}, 'table-overlay':{top:620,left:80}, 'qr-element':{top:810,left:1410}, 'watermark-el':{top:80,left:1070}, 'signature-el':{top:670,left:1350}, 'comment-el':{top:300,left:80} };
 
-        function getCountryCode(call) { 
-            if(!call) return null; 
-            const u = call.toUpperCase().trim(); 
-            for(let l=4; l>=1; l--) { 
-                let p = u.substring(0,l); 
-                if(prefixToCountry[p]) return prefixToCountry[p]; 
-            } 
-            return null; 
-        }
+        // ========== FUNCIONES DE ARRASTRE Y ESCALA ==========
+        function updateScale() { const w=document.getElementById('preview-wrapper'), r=document.getElementById('qsl-render-area'); if(w&&r) { currentScale = w.clientWidth/1650; r.style.transform=`scale(${currentScale})`; } }
+        window.addEventListener('resize', updateScale);
 
-        function updateFlagImage(imgElement, countryCode) { 
-            if(!imgElement) return; 
-            if(countryCode) { 
-                const url = `https://flagcdn.com/w80/${countryCode}.png`; 
-                imgElement.setAttribute('crossorigin', 'anonymous'); 
-                imgElement.onload = () => { imgElement.classList.remove('hidden'); };
-                imgElement.onerror = () => { imgElement.classList.add('hidden'); };
-                imgElement.src = url; 
-            } else { 
-                imgElement.classList.add('hidden'); 
-                imgElement.src = ''; 
-            } 
-        }
-
-        // ====== MEJORA EN ESPERA DE IMÁGENES ======
-        async function waitForAllImages() { 
-            const area = document.getElementById('qsl-render-area'); 
-            const images = Array.from(area.querySelectorAll('img')).filter(img => img.src && img.src !== '');
-            if(images.length === 0) return;
-            // Esperar hasta 5 segundos por cada imagen
-            await Promise.all(images.map(img => {
-                return new Promise((resolve) => {
-                    if(img.complete && img.naturalWidth > 0) {
-                        resolve();
-                    } else {
-                        const timeout = setTimeout(() => resolve(), 5000);
-                        img.onload = () => { clearTimeout(timeout); resolve(); };
-                        img.onerror = () => { clearTimeout(timeout); resolve(); };
-                    }
-                });
-            }));
-            // Pequeña pausa extra para estabilizar
-            await new Promise(r => setTimeout(r, 400));
-        }
-
-        // ====== CAPTURA ROBUSTA ======
-        async function captureQSL(area, scale, format) {
-            // Forzar que el área tenga el tamaño correcto
-            const origTransform = area.style.transform;
-            area.style.transform = 'none';
-            // Esperar a que todo esté cargado
-            await waitForAllImages();
-            // Capturar con html2canvas
-            const canvas = await html2canvas(area, {
-                scale: scale,
-                useCORS: true,
-                logging: false,
-                backgroundColor: null,
-                imageTimeout: 0,
-                windowWidth: 1650,
-                windowHeight: 1050,
-                // Mejora de rendimiento
-                onclone: (doc) => {
-                    // Asegurar que los elementos estén visibles
-                }
-            });
-            // Restaurar transform
-            area.style.transform = origTransform;
-            return canvas;
-        }
-
-        window.onload = () => { 
-            lucide.createIcons(); 
-            updateScale(); 
-            window.addEventListener('resize', updateScale); 
-            updateQR('https://cl7adv.github.io/Qsl-Caribe/'); 
-            ['user-logo-container','table-overlay','qr-element','watermark-el','signature-el','comment-el'].forEach(id=>{
-                const el=document.getElementById(id); 
-                if(el) makeDraggableFixed(el);
-            });
-            loadFromStorage(); 
-            updateOperatorFlag(document.getElementById('watermark-text').value); 
-            updateTableTextColor(document.getElementById('table-text-color').value); 
-            updateTableHeaderTextColor(document.getElementById('table-header-text-color').value); 
-            updateTableBgOpacity(parseFloat(document.getElementById('table-bg-opacity').value)); 
-            setTimeout(()=>updateTableStyle(document.getElementById('table-style-select').value),100); 
-            setTimeout(() => applyManualFull(), 500);
-        };
-
-        function updateScale() { 
-            const wrapper = document.getElementById('preview-wrapper'); 
-            const renderArea = document.getElementById('qsl-render-area'); 
-            if(wrapper && renderArea) { 
-                currentScale = wrapper.clientWidth / 1650; 
-                renderArea.style.transform = `scale(${currentScale})`; 
-            } 
-        }
-
-        function makeDraggableFixed(el) { 
-            let startX,startY,startLeft,startTop; 
-            const parent=document.getElementById('qsl-render-area'); 
-            function onDragStart(e) { 
-                e.preventDefault(); 
-                if(el.style.bottom !== '' || el.style.right !== '') { 
-                    const rect=el.getBoundingClientRect(), parentRect=parent.getBoundingClientRect(); 
-                    const newLeft=(rect.left-parentRect.left)/currentScale, newTop=(rect.top-parentRect.top)/currentScale; 
-                    el.style.left=newLeft+'px'; el.style.top=newTop+'px'; el.style.bottom=''; el.style.right=''; 
-                } 
-                const event=e.type==='touchstart'?e.touches[0]:e; 
-                startX=event.clientX; startY=event.clientY; 
-                startLeft=parseFloat(el.style.left); startTop=parseFloat(el.style.top); 
-                document.addEventListener('mousemove',onDragMove); 
-                document.addEventListener('mouseup',onDragEnd); 
-                document.addEventListener('touchmove',onDragMove,{passive:false}); 
-                document.addEventListener('touchend',onDragEnd); 
-            } 
-            function onDragMove(e) { 
-                e.preventDefault(); 
-                const event=e.type==='touchmove'?e.touches[0]:e; 
-                const dx=(event.clientX-startX)/currentScale, dy=(event.clientY-startY)/currentScale; 
-                let newLeft=startLeft+dx, newTop=startTop+dy; 
-                const maxLeft=parent.clientWidth-el.offsetWidth, maxTop=parent.clientHeight-el.offsetHeight; 
-                newLeft=Math.max(0,Math.min(newLeft,maxLeft)); 
-                newTop=Math.max(0,Math.min(newTop,maxTop)); 
-                el.style.left=newLeft+'px'; el.style.top=newTop+'px'; 
-            } 
-            function onDragEnd() { 
-                document.removeEventListener('mousemove',onDragMove); 
-                document.removeEventListener('mouseup',onDragEnd); 
-                document.removeEventListener('touchmove',onDragMove); 
-                document.removeEventListener('touchend',onDragEnd); 
-                saveToStorage(); 
-            } 
-            el.addEventListener('mousedown',onDragStart); 
-            el.addEventListener('touchstart',onDragStart,{passive:false}); 
+        function makeDraggable(el) {
+            let pos1=0,pos2=0,pos3=0,pos4=0,parent=document.getElementById('qsl-render-area');
+            el.addEventListener('mousedown', dragStart);
+            el.addEventListener('touchstart', dragStart, {passive:false});
+            function dragStart(e) { e.preventDefault(); let ev=e.type==='touchstart'?e.touches[0]:e; pos3=ev.clientX; pos4=ev.clientY; document.addEventListener('mousemove', dragMove); document.addEventListener('mouseup', dragEnd); document.addEventListener('touchmove', dragMove, {passive:false}); document.addEventListener('touchend', dragEnd); }
+            function dragMove(e) { e.preventDefault(); let ev=e.type==='touchmove'?e.touches[0]:e; pos1=(pos3-ev.clientX)/currentScale; pos2=(pos4-ev.clientY)/currentScale; pos3=ev.clientX; pos4=ev.clientY; let newTop=el.offsetTop-pos2, newLeft=el.offsetLeft-pos1; let maxTop=parent.clientHeight-el.offsetHeight, maxLeft=parent.clientWidth-el.offsetWidth; newTop=Math.max(0,Math.min(newTop,maxTop)); newLeft=Math.max(0,Math.min(newLeft,maxLeft)); el.style.top=newTop+"px"; el.style.left=newLeft+"px"; }
+            function dragEnd() { document.removeEventListener('mousemove', dragMove); document.removeEventListener('mouseup', dragEnd); document.removeEventListener('touchmove', dragMove); document.removeEventListener('touchend', dragEnd); saveToStorage(); }
         }
 
         function saveToStorage() { 
-            const state={ 
-                watermark:document.getElementById('watermark-text').value, 
-                qrUrl:document.getElementById('qr-url-input').value, 
-                comment:document.getElementById('comment-input').value, 
-                commentOpacity:document.getElementById('comment-el').style.opacity||'1', 
-                commentColor:document.getElementById('comment-el').style.color||'#ffffff', 
-                font:document.getElementById('watermark-el').className.match(/font-[^\s]+/)?.[0]||'font-oswald', 
-                borderVisible:document.getElementById('qsl-border').style.display!=='none', 
-                tableStyle:document.getElementById('table-style-select').value, 
-                borderColor:document.getElementById('qsl-border').style.borderColor, 
-                watermarkColor:document.getElementById('watermark-el').style.color, 
-                watermarkOpacity:document.getElementById('watermark-el').style.opacity, 
-                watermarkRelief:document.getElementById('watermark-relief').value, 
-                tableBgColor:document.getElementById('table-bg-color').value, 
-                tableHeaderColor:document.getElementById('table-header-color').value, 
-                tableTextColor:document.getElementById('table-text-color').value, 
-                tableHeaderTextColor:document.getElementById('table-header-text-color').value, 
-                tableBgOpacity:document.getElementById('table-bg-opacity').value, 
-                postcardFrame:document.getElementById('postcard-frame').style.display!=='none', 
-                visibility:{ 
-                    logo:document.getElementById('user-logo-container').style.display!=='none', 
-                    watermark:document.getElementById('watermark-el').style.display!=='none', 
-                    comment:document.getElementById('comment-el').style.display!=='none', 
-                    signature:document.getElementById('signature-el').style.display!=='none', 
-                    qr:document.getElementById('qr-element').style.display!=='none', 
-                    table:document.getElementById('table-overlay').style.display!=='none' 
-                }, 
-                positions:{} 
-            }; 
-            for(const id of Object.keys(defaultPositions)) { 
-                const el=document.getElementById(id); 
-                if(el) state.positions[id]={ top:el.style.top, left:el.style.left }; 
-            } 
-            localStorage.setItem('qslConfig',JSON.stringify(state)); 
+            const state={ watermark:document.getElementById('watermark-text').value, qrUrl:document.getElementById('qr-url-input').value, comment:document.getElementById('comment-input').value, commentOpacity:document.getElementById('comment-el').style.opacity||'1', commentColor:document.getElementById('comment-el').style.color||'#ffffff', font:document.getElementById('watermark-el').className.match(/font-[^\s]+/)?.[0]||'font-oswald', borderVisible:document.getElementById('qsl-border').style.display!=='none', tableStyle:document.getElementById('table-style-select').value, borderColor:document.getElementById('qsl-border').style.borderColor, watermarkColor:document.getElementById('watermark-el').style.color, watermarkOpacity:document.getElementById('watermark-el').style.opacity, watermarkRelief:document.getElementById('watermark-relief').value, tableBgColor:document.getElementById('table-bg-color').value, tableHeaderColor:document.getElementById('table-header-color').value, tableTextColor:document.getElementById('table-text-color').value, tableHeaderTextColor:document.getElementById('table-header-text-color').value, tableBgOpacity:document.getElementById('table-bg-opacity').value, postcardFrame:document.getElementById('postcard-frame').style.display!=='none', visibility:{ logo:document.getElementById('user-logo-container').style.display!=='none', watermark:document.getElementById('watermark-el').style.display!=='none', comment:document.getElementById('comment-el').style.display!=='none', signature:document.getElementById('signature-el').style.display!=='none', qr:document.getElementById('qr-element').style.display!=='none', table:document.getElementById('table-overlay').style.display!=='none' }, positions:{} };
+            for(const id of Object.keys(defaultPositions)) { const el=document.getElementById(id); if(el) state.positions[id]={ top:el.style.top, left:el.style.left }; }
+            localStorage.setItem('qslConfig',JSON.stringify(state));
         }
+        function loadFromStorage() { const saved=localStorage.getItem('qslConfig'); if(!saved) return; try { const state=JSON.parse(saved); if(state.watermark) updatePersonalData(state.watermark); if(state.qrUrl) { document.getElementById('qr-url-input').value=state.qrUrl; updateQR(state.qrUrl); } if(state.comment) updateComment(state.comment); if(state.commentOpacity) { document.getElementById('comment-opacity-slider').value=state.commentOpacity; updateCommentOpacity(state.commentOpacity); } if(state.commentColor) { document.getElementById('comment-color-picker').value=state.commentColor; updateCommentColor(state.commentColor); } if(state.font) updateFont(state.font); if(state.borderVisible!==undefined) document.getElementById('qsl-border').style.display=state.borderVisible?'block':'none'; if(state.tableStyle) { document.getElementById('table-style-select').value=state.tableStyle; updateTableStyle(state.tableStyle); } if(state.borderColor) document.getElementById('qsl-border').style.borderColor=state.borderColor; if(state.watermarkColor) { document.getElementById('watermark-color').value=state.watermarkColor; updateWatermarkColor(state.watermarkColor); } if(state.watermarkOpacity) { document.getElementById('watermark-opacity').value=state.watermarkOpacity; updateWatermarkOpacity(parseFloat(state.watermarkOpacity)); } if(state.watermarkRelief) { document.getElementById('watermark-relief').value=state.watermarkRelief; updateWatermarkRelief(state.watermarkRelief); } if(state.tableBgColor) { document.getElementById('table-bg-color').value=state.tableBgColor; updateTableBgColor(state.tableBgColor); } if(state.tableHeaderColor) { document.getElementById('table-header-color').value=state.tableHeaderColor; updateTableHeaderColor(state.tableHeaderColor); } if(state.tableTextColor) { document.getElementById('table-text-color').value=state.tableTextColor; updateTableTextColor(state.tableTextColor); } if(state.tableHeaderTextColor) { document.getElementById('table-header-text-color').value=state.tableHeaderTextColor; updateTableHeaderTextColor(state.tableHeaderTextColor); } if(state.tableBgOpacity) { document.getElementById('table-bg-opacity').value=state.tableBgOpacity; updateTableBgOpacity(parseFloat(state.tableBgOpacity)); } if(state.postcardFrame!==undefined) { document.getElementById('postcard-frame-checkbox').checked=state.postcardFrame; togglePostcardFrame(state.postcardFrame); } if(state.visibility) { toggleVisibility('user-logo-container',state.visibility.logo); document.getElementById('vis-logo').checked=state.visibility.logo; toggleVisibility('watermark-el',state.visibility.watermark); document.getElementById('vis-watermark').checked=state.visibility.watermark; toggleVisibility('comment-el',state.visibility.comment); document.getElementById('vis-comment').checked=state.visibility.comment; toggleVisibility('signature-el',state.visibility.signature); document.getElementById('vis-signature').checked=state.visibility.signature; toggleVisibility('qr-element',state.visibility.qr); document.getElementById('vis-qr').checked=state.visibility.qr; toggleVisibility('table-overlay',state.visibility.table); document.getElementById('vis-table').checked=state.visibility.table; } if(state.positions) for(const [id,pos] of Object.entries(state.positions)) { const el=document.getElementById(id); if(el && pos.top && pos.left) { el.style.top=pos.top; el.style.left=pos.left; el.style.bottom=''; el.style.right=''; } } } catch(e){console.warn(e);} }
 
-        function loadFromStorage() { 
-            const saved=localStorage.getItem('qslConfig'); 
-            if(!saved) return; 
-            try { 
-                const state=JSON.parse(saved); 
-                if(state.watermark) updatePersonalData(state.watermark); 
-                if(state.qrUrl) { document.getElementById('qr-url-input').value=state.qrUrl; updateQR(state.qrUrl); } 
-                if(state.comment) updateComment(state.comment); 
-                if(state.commentOpacity) { document.getElementById('comment-opacity-slider').value=state.commentOpacity; updateCommentOpacity(state.commentOpacity); } 
-                if(state.commentColor) { document.getElementById('comment-color-picker').value=state.commentColor; updateCommentColor(state.commentColor); } 
-                if(state.font) updateFont(state.font); 
-                if(state.borderVisible!==undefined) document.getElementById('qsl-border').style.display=state.borderVisible?'block':'none'; 
-                if(state.tableStyle) { document.getElementById('table-style-select').value=state.tableStyle; updateTableStyle(state.tableStyle); } 
-                if(state.borderColor) document.getElementById('qsl-border').style.borderColor=state.borderColor; 
-                if(state.watermarkColor) { document.getElementById('watermark-color').value=state.watermarkColor; updateWatermarkColor(state.watermarkColor); } 
-                if(state.watermarkOpacity) { document.getElementById('watermark-opacity').value=state.watermarkOpacity; updateWatermarkOpacity(parseFloat(state.watermarkOpacity)); } 
-                if(state.watermarkRelief) { document.getElementById('watermark-relief').value=state.watermarkRelief; updateWatermarkRelief(state.watermarkRelief); } 
-                if(state.tableBgColor) { document.getElementById('table-bg-color').value=state.tableBgColor; updateTableBgColor(state.tableBgColor); } 
-                if(state.tableHeaderColor) { document.getElementById('table-header-color').value=state.tableHeaderColor; updateTableHeaderColor(state.tableHeaderColor); } 
-                if(state.tableTextColor) { document.getElementById('table-text-color').value=state.tableTextColor; updateTableTextColor(state.tableTextColor); } 
-                if(state.tableHeaderTextColor) { document.getElementById('table-header-text-color').value=state.tableHeaderTextColor; updateTableHeaderTextColor(state.tableHeaderTextColor); } 
-                if(state.tableBgOpacity) { document.getElementById('table-bg-opacity').value=state.tableBgOpacity; updateTableBgOpacity(parseFloat(state.tableBgOpacity)); } 
-                if(state.postcardFrame!==undefined) { document.getElementById('postcard-frame-checkbox').checked=state.postcardFrame; togglePostcardFrame(state.postcardFrame); } 
-                if(state.visibility) { 
-                    toggleVisibility('user-logo-container',state.visibility.logo); document.getElementById('vis-logo').checked=state.visibility.logo; 
-                    toggleVisibility('watermark-el',state.visibility.watermark); document.getElementById('vis-watermark').checked=state.visibility.watermark; 
-                    toggleVisibility('comment-el',state.visibility.comment); document.getElementById('vis-comment').checked=state.visibility.comment; 
-                    toggleVisibility('signature-el',state.visibility.signature); document.getElementById('vis-signature').checked=state.visibility.signature; 
-                    toggleVisibility('qr-element',state.visibility.qr); document.getElementById('vis-qr').checked=state.visibility.qr; 
-                    toggleVisibility('table-overlay',state.visibility.table); document.getElementById('vis-table').checked=state.visibility.table; 
-                } 
-                if(state.positions) for(const [id,pos] of Object.entries(state.positions)) { 
-                    const el=document.getElementById(id); 
-                    if(el && pos.top && pos.left) { el.style.top=pos.top; el.style.left=pos.left; el.style.bottom=''; el.style.right=''; } 
-                } 
-            } catch(e){console.warn(e);} 
-        }
-
-        function switchTab(tab) { 
-            const designBtn = document.getElementById('btn-design');
-            const dataBtn = document.getElementById('btn-data');
-            const designPanel = document.getElementById('tab-design');
-            const dataPanel = document.getElementById('tab-data');
-            
-            if (tab === 'design') {
-                designPanel.classList.remove('hidden');
-                dataPanel.classList.add('hidden');
-                designBtn.className = 'tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 active-design';
-                dataBtn.className = 'tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 inactive';
-            } else {
-                designPanel.classList.add('hidden');
-                dataPanel.classList.remove('hidden');
-                designBtn.className = 'tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 inactive';
-                dataBtn.className = 'tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 active-data';
-            }
+        // ========== FUNCIONES DE ESTILO ==========
+        function switchTab(tab) {
+            document.getElementById('tab-design').classList.toggle('hidden', tab!=='design');
+            document.getElementById('tab-data').classList.toggle('hidden', tab!=='data');
+            document.getElementById('btn-design').className = tab==='design' ? 'tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 active-design' : 'tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 inactive';
+            document.getElementById('btn-data').className = tab==='data' ? 'tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 active-data' : 'tab-btn flex-1 py-4 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 inactive';
             lucide.createIcons();
         }
+        function updateFont(f) { const w=document.getElementById('watermark-el'); w.classList.remove('font-oswald','font-serif','font-sans','font-mono','font-signature'); w.classList.add(f); saveToStorage(); }
+        function updateBorderColor(c) { document.getElementById('qsl-border').style.borderColor=c; saveToStorage(); }
+        function toggleBorder() { const b=document.getElementById('qsl-border'); b.style.display=b.style.display==='none'?'block':'none'; saveToStorage(); }
+        function togglePostcardFrame(a) { document.getElementById('postcard-frame').style.display=a?'block':'none'; saveToStorage(); }
+        function updateComment(t) { document.getElementById('comment-el').textContent=t; saveToStorage(); }
+        function updateCommentOpacity(v) { document.getElementById('comment-el').style.opacity=v; document.getElementById('comment-opacity-slider').value=v; saveToStorage(); }
+        function updateCommentColor(v) { document.getElementById('comment-el').style.color=v; document.getElementById('comment-color-picker').value=v; saveToStorage(); }
+        function updateWatermarkColor(c) { document.getElementById('watermark-el').style.color=c; document.getElementById('watermark-color').value=c; saveToStorage(); }
+        function updateWatermarkOpacity(o) { document.getElementById('watermark-el').style.opacity=o; document.getElementById('watermark-opacity').value=o; saveToStorage(); }
+        function updateWatermarkRelief(s) { const w=document.getElementById('watermark-el'); switch(s){ case'none':w.style.textShadow='none';break; case'soft':w.style.textShadow='2px 2px 8px rgba(0,0,0,0.6)';break; case'strong':w.style.textShadow='4px 4px 12px black';break; case'engrave':w.style.textShadow='1px 1px 0px white, -1px -1px 0px rgba(0,0,0,0.7)';break; case'glow':w.style.textShadow='0 0 15px cyan, 0 0 5px darkblue';break; } saveToStorage(); }
+        function hexToRgba(h,o) { const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16); return `rgba(${r},${g},${b},${o})`; }
+        function updateTableBgColor(c) { if(document.getElementById('table-style-select').value!=='avefinish'){ const op=document.getElementById('table-bg-opacity').value; document.getElementById('table-overlay').style.backgroundColor=hexToRgba(c,op); saveToStorage(); } }
+        function updateTableHeaderColor(c) { if(document.getElementById('table-style-select').value!=='avefinish'){ document.getElementById('table-header').style.backgroundColor=c; saveToStorage(); } }
+        function updateTableTextColor(c) { if(document.getElementById('table-style-select').value!=='avefinish'){ document.querySelectorAll('#table-overlay tbody td').forEach(td=>td.style.color=c); saveToStorage(); } }
+        function updateTableHeaderTextColor(c) { if(document.getElementById('table-style-select').value!=='avefinish'){ document.getElementById('table-header').style.color=c; saveToStorage(); } }
+        function updateTableBgOpacity(v) { if(document.getElementById('table-style-select').value!=='avefinish'){ const c=document.getElementById('table-bg-color').value; document.getElementById('table-overlay').style.backgroundColor=hexToRgba(c,v); saveToStorage(); } }
 
-        function updateFont(fontClass) { 
-            const wm=document.getElementById('watermark-el'); 
-            wm.classList.remove('font-oswald','font-serif','font-sans','font-mono','font-signature'); 
-            wm.classList.add(fontClass); 
-            saveToStorage(); 
+        function updateTableStyle(style) {
+            const table = document.getElementById('table-overlay');
+            table.classList.remove('ave-finish-card');
+            table.style.width = "650px"; table.style.maxWidth = "650px"; table.style.minWidth = "650px";
+            if(style === 'avefinish') {
+                const html = `<div class="ave-finish-card" style="width:520px;padding:20px 24px;box-sizing:border-box;"><div class="flex justify-between items-center mb-3"><div class="wing-icon" style="background:rgba(255,215,0,0.2);border-radius:40px;padding:8px 12px;display:inline-flex;align-items:center;gap:12px;"><i data-lucide="feather" class="w-6 h-6 text-amber-400"></i><span class="text-amber-300 text-xs font-bold tracking-wider uppercase">AVE FINISH · ÉLITE</span></div><img id="finish-flag-target" src="" class="h-8 w-auto rounded-md shadow-md hidden"></div><div class="flex justify-between items-center mt-2 mb-4"><span class="qso-main-call" id="finish-call-display" style="font-size:42px;font-weight:800;background:linear-gradient(135deg,#FFE6B0,#FFB347);-webkit-background-clip:text;background-clip:text;color:transparent;">DX_STATION</span><span class="text-white/60 text-sm bg-white/10 px-3 py-1 rounded-full">DXpedition style</span></div><div class="space-y-2 mt-2"><div class="data-row"><span class="text-amber-300 font-semibold"><i data-lucide="calendar" class="inline w-4 h-4 mr-1"></i> FECHA UTC</span><span id="finish-date" class="text-white font-mono">2026-04-06</span></div><div class="data-row"><span class="text-amber-300 font-semibold"><i data-lucide="clock" class="inline w-4 h-4 mr-1"></i> HORA</span><span id="finish-time" class="text-white font-mono">22:15</span></div><div class="data-row"><span class="text-amber-300 font-semibold"><i data-lucide="radio" class="inline w-4 h-4 mr-1"></i> BANDA / MODO</span><span id="finish-bandmode" class="text-white font-bold">20M · SSB</span></div><div class="data-row"><span class="text-amber-300 font-semibold"><i data-lucide="zap" class="inline w-4 h-4 mr-1"></i> RST</span><span id="finish-rst" class="text-amber-200 text-xl font-black">59</span></div></div><div class="mt-5 pt-2 border-t border-amber-500/30 flex justify-end"><span class="text-[9px] text-white/40 tracking-wider">✧ FINISH TOUCH ✧</span></div></div>`;
+                table.innerHTML = html;
+                table.classList.add('ave-finish-card');
+                table.style.width = "520px"; table.style.maxWidth = "520px"; table.style.minWidth = "520px";
+                table.style.background = "transparent"; table.style.backdropFilter = "none"; table.style.boxShadow = "none"; table.style.padding = "0"; table.style.overflow = "visible";
+                lucide.createIcons();
+                // Sincronizar datos
+                const call = document.getElementById('target-call')?.textContent || 'DX_STATION';
+                const date = document.getElementById('td-date')?.textContent || '2026-04-06';
+                const time = document.getElementById('td-time')?.textContent || '22:15';
+                const band = document.getElementById('td-band')?.textContent || '20M';
+                const mode = document.getElementById('td-mode')?.textContent || 'SSB';
+                const rst = document.getElementById('td-rst')?.textContent || '59';
+                if(document.getElementById('finish-call-display')) document.getElementById('finish-call-display').textContent = call;
+                if(document.getElementById('finish-date')) document.getElementById('finish-date').textContent = date;
+                if(document.getElementById('finish-time')) document.getElementById('finish-time').textContent = time;
+                if(document.getElementById('finish-bandmode')) document.getElementById('finish-bandmode').textContent = `${band} · ${mode}`;
+                if(document.getElementById('finish-rst')) document.getElementById('finish-rst').textContent = rst;
+                const code = getCountryCode(call);
+                const f = document.getElementById('finish-flag-target');
+                if(f){ if(code){ f.src=`https://flagcdn.com/w80/${code}.png`; f.classList.remove('hidden'); f.onerror=()=>f.classList.add('hidden'); } else f.classList.add('hidden'); }
+            } else {
+                const html = `<div class="qso-watermark font-signature" style="color:rgba(30,41,59,0.4);font-size:90px;bottom:10px;right:20px;text-shadow:2px 2px 8px rgba(255,255,255,0.5),0 0 20px rgba(255,255,255,0.2);">73</div><div id="table-header" class="bg-blue-600 text-white p-3 mb-4 font-black flex justify-between items-center gap-10 text-2xl rounded-2xl"><div class="flex items-center gap-3"><i data-lucide="user" class="w-6 h-6"></i><span id="lbl-operator">OP: CO2KK</span><img id="operator-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous"></div><div class="flex items-center gap-3"><span>CONTACTO: <span id="target-call" class="text-yellow-300">DX_STATION</span></span><img id="target-flag" src="" class="h-6 rounded shadow-md hidden" crossorigin="anonymous"></div></div><table class="w-auto text-center text-2xl font-bold border-collapse"><thead><tr class="text-slate-500 text-xs border-b-2 border-slate-100"><th class="pb-2 px-3">FECHA</th><th class="pb-2 px-3">HORA UTC</th><th class="pb-2 px-3">BANDA</th><th class="pb-2 px-3">MODO</th><th class="pb-2 px-3">RST</th></tr></thead><tbody><tr><td class="pt-2 px-3" id="td-date">2026-04-06</td><td class="pt-2 px-3" id="td-time">22:15</td><td class="pt-2 px-3" id="td-band">20M</td><td class="pt-2 px-3" id="td-mode">SSB</td><td class="pt-2 px-3 text-blue-600" id="td-rst">59</td></tr></tbody></table>`;
+                table.innerHTML = html;
+                table.classList.remove('ave-finish-card');
+                table.style.width = "650px"; table.style.maxWidth = "650px"; table.style.minWidth = "650px";
+                table.style.background = ""; table.style.backdropFilter = ""; table.style.boxShadow = ""; table.style.padding = "4px"; table.style.overflow = "hidden";
+                lucide.createIcons();
+                const bg = document.getElementById('table-bg-color').value;
+                const op = parseFloat(document.getElementById('table-bg-opacity').value);
+                table.style.backgroundColor = hexToRgba(bg, op);
+                document.getElementById('table-header').style.backgroundColor = document.getElementById('table-header-color').value;
+                document.getElementById('table-header').style.color = document.getElementById('table-header-text-color').value;
+                document.querySelectorAll('#table-overlay tbody td').forEach(td => td.style.color = document.getElementById('table-text-color').value);
+                // Aplicar estilos específicos
+                if(style === 'minimal') { table.style.background='transparent'; table.style.backdropFilter='none'; document.getElementById('table-header').style.backgroundColor='transparent'; }
+                else if(style === 'classic') { table.style.background=hexToRgba(bg, op); document.getElementById('table-header').style.backgroundColor='#1e293b'; document.getElementById('table-header').style.color='#ffffff'; }
+                else if(style === 'elegant') { table.style.background=hexToRgba(bg, op); document.getElementById('table-header').style.backgroundColor='#b8860b'; document.getElementById('table-header').style.color='#ffffff'; table.style.border='2px solid #b8860b'; }
+                else { table.style.background=hexToRgba(bg, op); table.style.backdropFilter='blur(10px)'; document.getElementById('table-header').style.backgroundColor=document.getElementById('table-header-color').value; document.getElementById('table-header').style.color=document.getElementById('table-header-text-color').value; }
+            }
+            saveToStorage();
         }
 
-        function updateBorderColor(color) { 
-            document.getElementById('qsl-border').style.borderColor=color; 
-            saveToStorage(); 
+        // ========== FUNCIONES DE DATOS ==========
+        function updatePersonalData(text) { const call=text.toUpperCase()||"CO2KK"; document.getElementById('watermark-el').textContent=call; document.getElementById('signature-el').textContent=`73's de ${call}`; document.getElementById('lbl-operator').textContent=`OP: ${call}`; updateOperatorFlag(call); saveToStorage(); }
+        function updateOperatorFlag(call) { const flag=document.getElementById('operator-flag'); const code=getCountryCode(call); updateFlagImage(flag, code); }
+        function updateQR(url) { const c=document.getElementById('qr-code-container'); c.innerHTML=""; new QRCode(c,{text:url,width:140,height:140,colorDark:"#0f172a"}); saveToStorage(); }
+        function updateQRUrl(url) { if(url) updateQR(url); saveToStorage(); }
+
+        function applyQSO(qso) {
+            if (!qso) return;
+            const call = qso.CALL || 'DX_STATION';
+            document.getElementById('target-call').textContent = call;
+            let dateStr = qso.QSO_DATE || '';
+            if (dateStr && /^\d{8}$/.test(dateStr)) dateStr = dateStr.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
+            document.getElementById('td-date').textContent = dateStr || '----';
+            let timeStr = qso.TIME_ON || '';
+            if (timeStr && /^\d{4}$/.test(timeStr)) timeStr = timeStr.substring(0,2)+':'+timeStr.substring(2,4);
+            document.getElementById('td-time').textContent = timeStr || '----';
+            document.getElementById('td-band').textContent = qso.BAND || '---';
+            document.getElementById('td-mode').textContent = qso.MODE || '---';
+            const rst = qso.RST_SENT || qso.RST_RCVD || qso.RST || '---';
+            document.getElementById('td-rst').textContent = rst;
+            // Actualizar AVE FINISH si existe
+            if(document.getElementById('finish-call-display')) document.getElementById('finish-call-display').textContent = call;
+            if(document.getElementById('finish-date')) document.getElementById('finish-date').textContent = document.getElementById('td-date').textContent;
+            if(document.getElementById('finish-time')) document.getElementById('finish-time').textContent = document.getElementById('td-time').textContent;
+            if(document.getElementById('finish-bandmode')) document.getElementById('finish-bandmode').textContent = `${document.getElementById('td-band').textContent} · ${document.getElementById('td-mode').textContent}`;
+            if(document.getElementById('finish-rst')) document.getElementById('finish-rst').textContent = rst;
+            // Banderas
+            updateFlag(call);
+            const f = document.getElementById('finish-flag-target');
+            if(f){ const code=getCountryCode(call); if(code){ f.src=`https://flagcdn.com/w80/${code}.png`; f.classList.remove('hidden'); f.onerror=()=>f.classList.add('hidden'); } else f.classList.add('hidden'); }
+        }
+        function updateFlag(call) { const flag=document.getElementById('target-flag'); const code=getCountryCode(call); updateFlagImage(flag, code); }
+
+        function applyManualFull() {
+            const call = document.getElementById('manual-call').value.toUpperCase() || 'DX_STATION';
+            let dateRaw = document.getElementById('manual-date').value;
+            let timeRaw = document.getElementById('manual-time').value;
+            const band = document.getElementById('manual-band').value || '40M';
+            const mode = document.getElementById('manual-mode').value || 'FT8';
+            const rst = document.getElementById('manual-rst').value || '-01';
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateRaw)) dateRaw = new Date().toISOString().split('T')[0];
+            const qsoDate = dateRaw.replace(/-/g,'');
+            timeRaw = timeRaw.replace(/[^0-9]/g,'').padStart(4,'0').substring(0,4);
+            if (!/^\d{4}$/.test(timeRaw)) timeRaw = '0000';
+            const qso = { CALL:call, QSO_DATE:qsoDate, TIME_ON:timeRaw, BAND:band, MODE:mode, RST_SENT:rst };
+            applyQSO(qso);
         }
 
-        function toggleBorder() { 
-            const b=document.getElementById('qsl-border'); 
-            b.style.display=b.style.display==='none'?'block':'none'; 
-            saveToStorage(); 
+        // ========== PARSEO ADIF (VERSIÓN 4.3.1) ==========
+        function parseADIF(event) {
+            const file = event.target.files[0];
+            if (!file) { console.warn('No se seleccionó archivo.'); return; }
+            // Resetear input para permitir recargar el mismo archivo
+            event.target.value = '';
+            console.log('📄 Archivo seleccionado:', file.name);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let text = e.target.result;
+                    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+                    console.log('📄 Contenido leído, longitud:', text.length);
+                    let clean = text.replace(/^#.*$/gm, '').replace(/^\/\/.*$/gm, '');
+                    let records = clean.split(/<eor>|<EOR>/i);
+                    console.log('📄 Registros encontrados:', records.length);
+                    allQsos = [];
+                    records.forEach(rec => {
+                        if (rec.trim().length < 5) return;
+                        let qso = {};
+                        let regex = /<([A-Z_]+):(\d+)(?::[^>]*)?>([^<]*)/gi;
+                        let match;
+                        while ((match = regex.exec(rec)) !== null) {
+                            let tag = match[1].toUpperCase();
+                            let val = match[3].trim();
+                            if (val) qso[tag] = val;
+                        }
+                        if (qso.CALL) allQsos.push(qso);
+                    });
+                    console.log('✅ QSOs cargados:', allQsos.length);
+                    document.getElementById('qso-count').textContent = allQsos.length;
+                    let container = document.getElementById('qso-list');
+                    container.innerHTML = "";
+                    allQsos.forEach((q, i) => {
+                        let d = document.createElement('div');
+                        d.className = "bg-white p-3 border rounded-xl hover:bg-blue-50 cursor-pointer flex justify-between items-center";
+                        d.onclick = () => { applyQSO(q); container.querySelectorAll('.bg-blue-50').forEach(el=>el.classList.remove('bg-blue-50')); d.classList.add('bg-blue-50'); };
+                        d.innerHTML = `<div><span class="text-xs font-black">${q.CALL}</span><span class="text-[9px] text-slate-400 ml-2">${q.QSO_DATE||''}</span></div><span class="text-[10px] bg-slate-100 px-2 py-1 rounded">${q.BAND||'?'}</span>`;
+                        container.appendChild(d);
+                    });
+                    document.getElementById('mass-actions').classList.remove('hidden');
+                    if (allQsos.length > 0) {
+                        applyQSO(allQsos[0]);
+                        if (allQsos[0].STATION_CALLSIGN) updatePersonalData(allQsos[0].STATION_CALLSIGN);
+                        alert(`✅ Se importaron ${allQsos.length} contactos correctamente.`);
+                    } else {
+                        alert('❌ No se encontraron contactos válidos. Asegúrate de que el archivo contenga el campo CALL.');
+                    }
+                } catch(err) {
+                    console.error('❌ Error parseando ADIF:', err);
+                    alert('Error al procesar el archivo. Revisa la consola (F12).');
+                }
+            };
+            reader.onerror = function(err) {
+                console.error('❌ Error de lectura:', err);
+                alert('No se pudo leer el archivo.');
+            };
+            reader.readAsText(file, 'UTF-8');
         }
 
-        function togglePostcardFrame(active) { 
-            document.getElementById('postcard-frame').style.display=active?'block':'none'; 
-            saveToStorage(); 
+        // Cargar ADIF de ejemplo
+        function loadExampleADIF() {
+            const example = `<CALL:5>CT1BFP <QSO_DATE:8>20260406 <TIME_ON:4>2215 <BAND:3>20M <MODE:3>SSB <RST_SENT:2>59 <EOR>
+<CALL:5>F5ABC <QSO_DATE:8>20260407 <TIME_ON:4>0945 <BAND:3>40M <MODE:3>FT8 <RST_SENT:3>-01 <EOR>
+<CALL:6>LU6EGD <QSO_DATE:8>20260408 <TIME_ON:4>1830 <BAND:2>15M <MODE:4>CW <RST_SENT:3>599 <EOR>
+<CALL:5>CO5ABC <QSO_DATE:8>20260409 <TIME_ON:4>1200 <BAND:3>20M <MODE:2>FM <RST_SENT:3>59+ <EOR>`;
+            // Simular evento de archivo
+            const blob = new Blob([example], {type: 'text/plain'});
+            const file = new File([blob], 'ejemplo.adi', {type: 'text/plain'});
+            const event = { target: { files: [file] } };
+            parseADIF(event);
         }
 
-        function updateComment(text) { 
-            document.getElementById('comment-el').textContent=text; 
-            saveToStorage(); 
+        function clearContacts() {
+            if (allQsos.length === 0) return;
+            if (confirm('¿Eliminar todos los contactos cargados?')) {
+                allQsos = [];
+                document.getElementById('qso-count').textContent = '0';
+                document.getElementById('qso-list').innerHTML = '<p class="text-[10px] text-center text-slate-400 py-6 italic">Sin contactos cargados...</p>';
+                document.getElementById('mass-actions').classList.add('hidden');
+                document.getElementById('target-call').textContent = 'DX_STATION';
+                document.getElementById('td-date').textContent = '2026-04-06';
+                document.getElementById('td-time').textContent = '22:15';
+                document.getElementById('td-band').textContent = '20M';
+                document.getElementById('td-mode').textContent = 'SSB';
+                document.getElementById('td-rst').textContent = '59';
+                document.getElementById('target-flag').classList.add('hidden');
+                if(document.getElementById('finish-call-display')) document.getElementById('finish-call-display').textContent = 'DX_STATION';
+                if(document.getElementById('finish-date')) document.getElementById('finish-date').textContent = '2026-04-06';
+                if(document.getElementById('finish-time')) document.getElementById('finish-time').textContent = '22:15';
+                if(document.getElementById('finish-bandmode')) document.getElementById('finish-bandmode').textContent = '20M · SSB';
+                if(document.getElementById('finish-rst')) document.getElementById('finish-rst').textContent = '59';
+                if(document.getElementById('finish-flag-target')) document.getElementById('finish-flag-target').classList.add('hidden');
+            }
         }
 
-        function updateCommentOpacity(val) { 
-            document.getElementById('comment-el').style.opacity=val; 
-            document.getElementById('comment-opacity-slider').value=val; 
-            saveToStorage(); 
+        // ========== DESCARGA DE QSLs ==========
+        async function waitForAllImages() {
+            const area = document.getElementById('qsl-render-area');
+            const images = Array.from(area.querySelectorAll('img')).filter(img => img.src && img.src !== '');
+            if (images.length === 0) return;
+            await Promise.all(images.map(img => new Promise((resolve) => {
+                if (img.complete && img.naturalWidth > 0) resolve();
+                else { const timeout = setTimeout(() => resolve(), 5000); img.onload = () => { clearTimeout(timeout); resolve(); }; img.onerror = () => { clearTimeout(timeout); resolve(); }; }
+            })));
+            await new Promise(r => setTimeout(r, 400));
         }
-
-        function updateCommentColor(val) { 
-            document.getElementById('comment-el').style.color=val; 
-            document.getElementById('comment-color-picker').value=val; 
-            saveToStorage(); 
+        async function captureQSL(area, scale, format) {
+            const orig = area.style.transform;
+            area.style.transform = 'none';
+            await waitForAllImages();
+            const canvas = await html2canvas(area, { scale, useCORS: true, logging: false, backgroundColor: null, imageTimeout: 0, windowWidth: 1650, windowHeight: 1050 });
+            area.style.transform = orig;
+            return canvas;
         }
-
-        function updateWatermarkColor(color) { 
-            document.getElementById('watermark-el').style.color=color; 
-            document.getElementById('watermark-color').value=color; 
-            saveToStorage(); 
-        }
-
-        function updateWatermarkOpacity(opacity) { 
-            document.getElementById('watermark-el').style.opacity=opacity; 
-            document.getElementById('watermark-opacity').value=opacity; 
-            saveToStorage(); 
-        }
-
-        function updateWatermarkRelief(style) { 
-            const wm=document.getElementById('watermark-el'); 
-            switch(style){ 
-                case'none': wm.style.textShadow='none'; break; 
-                case'soft': wm.style.textShadow='2px 2px 8px rgba(0,0,0,0.6)'; break; 
-                case'strong': wm.style.textShadow='4px 4px 12px black'; break; 
-                case'engrave': wm.style.textShadow='1px 1px 0px white, -1px -1px 0px rgba(0,0,0,0.7)'; break; 
-                case'glow': wm.style.textShadow='0 0 15px cyan, 0 0 5px darkblue'; break; 
-                default: wm.style.textShadow='none'; 
-            } 
-            saveToStorage(); 
-        }
-
-        function updateTableStyle(style) { 
-            const table=document.getElementById('table-overlay'), header=document.getElementById('table-header'), opacity=document.getElementById('table-bg-opacity').value, headerTextColor=document.getElementById('table-header-text-color').value; 
-            if(style==='minimal') { 
-                table.style.background='transparent'; 
-                table.style.boxShadow='none'; 
-                table.style.backdropFilter='none'; 
-                header.style.backgroundColor='transparent'; 
-                header.style.color=headerTextColor; 
-            } else if(style==='classic') { 
-                table.style.background=`rgba(255,255,255,${opacity})`; 
-                table.style.backdropFilter='blur(30px)'; 
-                header.style.backgroundColor='#1e293b'; 
-                header.style.color='#ffffff'; 
-            } else if(style==='elegant') { 
-                table.style.background=`rgba(255,255,255,${opacity})`; 
-                table.style.backdropFilter='blur(10px)'; 
-                header.style.backgroundColor='#b8860b'; 
-                header.style.color='#ffffff'; 
-                table.style.border='2px solid #b8860b'; 
-            } else { 
-                table.style.background=`rgba(255,255,255,${opacity})`; 
-                table.style.backdropFilter='blur(10px)'; 
-                header.style.backgroundColor=document.getElementById('table-header-color').value; 
-                header.style.color=headerTextColor; 
-            } 
-            saveToStorage(); 
-        }
-
-        function updateTableBgColor(color) { 
-            const opacity=document.getElementById('table-bg-opacity').value; 
-            document.getElementById('table-overlay').style.backgroundColor=hexToRgba(color,opacity); 
-            saveToStorage(); 
-        }
-
-        function updateTableHeaderColor(color) { 
-            document.getElementById('table-header').style.backgroundColor=color; 
-            saveToStorage(); 
-        }
-
-        function updateTableTextColor(color) { 
-            document.querySelectorAll('#table-overlay tbody td').forEach(cell=>cell.style.color=color); 
-            saveToStorage(); 
-        }
-
-        function updateTableHeaderTextColor(color) { 
-            document.getElementById('table-header').style.color=color; 
-            saveToStorage(); 
-        }
-
-        function updateTableBgOpacity(val) { 
-            const color=document.getElementById('table-bg-color').value; 
-            document.getElementById('table-overlay').style.backgroundColor=hexToRgba(color,val); 
-            saveToStorage(); 
-        }
-
-        function hexToRgba(hex,opacity) { 
-            const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16); 
-            return `rgba(${r}, ${g}, ${b}, ${opacity})`; 
-        }
-
-        function updatePersonalData(text) { 
-            const call=text.toUpperCase()||"CO2KK"; 
-            document.getElementById('watermark-el').textContent=call; 
-            document.getElementById('signature-el').textContent=`73's de ${call}`; 
-            document.getElementById('lbl-operator').textContent = `OP: ${call}`; 
-            updateOperatorFlag(call); 
-            saveToStorage(); 
-        }
-
-        function updateOperatorFlag(call) { 
-            const flagImg=document.getElementById('operator-flag'); 
-            const code=getCountryCode(call); 
-            updateFlagImage(flagImg,code); 
-        }
-
-        function updateQRUrl(url) { 
-            if(url) updateQR(url); 
-            saveToStorage(); 
-        }
-
-        function updateQR(url) { 
-            const container=document.getElementById('qr-code-container'); 
-            container.innerHTML=""; 
-            new QRCode(container,{ text:url, width:140, height:140, colorDark:"#0f172a" }); 
-            saveToStorage(); 
-        }
-
-        function handleImage(event, targetId) { 
-            const file=event.target.files[0]; 
-            if(file){ 
-                const reader=new FileReader(); 
-                reader.onload=(e)=>{ 
-                    document.getElementById(targetId).src=e.target.result; 
-                    saveToStorage(); 
-                }; 
-                reader.readAsDataURL(file); 
-            } 
-        }
-
-        function setBackground(url) { 
-            const bg=document.getElementById('qsl-bg'); 
-            bg.src=url; 
-            bg.style.display='block'; 
-            bg.onerror=function(){ 
-                this.parentElement.style.backgroundColor='#1e293b'; 
-                this.style.display='none'; 
-            }; 
-            saveToStorage(); 
-        }
-
-        function toggleVisibility(elementId, visible) { 
-            const el=document.getElementById(elementId); 
-            if(el) el.style.display=visible?'block':'none'; 
-            saveToStorage(); 
-        }
-
-        function parseADIF(event) { 
-            const file=event.target.files[0]; 
-            if(!file) return; 
-            const reader=new FileReader(); 
-            reader.onload=function(e) { 
-                const text=e.target.result; 
-                allQsos=[]; 
-                const cleanText=text.replace(/^#.*$/gm,'').replace(/^\/\/.*$/gm,''); 
-                const records=cleanText.split(/<eor>|<EOR>/i); 
-                records.forEach(record=>{ 
-                    if(record.trim().length<5) return; 
-                    const qso={}; 
-                    const fieldRegex=/<([A-Z_]+):(\d+)(?::[^>]*)?>([^<]*)/gi; 
-                    let match; 
-                    while((match=fieldRegex.exec(record))!==null){ 
-                        const tag=match[1].toUpperCase(); 
-                        const value=match[3].trim(); 
-                        if(value) qso[tag]=value; 
-                    } 
-                    if(qso.CALL) allQsos.push(qso); 
-                }); 
-                document.getElementById('qso-count').textContent=allQsos.length; 
-                displayQSOs(); 
-                document.getElementById('mass-actions').classList.remove('hidden'); 
-                if(allQsos[0]?.STATION_CALLSIGN) updatePersonalData(allQsos[0].STATION_CALLSIGN); 
-            }; 
-            reader.readAsText(file); 
-        }
-
-        function displayQSOs() { 
-            const container=document.getElementById('qso-list'); 
-            container.innerHTML=""; 
-            allQsos.forEach((qso,index)=>{ 
-                const div=document.createElement('div'); 
-                div.className="bg-white p-3 border rounded-xl hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-all group"; 
-                div.onclick=()=>applyQSO(qso); 
-                div.innerHTML=`<div class="flex flex-col"><span class="text-xs font-black text-slate-700">${qso.CALL}</span><span class="text-[9px] text-slate-400">${qso.QSO_DATE||'---'}</span></div><span class="text-[10px] font-bold bg-slate-100 px-2 py-1 rounded group-hover:bg-blue-200">${qso.BAND||'??'}</span>`; 
-                container.appendChild(div); 
-            }); 
-        }
-
-        function applyQSO(qso) { 
-            document.getElementById('target-call').textContent=qso.CALL||'DX_STATION'; 
-            let dateStr=qso.QSO_DATE||'20260406'; 
-            if(dateStr.length===8) dateStr=dateStr.replace(/(\d{4})(\d{2})(\d{2})/,'$1-$2-$3'); 
-            document.getElementById('td-date').textContent=dateStr; 
-            let timeStr=qso.TIME_ON||'0000'; 
-            if(timeStr.length>=4) timeStr=timeStr.substring(0,2)+":"+timeStr.substring(2,4); 
-            document.getElementById('td-time').textContent=timeStr; 
-            document.getElementById('td-band').textContent=qso.BAND||'---'; 
-            document.getElementById('td-mode').textContent=qso.MODE||'---'; 
-            document.getElementById('td-rst').textContent=qso.RST_SENT||'---'; 
-            updateFlag(qso.CALL); 
-        }
-
-        function applyManualFull() { 
-            const call=document.getElementById('manual-call').value.toUpperCase()||'DX_STATION'; 
-            let dateRaw=document.getElementById('manual-date').value; 
-            let timeRaw=document.getElementById('manual-time').value; 
-            const band=document.getElementById('manual-band').value||'40M'; 
-            const mode=document.getElementById('manual-mode').value||'FT8'; 
-            const rst=document.getElementById('manual-rst').value||'-01'; 
-            if(!/^\d{4}-\d{2}-\d{2}$/.test(dateRaw)) dateRaw=new Date().toISOString().split('T')[0]; 
-            const qsoDate=dateRaw.replace(/-/g,''); 
-            timeRaw=timeRaw.replace(/[^0-9]/g,'').padStart(4,'0').substring(0,4); 
-            if(!/^\d{4}$/.test(timeRaw)) timeRaw='0000'; 
-            const qso={ CALL:call, QSO_DATE:qsoDate, TIME_ON:timeRaw, BAND:band, MODE:mode, RST_SENT:rst }; 
-            applyQSO(qso); 
-        }
-
-        function updateFlag(call) { 
-            const flagImg=document.getElementById('target-flag'); 
-            const code=getCountryCode(call); 
-            updateFlagImage(flagImg,code); 
-        }
-
-        // ====== DESCARGA INDIVIDUAL MEJORADA ======
-        async function downloadSingleQSL() { 
-            const area=document.getElementById('qsl-render-area'); 
-            const call=document.getElementById('target-call').textContent; 
-            const station=document.getElementById('watermark-el').textContent; 
-            const scale=parseInt(document.getElementById('export-scale').value)||2; 
-            const format=document.getElementById('export-format').value; 
-            
+        async function downloadSingleQSL() {
+            const area = document.getElementById('qsl-render-area');
+            const call = document.getElementById('target-call').textContent;
+            const station = document.getElementById('watermark-el').textContent;
+            const scale = parseInt(document.getElementById('export-scale').value) || 2;
+            const format = document.getElementById('export-format').value;
             try {
                 const canvas = await captureQSL(area, scale, format);
-                const link=document.createElement('a'); 
-                link.download=`QSL_${station}_${call}.${format==='png'?'png':'jpg'}`; 
-                link.href=format==='png'?canvas.toDataURL("image/png"):canvas.toDataURL("image/jpeg",1.0); 
+                const link = document.createElement('a');
+                link.download = `QSL_${station}_${call}.${format==='png'?'png':'jpg'}`;
+                link.href = format==='png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 1.0);
                 link.click();
-            } catch(e) {
-                alert('Error al capturar la QSL. Intenta de nuevo.');
-                console.error(e);
-            }
+            } catch(e) { alert('Error al capturar la QSL.'); console.error(e); }
         }
-
-        // ====== ZIP MEJORADO (sin bloqueos) ======
-        async function downloadAllQSLsZip() { 
-            if(allQsos.length === 0) {
-                alert('No hay contactos cargados. Importa un archivo ADIF primero.');
-                return;
-            }
-            cancelBatch = false;
-            const loader = document.getElementById('loader'); 
-            const loaderText = document.getElementById('loader-text'); 
-            const loaderSub = document.getElementById('loader-sub');
-            const progressFill = document.getElementById('progress-fill');
-            loader.style.display = 'flex'; 
-            const zip = new JSZip(); 
-            const area = document.getElementById('qsl-render-area'); 
-            const scale = parseInt(document.getElementById('export-scale').value) || 2; 
-            const format = document.getElementById('export-format').value; 
-            const station = document.getElementById('watermark-el').textContent;
-            const ext = format === 'png' ? 'png' : 'jpg'; 
-            
-            // Guardar el transform original y aplicar escala fija para captura
-            const origTransform = area.style.transform;
-            area.style.transform = 'none';
-            
-            let errors = 0;
-            for(let i = 0; i < allQsos.length; i++) { 
-                if(cancelBatch) { 
-                    loaderText.textContent = "❌ Cancelado"; 
-                    await new Promise(r => setTimeout(r, 1000)); 
-                    break; 
-                }
-                const percent = Math.round(((i + 1) / allQsos.length) * 100);
-                progressFill.style.width = `${percent}%`;
-                progressFill.textContent = `${percent}%`;
-                loaderText.textContent = `📦 Procesando QSL ${i + 1} de ${allQsos.length}`;
-                loaderSub.textContent = `📡 Contacto: ${allQsos[i].CALL} | ${allQsos[i].BAND || 'N/A'}`;
-                
-                try {
-                    applyQSO(allQsos[i]); 
-                    // Esperar a que se aplique el cambio
-                    await new Promise(r => setTimeout(r, 500));
-                    // Capturar con la función mejorada
-                    const canvas = await captureQSL(area, scale, format);
-                    // Convertir a blob para el ZIP
-                    const blob = await new Promise(resolve => canvas.toBlob(resolve, format === 'png' ? 'image/png' : 'image/jpeg', 0.95));
-                    // Guardar en el ZIP
-                    zip.file(`QSL_${station}_${allQsos[i].CALL}_${String(i + 1).padStart(3, '0')}.${ext}`, blob);
-                } catch(err) { 
-                    errors++;
-                    console.error(`Error en ${allQsos[i].CALL}:`, err);
-                    loaderSub.textContent = `⚠️ Error en ${allQsos[i].CALL} (${errors} errores)`; 
-                    // Esperar un poco antes de continuar
-                    await new Promise(r => setTimeout(r, 800));
-                }
-                // Pequeña pausa para no saturar
-                await new Promise(r => setTimeout(r, 200));
-            } 
-            
-            // Restaurar transform
-            area.style.transform = origTransform;
-            
-            if(!cancelBatch && errors < allQsos.length) {
-                loaderText.textContent = "📦 Creando ZIP...";
-                try {
-                    const content = await zip.generateAsync({ type: "blob" }); 
-                    saveAs(content, `QSL_Galeria_${station}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.zip`); 
-                } catch(e) {
-                    alert('Error al generar el ZIP. Prueba con la descarga "una por una".');
-                    console.error(e);
-                }
-            } else if (errors === allQsos.length) {
-                alert('Todos los QSLs fallaron. Revisa la consola.');
-            }
-            await new Promise(r => setTimeout(r, 1000));
-            loader.style.display = 'none'; 
-            progressFill.style.width = '0%';
-            progressFill.textContent = '0%';
-        }
-
-        // ====== DESCARGA SECUENCIAL (una por una) MEJORADA ======
-        async function downloadBatchSequential() {
-            if(allQsos.length === 0) { alert('No hay contactos cargados'); return; }
+        async function downloadAllQSLsZip() {
+            if (allQsos.length === 0) { alert('No hay contactos cargados.'); return; }
             cancelBatch = false;
             const loader = document.getElementById('loader');
             const loaderText = document.getElementById('loader-text');
             const loaderSub = document.getElementById('loader-sub');
             const progressFill = document.getElementById('progress-fill');
+            loader.style.display = 'flex';
+            const zip = new JSZip();
             const area = document.getElementById('qsl-render-area');
             const scale = parseInt(document.getElementById('export-scale').value) || 2;
             const format = document.getElementById('export-format').value;
             const station = document.getElementById('watermark-el').textContent;
-            loader.style.display = 'flex';
-            
-            const origTransform = area.style.transform;
+            const ext = format === 'png' ? 'png' : 'jpg';
+            const orig = area.style.transform;
             area.style.transform = 'none';
-            
             let errors = 0;
-            for(let i = 0; i < allQsos.length; i++) {
-                if(cancelBatch) { 
-                    loaderText.textContent = "❌ Cancelado"; 
-                    await new Promise(r => setTimeout(r, 1000)); 
-                    break; 
-                }
-                const percent = Math.round(((i + 1) / allQsos.length) * 100);
-                progressFill.style.width = `${percent}%`;
-                progressFill.textContent = `${percent}%`;
-                loaderText.textContent = `📸 Descargando QSL ${i + 1} de ${allQsos.length}`;
+            for (let i=0; i<allQsos.length; i++) {
+                if (cancelBatch) { loaderText.textContent = "❌ Cancelado"; await new Promise(r=>setTimeout(r,1000)); break; }
+                const percent = Math.round(((i+1)/allQsos.length)*100);
+                progressFill.style.width = percent+'%';
+                progressFill.textContent = percent+'%';
+                loaderText.textContent = `📦 Procesando QSL ${i+1} de ${allQsos.length}`;
                 loaderSub.textContent = `📡 ${allQsos[i].CALL} | ${allQsos[i].BAND || 'N/A'}`;
-                
                 try {
                     applyQSO(allQsos[i]);
-                    await new Promise(r => setTimeout(r, 500));
+                    await new Promise(r=>setTimeout(r,500));
+                    const canvas = await captureQSL(area, scale, format);
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, format==='png'?'image/png':'image/jpeg', 0.95));
+                    zip.file(`QSL_${station}_${allQsos[i].CALL}_${String(i+1).padStart(3,'0')}.${ext}`, blob);
+                } catch(err) { errors++; console.error(err); loaderSub.textContent = `⚠️ Error en ${allQsos[i].CALL} (${errors})`; await new Promise(r=>setTimeout(r,800)); }
+                await new Promise(r=>setTimeout(r,200));
+            }
+            area.style.transform = orig;
+            if (!cancelBatch && errors < allQsos.length) {
+                loaderText.textContent = "📦 Creando ZIP...";
+                try { const content = await zip.generateAsync({type:"blob"}); saveAs(content, `QSL_Galeria_${station}_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.zip`); }
+                catch(e) { alert('Error al generar ZIP.'); console.error(e); }
+            } else if (errors === allQsos.length) alert('Todos fallaron.');
+            await new Promise(r=>setTimeout(r,1000));
+            loader.style.display = 'none';
+            progressFill.style.width = '0%'; progressFill.textContent = '0%';
+        }
+        async function downloadBatchSequential() {
+            if (allQsos.length === 0) { alert('No hay contactos.'); return; }
+            cancelBatch = false;
+            const loader = document.getElementById('loader');
+            const loaderText = document.getElementById('loader-text');
+            const loaderSub = document.getElementById('loader-sub');
+            const progressFill = document.getElementById('progress-fill');
+            loader.style.display = 'flex';
+            const area = document.getElementById('qsl-render-area');
+            const scale = parseInt(document.getElementById('export-scale').value) || 2;
+            const format = document.getElementById('export-format').value;
+            const station = document.getElementById('watermark-el').textContent;
+            const orig = area.style.transform;
+            area.style.transform = 'none';
+            let errors = 0;
+            for (let i=0; i<allQsos.length; i++) {
+                if (cancelBatch) { loaderText.textContent = "❌ Cancelado"; await new Promise(r=>setTimeout(r,1000)); break; }
+                const percent = Math.round(((i+1)/allQsos.length)*100);
+                progressFill.style.width = percent+'%';
+                progressFill.textContent = percent+'%';
+                loaderText.textContent = `📸 Descargando QSL ${i+1} de ${allQsos.length}`;
+                loaderSub.textContent = `📡 ${allQsos[i].CALL} | ${allQsos[i].BAND || 'N/A'}`;
+                try {
+                    applyQSO(allQsos[i]);
+                    await new Promise(r=>setTimeout(r,500));
                     const canvas = await captureQSL(area, scale, format);
                     const link = document.createElement('a');
-                    link.download = `QSL_${station}_${allQsos[i].CALL}_${String(i+1).padStart(3,'0')}.${format === 'png' ? 'png' : 'jpg'}`;
-                    link.href = format === 'png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.95);
+                    link.download = `QSL_${station}_${allQsos[i].CALL}_${String(i+1).padStart(3,'0')}.${format==='png'?'png':'jpg'}`;
+                    link.href = format==='png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.95);
                     link.click();
-                    await new Promise(r => setTimeout(r, 500));
-                } catch(err) { 
-                    errors++;
-                    console.error(`Error en ${allQsos[i].CALL}:`, err);
-                    loaderSub.textContent = `⚠️ Error en ${allQsos[i].CALL} (${errors} errores)`;
-                    await new Promise(r => setTimeout(r, 800));
-                }
-                await new Promise(r => setTimeout(r, 200));
+                    await new Promise(r=>setTimeout(r,500));
+                } catch(err) { errors++; console.error(err); loaderSub.textContent = `⚠️ Error en ${allQsos[i].CALL} (${errors})`; await new Promise(r=>setTimeout(r,800)); }
+                await new Promise(r=>setTimeout(r,200));
             }
-            
-            area.style.transform = origTransform;
-            
+            area.style.transform = orig;
             loaderText.textContent = errors === 0 ? "✅ ¡DESCARGA COMPLETADA!" : `⚠️ Completado con ${errors} errores.`;
-            await new Promise(r => setTimeout(r, 1500));
+            await new Promise(r=>setTimeout(r,1500));
             loader.style.display = 'none';
-            progressFill.style.width = '0%';
-            progressFill.textContent = '0%';
+            progressFill.style.width = '0%'; progressFill.textContent = '0%';
         }
 
-        function resetPositions() { 
-            for(const [id,pos] of Object.entries(defaultPositions)) { 
-                const el=document.getElementById(id); 
-                if(el){ el.style.top=pos.top+'px'; el.style.left=pos.left+'px'; el.style.bottom=''; el.style.right=''; } 
-            } 
-            saveToStorage(); 
+        // ========== OTRAS FUNCIONES ==========
+        function toggleVisibility(id, vis) { const el=document.getElementById(id); if(el) el.style.display=vis?'block':'none'; saveToStorage(); }
+        function setBackground(url) { const bg=document.getElementById('qsl-bg'); bg.src=url; bg.style.display='block'; bg.onerror=function(){ this.style.display='none'; this.parentElement.classList.add('bg-fallback'); }; bg.onload=function(){ this.parentElement.classList.remove('bg-fallback'); }; saveToStorage(); }
+        function handleImage(e, target) { const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=ev=>{ document.getElementById(target).src=ev.target.result; saveToStorage(); }; reader.readAsDataURL(file); } }
+        function resetPositions() { for(const [id,pos] of Object.entries(defaultPositions)) { const el=document.getElementById(id); if(el){ el.style.top=pos.top+'px'; el.style.left=pos.left+'px'; el.style.bottom=''; el.style.right=''; } } saveToStorage(); }
+        function resetAll() {
+            updatePersonalData('CO2KK');
+            document.getElementById('qr-url-input').value='https://cl7adv.github.io/Qsl-Caribe/'; updateQR('https://cl7adv.github.io/Qsl-Caribe/');
+            updateComment('Confirmando nuestro excelente contacto.'); updateCommentOpacity(1); updateCommentColor('#ffffff');
+            updateFont('font-oswald');
+            document.getElementById('qsl-border').style.display='block';
+            updateBorderColor('rgba(255,255,255,0.3)');
+            updateWatermarkColor('#ffffff'); updateWatermarkOpacity(0.5); updateWatermarkRelief('none');
+            document.getElementById('watermark-relief').value='none';
+            document.getElementById('watermark-color').value='#ffffff';
+            document.getElementById('watermark-opacity').value='0.5';
+            document.getElementById('table-bg-color').value='#ffffff';
+            document.getElementById('table-header-color').value='#2563eb';
+            document.getElementById('table-text-color').value='#000000';
+            document.getElementById('table-header-text-color').value='#ffffff';
+            updateTableBgOpacity(0.95);
+            document.getElementById('table-style-select').value='modern';
+            updateTableStyle('modern');
+            setBackground('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1650');
+            document.getElementById('postcard-frame-checkbox').checked=false; togglePostcardFrame(false);
+            ['vis-logo','vis-watermark','vis-comment','vis-signature','vis-qr','vis-table'].forEach(id => { document.getElementById(id).checked=true; });
+            toggleVisibility('user-logo-container',true); toggleVisibility('watermark-el',true); toggleVisibility('comment-el',true); toggleVisibility('signature-el',true); toggleVisibility('qr-element',true); toggleVisibility('table-overlay',true);
+            resetPositions();
+            localStorage.removeItem('qslConfig');
+            // Limpiar contactos
+            allQsos = [];
+            document.getElementById('qso-count').textContent = '0';
+            document.getElementById('qso-list').innerHTML = '<p class="text-[10px] text-center text-slate-400 py-6 italic">Sin contactos cargados...</p>';
+            document.getElementById('mass-actions').classList.add('hidden');
+            document.getElementById('target-call').textContent = 'DX_STATION';
+            document.getElementById('td-date').textContent = '2026-04-06';
+            document.getElementById('td-time').textContent = '22:15';
+            document.getElementById('td-band').textContent = '20M';
+            document.getElementById('td-mode').textContent = 'SSB';
+            document.getElementById('td-rst').textContent = '59';
+            document.getElementById('target-flag').classList.add('hidden');
+            if(document.getElementById('finish-call-display')) { document.getElementById('finish-call-display').textContent = 'DX_STATION'; document.getElementById('finish-date').textContent = '2026-04-06'; document.getElementById('finish-time').textContent = '22:15'; document.getElementById('finish-bandmode').textContent = '20M · SSB'; document.getElementById('finish-rst').textContent = '59'; document.getElementById('finish-flag-target').classList.add('hidden'); }
         }
 
-        function resetAll() { 
-            updatePersonalData('CO2KK'); 
-            document.getElementById('qr-url-input').value='https://cl7adv.github.io/Qsl-Caribe/'; 
-            updateQR('https://cl7adv.github.io/Qsl-Caribe/'); 
-            updateComment('Confirmando nuestro excelente contacto.'); 
-            updateCommentOpacity(1); 
-            updateCommentColor('#ffffff'); 
-            updateFont('font-oswald'); 
-            document.getElementById('qsl-border').style.display='block'; 
-            updateBorderColor('rgba(255,255,255,0.3)'); 
-            updateWatermarkColor('#ffffff'); 
-            updateWatermarkOpacity(0.5); 
-            updateWatermarkRelief('none'); 
-            document.getElementById('watermark-relief').value='none'; 
-            document.getElementById('watermark-color').value='#ffffff'; 
-            document.getElementById('watermark-opacity').value='0.5'; 
-            document.getElementById('table-bg-color').value='#ffffff'; 
-            document.getElementById('table-header-color').value='#2563eb'; 
-            document.getElementById('table-text-color').value='#000000'; 
-            document.getElementById('table-header-text-color').value='#ffffff'; 
-            updateTableBgOpacity(0.95); 
-            updateTableStyle('modern'); 
-            setBackground('https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=1650'); 
-            document.getElementById('postcard-frame-checkbox').checked=false; 
-            togglePostcardFrame(false); 
-            document.getElementById('vis-logo').checked=true; 
-            document.getElementById('vis-watermark').checked=true; 
-            document.getElementById('vis-comment').checked=true; 
-            document.getElementById('vis-signature').checked=true; 
-            document.getElementById('vis-qr').checked=true; 
-            document.getElementById('vis-table').checked=true; 
-            toggleVisibility('user-logo-container',true); 
-            toggleVisibility('watermark-el',true); 
-            toggleVisibility('comment-el',true); 
-            toggleVisibility('signature-el',true); 
-            toggleVisibility('qr-element',true); 
-            toggleVisibility('table-overlay',true); 
-            resetPositions(); 
-            localStorage.removeItem('qslConfig'); 
-        }
+        // ========== INICIALIZACIÓN ==========
+        window.onload = function() {
+            lucide.createIcons();
+            updateScale();
+            window.addEventListener('resize', updateScale);
+            updateQR('https://cl7adv.github.io/Qsl-Caribe/');
+            ['user-logo-container','table-overlay','qr-element','watermark-el','signature-el','comment-el'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) makeDraggable(el);
+            });
+            loadFromStorage();
+            updateOperatorFlag(document.getElementById('watermark-text').value);
+            updateTableTextColor(document.getElementById('table-text-color').value);
+            updateTableHeaderTextColor(document.getElementById('table-header-text-color').value);
+            updateTableBgOpacity(parseFloat(document.getElementById('table-bg-opacity').value));
+            setTimeout(() => updateTableStyle(document.getElementById('table-style-select').value), 100);
+            setTimeout(() => applyManualFull(), 500);
+            console.log('🚀 QSL ELITE PRO v5.4 cargada correctamente.');
+        };
     </script>
 </body>
 </html>
